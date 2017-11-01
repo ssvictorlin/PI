@@ -9,11 +9,13 @@ import {
   Platform,
   StyleSheet,
   Text,
+  Button,
   View
 } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
-import Icon from 'react-native-vector-icons/FontAwesome'
-import {Dimensions} from 'react-native'
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {Dimensions} from 'react-native';
+import {get, put} from './api.js';
 
 const deviceW = Dimensions.get('window').width
 
@@ -31,12 +33,37 @@ const instructions = Platform.select({
 });
 
 class Home extends Component {
+  constructor() {
+    super();
+    this.state = {
+      data: "no connection",
+      loading: false,
+    };
+    //this.fetchComments = fetchComments.bind(this);
+  }
+
+  fetchComments = async () => {
+    this.setState({loading: true})
+    try {
+      const response = await get('testroute');
+      const dummy = await response.json();
+      this.setState({data: dummy.DummyData,
+      loading: false});
+    }
+    catch(err) {
+      alert(err);
+    }
+  };
+
   render() {
+    let fillertext = this.state.loading ? "Loading" : this.state.data;
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Home
+          {fillertext}
         </Text>
+
+        <Button onPress={this.fetchComments} title="Test" />
       </View>
     )
   }
