@@ -6,7 +6,7 @@ import { get, put } from './api.js';
 import Friends from './src/components/Friends.js';
 import Profile from './src/components/Profile.js';
 import Crowns from './src/components/Crowns.js';
-import Header from './src/components/header.js';
+import Header from './src/components/Header.js';
 
 const deviceW = Dimensions.get('window').width
 
@@ -18,8 +18,7 @@ function px2dp(px) {
 
 export default class App extends Component<{}> {
   state= {
-    selectedTab: 'profile',
-    profileName: 'Butter Croissants'
+    selectedTab: 'profile'
   };
 
   render() {
@@ -43,7 +42,7 @@ export default class App extends Component<{}> {
             renderIcon={() => <Icon name="user" size={px2dp(22)} color="#666"/>}
             renderSelectedIcon={() => <Icon name="user" size={px2dp(22)} color="#3496f0"/>}
             onPress={() => this.setState({selectedTab: 'profile'})}>
-            <Profile name="Butter Croissants" />
+            <Profile />
           </TabNavigator.Item>
           <TabNavigator.Item
             selected={this.state.selectedTab === 'crowns'}

@@ -6,9 +6,9 @@ export default class Profile extends Component {
 	constructor() {
     super();
     this.state = {
-    	radarChart: "https://i.imgur.com/rgJ7bXi.png",
-      name: "Butter Croissants",
-      image: "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+    	radarChart: "",
+      name: "",
+      image: "",
 			data: "TODO",
 			loading: false
     };
@@ -21,9 +21,13 @@ export default class Profile extends Component {
 	getData = async () => {
 		this.setState({loading: true});
     try {
-      const response = await get('testroute');
-      const dummy = await response.json();
-      this.setState({data: dummy.DummyData,
+      const response = await get('profile');
+      const data = await response.json();
+      this.setState({
+      	data: data.DummyData,
+      	name: data.name,
+      	radarChart: data.radarChart,
+      	image: data.image,
 				loading: false});
     }
     catch(err) {
