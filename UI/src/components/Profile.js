@@ -9,7 +9,8 @@ export default class Profile extends Component {
     	radarChart: "https://i.imgur.com/rgJ7bXi.png",
       name: "Butter Croissants",
       image: "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
-			data: "TODO"
+			data: "TODO",
+			loading: false
     };
   }
 
@@ -18,10 +19,12 @@ export default class Profile extends Component {
 	}
 
 	getData = async () => {
+		this.setState({loading: true});
     try {
       const response = await get('testroute');
       const dummy = await response.json();
-      this.setState({data: dummy.DummyData});
+      this.setState({data: dummy.DummyData,
+				loading: false});
     }
     catch(err) {
       alert(err);
@@ -29,52 +32,56 @@ export default class Profile extends Component {
   };
 
 	render() {
-  	return (
-    	<ScrollView>
-				<Image
-					style={ styles.imageStyle }
-					source={{ uri: this.state.radarChart }}
-				/>
-				<View style={ styles.containerStyle }>
-					<View style={ styles.thumbnailContainerStyle }>
-						<Image
-							style={ styles.thumbnailStyle }
-							source={{ uri: this.state.image }}
-						/>
+		if (this.state.loading == true) {
+			return <Text>Insert Loading GIF here</Text>
+		} else {
+	  	return (
+	    	<ScrollView>
+					<Image
+						style={ styles.imageStyle }
+						source={{ uri: this.state.radarChart }}
+					/>
+					<View style={ styles.containerStyle }>
+						<View style={ styles.thumbnailContainerStyle }>
+							<Image
+								style={ styles.thumbnailStyle }
+								source={{ uri: this.state.image }}
+							/>
+						</View>
+						<View style={ styles.headerContentStyle }>
+							<Text style={ styles.headerTextStyle }>{ this.state.name }</Text>
+						</View>
 					</View>
-					<View style={ styles.headerContentStyle }>
-						<Text style={ styles.headerTextStyle }>{ this.state.name }</Text>
-					</View>
-				</View>
-				<Text style={ styles.activityStyle }>
-					activities1
-				</Text>
-				<Text style={ styles.activityStyle }>
-					activities2
-				</Text>
-				<Text style={ styles.activityStyle }>
-					activities3
-				</Text>
-				<Text style={ styles.activityStyle }>
-					activities4
-				</Text>
-				<Text style={ styles.activityStyle }>
-					activities5
-				</Text>
-				<Text style={ styles.activityStyle }>
-					activities6
-				</Text>
-				<Text style={ styles.activityStyle }>
-					activities7
-				</Text>
-				<Text style={ styles.activityStyle }>
-					activities8
-				</Text>
-				<Text style={ styles.activityStyle }>
-					{ this.state.data }
-				</Text>
-    	</ScrollView>
-  	);
+					<Text style={ styles.activityStyle }>
+						{ this.state.data }
+					</Text>
+					<Text style={ styles.activityStyle }>
+						activities2
+					</Text>
+					<Text style={ styles.activityStyle }>
+						activities3
+					</Text>
+					<Text style={ styles.activityStyle }>
+						activities4
+					</Text>
+					<Text style={ styles.activityStyle }>
+						activities5
+					</Text>
+					<Text style={ styles.activityStyle }>
+						activities6
+					</Text>
+					<Text style={ styles.activityStyle }>
+						activities7
+					</Text>
+					<Text style={ styles.activityStyle }>
+						activities8
+					</Text>
+					<Text style={ styles.activityStyle }>
+						{ this.state.data }
+					</Text>
+	    	</ScrollView>
+  		);
+		}
   }
 };
 

@@ -18,7 +18,8 @@ function px2dp(px) {
 
 export default class App extends Component<{}> {
   state= {
-    selectedTab: 'profile'
+    selectedTab: 'profile',
+    profileName: 'Butter Croissants'
   };
 
   render() {
@@ -33,7 +34,7 @@ export default class App extends Component<{}> {
             renderIcon={() => <Icon name="users" size={px2dp(22)} color="#666"/>}
             renderSelectedIcon={() => <Icon name="users" size={px2dp(22)} color="#3496f0"/>}
             onPress={() => this.setState({selectedTab: 'friends'})}>
-            <Friends/>
+            <Friends />
           </TabNavigator.Item>
           <TabNavigator.Item
             selected={this.state.selectedTab === 'profile'}
@@ -42,7 +43,7 @@ export default class App extends Component<{}> {
             renderIcon={() => <Icon name="user" size={px2dp(22)} color="#666"/>}
             renderSelectedIcon={() => <Icon name="user" size={px2dp(22)} color="#3496f0"/>}
             onPress={() => this.setState({selectedTab: 'profile'})}>
-            <Profile name="Butter Croissants"/>
+            <Profile name="Butter Croissants" />
           </TabNavigator.Item>
           <TabNavigator.Item
             selected={this.state.selectedTab === 'crowns'}
