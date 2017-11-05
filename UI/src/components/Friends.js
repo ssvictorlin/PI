@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Button } from 'react-native';
 import { get, put } from '../../api.js';
 
-class Home extends Component {
+export default class Friends extends Component {
   constructor() {
     super();
     this.state = {
@@ -52,5 +52,3 @@ const styles = {
     margin: 10,
   },
 }
-
-export default Home;

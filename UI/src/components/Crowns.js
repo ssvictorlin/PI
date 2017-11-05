@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ScrollView, Text} from 'react-native';
 import { get, put } from '../../api.js';
 
-class Crowns extends Component {
+export default class Crowns extends Component {
 	render() {
   		return (
     	<ScrollView>
@@ -21,6 +21,3 @@ const styles = {
     margin: 10,
   },
 }
-
-
-export default Crowns;
