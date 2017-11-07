@@ -37,7 +37,7 @@ export default class App extends Component<{}> {
           >
          <View style={{marginTop: 22}}>
           <View>
-            <Text>Settingsc</Text>
+            <Text>Setting</Text>
             <TouchableHighlight onPress={() => {
               this.setModalVisible(!this.state.modalVisible)
             }}>
