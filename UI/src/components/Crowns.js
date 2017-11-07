@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Image, Text } from 'react-native';
+import { ScrollView, View, Image, Text, ActivityIndicator } from 'react-native';
 import { get, put } from '../../api.js';
 import Card from './Card';
 import CardSection from './CardSection';
@@ -36,7 +36,11 @@ export default class Crowns extends Component {
 
 	render() {
     if (this.state.loading == true) {
-      return <Text>Insert Loading GIF here</Text>
+			return (<ActivityIndicator
+	        animating={this.state.loading}
+	        style={[styles.centering, {height: 80}]}
+	        size="large"
+	      />);
     } else {
   		return (
     	  <ScrollView>
@@ -105,6 +109,11 @@ const styles = {
   },
   pieChart: {
     height: 100,
-    width: 100
-  }
+    width: 100,
+  },
+  centering: {
+		alignItems: 'center',
+    justifyContent: 'center',
+		padding: 8
+	}
 }

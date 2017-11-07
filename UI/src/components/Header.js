@@ -11,7 +11,7 @@ export default class Header extends Component {
   render() {
     return(
       <View style={styles.header}>
-        <Icon size={20} style={styles.gear} name="cog"/>
+        <Icon size={20} style={styles.gear} name="cog" onPress={() => {this.props.openModal(true)}} />
       </View>
     );
   }

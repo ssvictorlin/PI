@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Dimensions, View } from 'react-native';
+import { Dimensions, View, Modal, Text, TouchableHighlight } from 'react-native';
 import { get, put } from './api.js';
 import Friends from './src/components/Friends.js';
 import Profile from './src/components/Profile.js';
@@ -18,13 +18,35 @@ function px2dp(px) {
 
 export default class App extends Component<{}> {
   state= {
-    selectedTab: 'profile'
+    selectedTab: 'profile',
+    modalVisible: false
   };
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
 
   render() {
     return (
       <View style={{flex:1}}>
-        <Header style={{flex:1}} />
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => this.setModalVisible(false)}
+          >
+         <View style={{marginTop: 22}}>
+          <View>
+            <Text>Settings</Text>
+            <TouchableHighlight onPress={() => {
+              this.setModalVisible(!this.state.modalVisible)
+            }}>
+              <Text>Hide Modal</Text>
+            </TouchableHighlight>
+          </View>
+         </View>
+        </Modal>
+        <Header style={{flex:1}} openModal={this.setModalVisible.bind(this)} />
         <TabNavigator style={styles.container}>
           <TabNavigator.Item
             selected={this.state.selectedTab === 'friends'}

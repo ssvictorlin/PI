@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Text, Image, Button } from 'react-native';
+import { ScrollView, View, Text, Image, Button, ActivityIndicator } from 'react-native';
 import { get, put } from '../../api.js';
 
 export default class Profile extends Component {
@@ -37,7 +37,11 @@ export default class Profile extends Component {
 
 	render() {
 		if (this.state.loading == true) {
-			return <Text>Insert Loading GIF here</Text>
+			return (<ActivityIndicator
+	        animating={this.state.loading}
+	        style={[styles.centering, {height: 80}]}
+	        size="large"
+	      />);
 		} else {
 	  	return (
 	    	<ScrollView>
@@ -124,5 +128,10 @@ const styles = {
 	activityStyle: {
 		height: 40,
 		fontSize: 18
+	},
+	centering: {
+		alignItems: 'center',
+    justifyContent: 'center',
+		padding: 8
 	}
 }
