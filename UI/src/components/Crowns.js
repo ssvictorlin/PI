@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { ScrollView, View, Image, Text, ActivityIndicator } from 'react-native';
 import { get, put } from '../../api.js';
-import Card from './Card';
-import CardSection from './CardSection';
+import { Card, CardSection } from './common';
 
 export default class Crowns extends Component {
   constructor() {

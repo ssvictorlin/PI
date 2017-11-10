@@ -17,8 +17,9 @@ export default class Friends extends Component {
     try {
       const response = await get('testroute');
       const dummy = await response.json();
-      this.setState({data: dummy.DummyData,
-      loading: false});
+      this.setState({
+        data: dummy.DummyData,
+        loading: false});
     }
     catch(err) {
       alert(err);

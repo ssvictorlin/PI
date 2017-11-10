@@ -3,10 +3,12 @@ import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Dimensions, View, Modal, Text, TouchableHighlight } from 'react-native';
 import { get, put } from './api.js';
-import Friends from './src/components/Friends.js';
-import Profile from './src/components/Profile.js';
-import Crowns from './src/components/Crowns.js';
-import Header from './src/components/Header.js';
+import Friends from './src/components/Friends';
+import Profile from './src/components/Profile';
+import Crowns from './src/components/Crowns';
+import Header from './src/components/Header';
+import LoginForm from './src/components/LoginForm';
+import { Button, Spinner } from './src/components/common';
 
 const deviceW = Dimensions.get('window').width
 
@@ -19,63 +21,89 @@ function px2dp(px) {
 export default class App extends Component<{}> {
   state= {
     selectedTab: 'profile',
-    modalVisible: false
+    modalVisible: false,
+    loggedIn: false,
   };
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
   }
 
+  logout() {
+    this.setState({ loggedIn: false });
+  }
+
+  renderContent() {
+    switch (this.state.loggedIn) {
+      case true:
+        <View style={{flex:1}}>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={this.state.modalVisible}
+            onRequestClose={() => this.setModalVisible(false)}
+          >
+            <View style={{marginTop: 22}}>
+              <View>
+                <Text>Setting</Text>
+                <TouchableHighlight onPress={() => {
+                  this.setModalVisible(!this.state.modalVisible)
+                }}>
+                  <Text>Hide Modal</Text>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {
+                  this.logout()
+                }}>
+                  <Text>Logout</Text>
+                </TouchableHighlight>
+              </View>
+            </View>
+          </Modal>
+          <Header style={{flex:1}} openModal={this.setModalVisible.bind(this)} />
+          <TabNavigator style={styles.container}>
+            <TabNavigator.Item
+              selected={this.state.selectedTab === 'friends'}
+              title="Friends"
+              selectedTitleStyle={{color: "#3496f0"}}
+              renderIcon={() => <Icon name="users" size={px2dp(22)} color="#666"/>}
+              renderSelectedIcon={() => <Icon name="users" size={px2dp(22)} color="#3496f0"/>}
+              onPress={() => this.setState({selectedTab: 'friends'})}
+            >
+              <Friends />
+            </TabNavigator.Item>
+            <TabNavigator.Item
+              selected={this.state.selectedTab === 'profile'}
+              title="Profile"
+              selectedTitleStyle={{color: "#3496f0"}}
+              renderIcon={() => <Icon name="user" size={px2dp(22)} color="#666"/>}
+              renderSelectedIcon={() => <Icon name="user" size={px2dp(22)} color="#3496f0"/>}
+              onPress={() => this.setState({selectedTab: 'profile'})}
+            >
+              <Profile />
+            </TabNavigator.Item>
+            <TabNavigator.Item
+              selected={this.state.selectedTab === 'crowns'}
+              title="Crowns"
+              selectedTitleStyle={{color: "#3496f0"}}
+              renderIcon={() => <Icon name="trophy" size={px2dp(22)} color="#666"/>}
+              renderSelectedIcon={() => <Icon name="trophy" size={px2dp(22)} color="#3496f0"/>}
+              onPress={() => this.setState({selectedTab: 'crowns'})}
+            >
+              <Crowns />
+            </TabNavigator.Item>
+          </TabNavigator>
+        </View>
+      case false:
+        return <LoginForm />;
+      default:
+        return <Spinner size="large" />;
+    }
+  }
+
   render() {
     return (
       <View style={{flex:1}}>
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          onRequestClose={() => this.setModalVisible(false)}
-          >
-         <View style={{marginTop: 22}}>
-          <View>
-            <Text>Setting</Text>
-            <TouchableHighlight onPress={() => {
-              this.setModalVisible(!this.state.modalVisible)
-            }}>
-              <Text>Hide Modal</Text>
-            </TouchableHighlight>
-          </View>
-         </View>
-        </Modal>
-        <Header style={{flex:1}} openModal={this.setModalVisible.bind(this)} />
-        <TabNavigator style={styles.container}>
-          <TabNavigator.Item
-            selected={this.state.selectedTab === 'friends'}
-            title="Friends"
-            selectedTitleStyle={{color: "#3496f0"}}
-            renderIcon={() => <Icon name="users" size={px2dp(22)} color="#666"/>}
-            renderSelectedIcon={() => <Icon name="users" size={px2dp(22)} color="#3496f0"/>}
-            onPress={() => this.setState({selectedTab: 'friends'})}>
-            <Friends />
-          </TabNavigator.Item>
-          <TabNavigator.Item
-            selected={this.state.selectedTab === 'profile'}
-            title="Profile"
-            selectedTitleStyle={{color: "#3496f0"}}
-            renderIcon={() => <Icon name="user" size={px2dp(22)} color="#666"/>}
-            renderSelectedIcon={() => <Icon name="user" size={px2dp(22)} color="#3496f0"/>}
-            onPress={() => this.setState({selectedTab: 'profile'})}>
-            <Profile />
-          </TabNavigator.Item>
-          <TabNavigator.Item
-            selected={this.state.selectedTab === 'crowns'}
-            title="Crowns"
-            selectedTitleStyle={{color: "#3496f0"}}
-            renderIcon={() => <Icon name="trophy" size={px2dp(22)} color="#666"/>}
-            renderSelectedIcon={() => <Icon name="trophy" size={px2dp(22)} color="#3496f0"/>}
-            onPress={() => this.setState({selectedTab: 'crowns'})}>
-            <Crowns />
-          </TabNavigator.Item>
-        </TabNavigator>
+        {this.renderContent()}
       </View>
     );
   }
