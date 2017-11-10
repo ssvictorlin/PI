@@ -19,24 +19,23 @@ function px2dp(px) {
 }
 
 export default class App extends Component<{}> {
-  state= {
+  state = {
     selectedTab: 'profile',
     modalVisible: false,
-    loggedIn: false,
+    loggedIn: true,
   };
 
-  setModalVisible(visible) {
+  setModalVisible = (visible) => {
     this.setState({modalVisible: visible});
   }
 
-  logout() {
+  logout = () => {
     this.setState({ loggedIn: false });
   }
 
-  renderContent() {
-    switch (this.state.loggedIn) {
-      case true:
-        <View style={{flex:1}}>
+  renderContent = () => {
+    if (this.state.loggedIn) {
+      return (<View style={{flex:1}}>
           <Modal
             animationType="slide"
             transparent={false}
@@ -92,12 +91,10 @@ export default class App extends Component<{}> {
               <Crowns />
             </TabNavigator.Item>
           </TabNavigator>
-        </View>
-      case false:
-        return <LoginForm />;
-      default:
-        return <Spinner size="large" />;
-    }
+        </View>)
+      } else {
+        return (<LoginForm />);
+      }
   }
 
   render() {

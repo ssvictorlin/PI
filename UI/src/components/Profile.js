@@ -21,7 +21,7 @@ export default class Profile extends Component {
 	getData = async () => {
 		this.setState({loading: true});
     try {
-      const response = await get('profile');
+      const response = await get('app/profile');
       const data = await response.json();
       this.setState({
       	data: data.DummyData,

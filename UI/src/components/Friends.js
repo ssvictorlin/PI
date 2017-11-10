@@ -15,7 +15,7 @@ export default class Friends extends Component {
   fetchComments = async () => {
     this.setState({loading: true})
     try {
-      const response = await get('testroute');
+      const response = await get('app/testroute');
       const dummy = await response.json();
       this.setState({
         data: dummy.DummyData,

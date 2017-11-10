@@ -20,7 +20,7 @@ export default class Crowns extends Component {
   getData = async () => {
     this.setState({loading: true});
     try {
-      const response = await get('crowns');
+      const response = await get('app/crowns');
       const data = await response.json();
       this.setState({
         crownHolder: data.crownHolder,

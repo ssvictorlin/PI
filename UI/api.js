@@ -1,5 +1,6 @@
 // Our API backend's URL
-const API = 'https://us-central1-ubiquitouspi-ddcb0.cloudfunctions.net/app';
+const API = 'https://us-central1-ubiquitouspi-ddcb0.cloudfunctions.net';
+
 
 const headers = {
   'Accept': 'application/json',
