@@ -22,7 +22,7 @@ export default class App extends Component<{}> {
   state = {
     selectedTab: 'profile',
     modalVisible: false,
-    loggedIn: true,
+    loggedIn: false, 
   };
 
   setModalVisible = (visible) => {
