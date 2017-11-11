@@ -9,6 +9,7 @@ import Crowns from './src/components/Crowns';
 import Header from './src/components/Header';
 import LoginForm from './src/components/LoginForm';
 import { Button, Spinner } from './src/components/common';
+import firebase from 'firebase';
 
 const deviceW = Dimensions.get('window').width
 
@@ -22,8 +23,22 @@ export default class App extends Component<{}> {
   state = {
     selectedTab: 'profile',
     modalVisible: false,
-    loggedIn: false, 
+    loggedIn: false,
   };
+
+  componentWillMount() {
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyA9XhQ19knvbKb7DqXp4vwGVSGkQPuqyzw",
+      authDomain: "ubiquitouspi-ddcb0.firebaseapp.com",
+      databaseURL: "https://ubiquitouspi-ddcb0.firebaseio.com",
+      projectId: "ubiquitouspi-ddcb0",
+      storageBucket: "ubiquitouspi-ddcb0.appspot.com",
+      messagingSenderId: "909294414727"
+    };
+
+    firebase.initializeApp(config);
+  }
 
   setModalVisible = (visible) => {
     this.setState({modalVisible: visible});

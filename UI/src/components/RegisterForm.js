@@ -4,35 +4,44 @@ import { Button, Card, CardSection, Input, Spinner } from './common';
 import { get } from '../../api.js';
 import firebase from 'firebase';
 
-export default class LoginForm extends Component {
-  state = { email: '', password: '', error: '', loading: false };
+export default class RegisterForm extends Component {
+  state = { email: '', password: '', username: '', error: '', loading: false };
 
   onButtonPress() {
-    const { email, password } = this.state;
+    const { email, password, username } = this.state;
     this.setState({ error: '', loading: true });
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(this.onLoginSuccess.bind(this))
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(this.sendUserData())
       .catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
-      this.onLoginFail.bind(this)
-});
+    });
+  }
+
+  // set login information to backend by POST request
+  sendUserData = async () => {
+    try {
+      const response = await get('app/register?username='+this.state.username);
+      this.setState({loading: false});
+    }
+    catch(err) {
+      console.log(err);
+    }
   }
 
   onLoginFail() {
     this.setState({ error: 'Authentication Failed', loading: false });
-    console.log("log in failed");
   }
 
   onLoginSuccess() {
     this.setState({
       email: '',
       password: '',
+      username: '',
       loading: false,
       error: ''
     });
-    console.log("log in success");
   }
 
   renderButton() {
@@ -42,7 +51,7 @@ export default class LoginForm extends Component {
 
     return (
       <Button onPress={this.onButtonPress.bind(this)}>
-        Log in
+        Register
       </Button>
     );
   }
@@ -66,6 +75,15 @@ export default class LoginForm extends Component {
             label="Password"
             value={this.state.password}
             onChangeText={password => this.setState({ password })}
+          />
+        </CardSection>
+
+        <CardSection>
+          <Input
+            placeholder="username"
+            label="Username"
+            value={this.state.username}
+            onChangeText={username => this.setState({ username })}
           />
         </CardSection>
 
