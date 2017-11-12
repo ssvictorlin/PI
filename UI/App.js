@@ -23,7 +23,7 @@ export default class App extends Component<{}> {
   state = {
     selectedTab: 'profile',
     modalVisible: false,
-    loggedIn: false,
+    loggedIn: true, // set to true for development purposes
   };
 
   componentWillMount() {
