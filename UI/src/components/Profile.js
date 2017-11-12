@@ -3,6 +3,9 @@ import { ScrollView, View, Text, Image, Button, ActivityIndicator } from 'react-
 import { get, put } from '../../api.js';
 import { Icon, List, ListItem } from 'react-native-elements';
 
+// require the module
+var RNFS = require('react-native-fs');
+
 const list = [
   {
     name: 'Running',
@@ -32,15 +35,57 @@ export default class Profile extends Component {
     this.state = {
     	radarChart: "",
       name: "",
-      image: "",
+      avatar: "",
 			data: "TODO",
 			loading: false
     };
   }
 
 	componentWillMount() {
+		this.sendData();
 		this.getData();
 	}
+
+	sendData = async () => {
+		this.setState({loading: true});
+		try {
+			// get a list of files and directories in the ExtraSensory directory
+			// current path is static, to test on tour own, you should change last 8 character into your phone UID
+			const extraSensoryPath = RNFS.ExternalStorageDirectoryPath + '/Android/data/edu.ucsd.calab.extrasensory/files/Documents/extrasensory.labels.2C102E28';
+			var extraSensoryData;
+			// an array to store desired json
+			var fileData = [];
+			await RNFS.readDir(extraSensoryPath)
+			  .then((result) => {
+			  	extraSensoryData = result;
+			  	// print all the data in console
+			  	var i;
+			    for (i = 0; i < extraSensoryData.length; i++) {
+			    	// TO-DO: cannot put content into fileData array appropriately, so now just showing data
+			    	RNFS.readFile(result[i].path, 'utf8')
+			    		.then((content) => {console.log(content)})
+			    		.catch((err) => {
+			    			console.log(err.message, err.code);
+			  			});;
+			    }
+			  })
+			  .catch((err) => {
+			    console.log(err.message, err.code);
+			  });
+			console.log(fileData);
+			// can successfully put data to backend and get same data back
+	    const response = await put('app/send', extraSensoryData);
+	    console.log("get response");
+			const data = await response.json();
+			this.setState({
+	    	data: data.DummyData,
+			});
+			console.log(this.state.data);
+    }
+    catch(err) {
+      alert(err);
+    }
+	};
 
 	getData = async () => {
 		this.setState({loading: true});
@@ -48,11 +93,11 @@ export default class Profile extends Component {
       const response = await get('app/profile');
       const data = await response.json();
       this.setState({
-      	data: data.DummyData,
       	name: data.name,
       	radarChart: data.radarChart,
-      	image: data.image,
-				loading: false});
+      	avatar: data.avatar,
+				loading: false
+			});
     }
     catch(err) {
       alert(err);
@@ -79,7 +124,7 @@ export default class Profile extends Component {
 						<View style={ styles.thumbnailContainer }>
 							<Image
 								style={ styles.thumbnail }
-								source={{ uri: this.state.image }}
+								source={{ uri: this.state.avatar }}
 							/>
 						</View>
 						<View style={ styles.headerContent }>
