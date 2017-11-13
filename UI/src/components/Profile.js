@@ -45,34 +45,52 @@ export default class Profile extends Component {
 		this.sendData();
 		this.getData();
 	}
-
+	// get a list of files and directories in the ExtraSensory directory and send to backend
 	sendData = async () => {
 		this.setState({loading: true});
 		try {
-			// get a list of files and directories in the ExtraSensory directory
-			// current path is static, to test on tour own, you should change last 8 character into your phone UID
-			const extraSensoryPath = RNFS.ExternalStorageDirectoryPath + '/Android/data/edu.ucsd.calab.extrasensory/files/Documents/extrasensory.labels.2C102E28';
-			var extraSensoryData;
-			// an array to store desired json
-			var fileData = [];
+			var extraSensoryPath = RNFS.ExternalStorageDirectoryPath + '/Android/data/edu.ucsd.calab.extrasensory/files/Documents/';
+			// 8 digits phone UID
+			var phoneUID;
+			// try to read last 8 digits
 			await RNFS.readDir(extraSensoryPath)
-			  .then((result) => {
-			  	extraSensoryData = result;
-			  	// print all the data in console
-			  	var i;
-			    for (i = 0; i < extraSensoryData.length; i++) {
-			    	// TO-DO: cannot put content into fileData array appropriately, so now just showing data
-			    	RNFS.readFile(result[i].path, 'utf8')
-			    		.then((content) => {console.log(content)})
-			    		.catch((err) => {
-			    			console.log(err.message, err.code);
-			  			});;
+				.then((result) => {
+					// stat the first file (which also have one directory in our case)
+					return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+				})
+				.then((statResult) => {
+					// only extrasensory.labels.xxxxxxxx directory exists
+			    if (statResult[0].isDirectory()) {
+			      // if we have a directory, read it
+			      phoneUID = statResult[1].substr(statResult[1].length - 8);
 			    }
 			  })
 			  .catch((err) => {
 			    console.log(err.message, err.code);
 			  });
-			console.log(fileData);
+			// construct new complete path
+			extraSensoryPath = extraSensoryPath + 'extrasensory.labels.' + phoneUID;
+			// an array to store promises
+			var promises = [];
+			// an array to store
+			var extraSensoryData = [];
+			// construct extraSensoryData by appending all data into an array
+			await RNFS.readDir(extraSensoryPath)
+			  .then((result) => {
+			    for (var i = 0; i < result.length; i++) {
+			    	// push promise into array
+			    	promises.push(RNFS.readFile(result[i].path, 'utf8'));
+			    }
+			    // wait for all promises to finish and execute 'then'
+			    return Promise.all(promises);
+			  })
+			  .then((content) => {
+					extraSensoryData.push(content);
+				})
+			  .catch((err) => {
+			    console.log(err.message, err.code);
+			  });
+
 			// can successfully put data to backend and get same data back
 	    const response = await put('app/send', extraSensoryData);
 	    console.log("get response");
