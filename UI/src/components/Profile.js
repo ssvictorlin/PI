@@ -2,6 +2,30 @@ import React, { Component } from 'react';
 import { ScrollView, View, Text, Image, Button, ActivityIndicator } from 'react-native';
 import { get, put } from '../../api.js';
 import RadarGraph from './radar.js';
+import { Icon, List, ListItem } from 'react-native-elements';
+
+const list = [
+  {
+    name: 'Running',
+    icon: 'run'
+  },
+  {
+    name: 'Walking',
+		icon: 'walk'
+  },
+  {
+    name: 'In a car',
+    icon: 'car'
+  },
+  {
+    name: 'Bicycling',
+    icon: 'bike'
+  },
+  {
+    name: 'Sleeping',
+    icon: 'sleep'
+  },
+]
 
 export default class Profile extends Component {
 	constructor() {
@@ -52,7 +76,7 @@ export default class Profile extends Component {
 					<View style={ styles.container }>
 						<View style={ styles.thumbnailContainer }>
 							<Image
-								style={ styles.thumbnailStyle }
+								style={ styles.thumbnail }
 								source={{ uri: this.state.image }}
 							/>
 						</View>
@@ -60,33 +84,17 @@ export default class Profile extends Component {
 							<Text style={ styles.headerText }>{ this.state.name }</Text>
 						</View>
 					</View>
-					<Text style={ styles.activity }>
-						{ this.state.data }
-					</Text>
-					<Text style={ styles.activity }>
-						activities2
-					</Text>
-					<Text style={ styles.activity }>
-						activities3
-					</Text>
-					<Text style={ styles.activity }>
-						activities4
-					</Text>
-					<Text style={ styles.activity }>
-						activities5
-					</Text>
-					<Text style={ styles.activity }>
-						activities6
-					</Text>
-					<Text style={ styles.activity }>
-						activities7
-					</Text>
-					<Text style={ styles.activity }>
-						activities8
-					</Text>
-					<Text style={ styles.activity }>
-						{ this.state.data }
-					</Text>
+					<List containerStyle={{marginBottom: 20}} hideChevron={true}>
+					  {
+					    list.map((item, i) => (
+					      <ListItem
+					        key={i}
+					        title={item.name}
+					        leftIcon={{name: item.icon, type: 'material-community'}}
+					      />
+					    ))
+					  }
+					</List>
 	    	</ScrollView>
   		);
 		}
