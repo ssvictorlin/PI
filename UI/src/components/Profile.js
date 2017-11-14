@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ScrollView, View, Text, Image, Button, ActivityIndicator } from 'react-native';
 import { get, put } from '../../api.js';
+import RadarGraph from './radar.js';
 import { Icon, List, ListItem } from 'react-native-elements';
 
 // require the module
@@ -134,10 +135,7 @@ export default class Profile extends Component {
 		} else {
 	  	return (
 	    	<ScrollView>
-					<Image
-						style={ styles.image }
-						source={{ uri: this.state.radarChart }}
-					/>
+					<RadarGraph />
 					<View style={ styles.container }>
 						<View style={ styles.thumbnailContainer }>
 							<Image

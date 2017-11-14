@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text } from 'react-native';
 import { Button, Card, CardSection, Input, Spinner } from './common';
 import { get } from '../../api.js';
-import firebase from 'firebase';
+//import firebase from 'firebase';
 
 export default class LoginForm extends Component {
   state = { email: '', password: '', error: '', loading: false };
@@ -11,12 +11,12 @@ export default class LoginForm extends Component {
     const { email, password } = this.state;
     this.setState({ error: '', loading: true });
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(this.onLoginSuccess.bind(this))
+      .then(this.onLoginSuccess)
       .catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
-      this.onLoginFail.bind(this)
+      this.onLoginFail;
 });
   }
 
