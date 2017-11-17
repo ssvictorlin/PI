@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ScrollView, View, Image, Text, ActivityIndicator } from 'react-native';
 import { get, put } from '../../api.js';
 import { Card, CardSection } from './common';
+import PieGraph from './pie.js'
 
 export default class Crowns extends Component {
   constructor() {
@@ -52,12 +53,7 @@ export default class Crowns extends Component {
                     source={{ uri: this.state.crownHolder }}
                   />
                 </View>
-                <View style={ styles.crownHolderContainer }>
-                  <Image
-                    style={ styles.pieChart }
-                    source={{ uri: this.state.pieChart }}
-                  />
-                </View>
+                 <PieGraph />
               </View>
 		  		  </CardSection>
           </Card>
