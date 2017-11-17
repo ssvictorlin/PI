@@ -75,7 +75,8 @@ export default class App extends Component<{}> {
             </View>
           </Modal>
           <Header
-            centerComponent={{ text: 'PersonalityInsights', style: { fontSize: 26, color: '#fff' } }}
+            outerContainerStyles={{height: 50, padding: 10}}
+            centerComponent={{ text: 'PersonalityInsights', style: { fontSize: 24, color: '#fff' } }}
             rightComponent={<Setting openModal={this.setModalVisible.bind(this)}/>}
           />
           <TabNavigator style={styles.container}>
