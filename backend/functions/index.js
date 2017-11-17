@@ -1,12 +1,12 @@
 
-var functions = require('firebase-functions');
+const functions = require('firebase-functions');
 const express = require('express');
-var url = require('url');
-var admin = require("firebase-admin");
+const url = require('url');
+const admin = require("firebase-admin");
 admin.initializeApp(functions.config().firebase);
 const app = express();
 const dbroutes = require('./routes/database.js');
-var db = admin.database();
+const db = admin.database();
 
 app.get('/register', (req, res) => {
 	res.header('Access-Control-Allow-Origin', '*');
@@ -107,10 +107,9 @@ app.get('/testroute', (req, res) => {
 
 app.get('/profile', (req, res) => {
   res.send({
-  	"DummyData": "Truly Dummy Data",
   	"name": "Butter Croissants",
   	"radarChart": "https://i.imgur.com/rgJ7bXi.png",
-  	"image": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+  	"avatar": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
   });
 });
 
@@ -121,13 +120,12 @@ app.get('/crowns', (req, res) => {
   });
 });
 
-app.get('/login' , (req, res) => {
-	var query = url.parse(req.url, true).query;
-	const email = query['email'];
-	const password = query['password'];
-	admin.auth().signInWithEmailAndPassword(email, password)
-})
-
 app.get('/dbtest', dbroutes.test);
+
+// kind of useless now, just reseiving data and sending back
+app.put('/send', (req, res) => {
+	const result = req.body;
+	res.send({"DummyData": result});
+});
 
 exports.app = functions.https.onRequest(app);

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Header } from 'react-native-elements';
 import { Dimensions, View, Modal, Text, TouchableHighlight } from 'react-native';
 import { get, put } from './api.js';
 import Friends from './src/components/Friends';
 import Profile from './src/components/Profile';
 import Crowns from './src/components/Crowns';
-import Header from './src/components/Header';
+import Setting from './src/components/Setting';
 import LoginForm from './src/components/LoginForm';
 import { Button, Spinner } from './src/components/common';
 import firebase from 'firebase';
@@ -73,7 +74,10 @@ export default class App extends Component<{}> {
               </View>
             </View>
           </Modal>
-          <Header style={{flex:1}} openModal={this.setModalVisible.bind(this)} />
+          <Header
+            centerComponent={{ text: 'PersonalityInsights', style: { fontSize: 26, color: '#fff' } }}
+            rightComponent={<Setting openModal={this.setModalVisible.bind(this)}/>}
+          />
           <TabNavigator style={styles.container}>
             <TabNavigator.Item
               selected={this.state.selectedTab === 'friends'}
