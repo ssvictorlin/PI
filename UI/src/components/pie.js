@@ -9,16 +9,31 @@ export default class PieGraph extends Component {
     alert(label + ':' + value);
   }
 
+  fetchUserData = async () => {
+    this.setState({loading: true})
+    try {
+      const response = await get('app/testroute');
+      const dummy = await response.json();
+      this.setState({
+        data: dummy.DummyData,
+        loading: false});
+    }
+    catch(err) {
+      alert(err);
+    }
+  };
+
   render() {
     let data = [{
         "name": "Angelique",
-        "minutes": 7694
+        "minutes": 7694,
+        "color": {'r':223,'g':154,'b':20}
         }, {
         "name": "Zinon",
-        "minutes": 2584
+        "minutes": 2584,
         }, {
         "name": "Vikki",
-        "minutes": 659
+        "minutes": 659,
         }, {
         "name": "Martin",
         "minutes": 728
@@ -47,7 +62,6 @@ export default class PieGraph extends Component {
             fontSize: 8,
             fontWeight: true,
             color: '#ECF0F1',
-            position: 'absolute'
         }
         }
 
