@@ -27,7 +27,9 @@ export default class App extends Component<{}> {
     loggedIn: false, // set to true for development purposes
     email: null,
     password: null,
-    username: null
+    username: null,
+    loading: false,
+    loginErr: ''
   };
 
   setEmail(str) {
@@ -43,15 +45,12 @@ export default class App extends Component<{}> {
   }
 
   attemptLogin() {
+    this.setState({loading: true});
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
-        this.setState({loggedIn: true});
+        this.setState({loggedIn: true, loading: false});
       })
-      .catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-    });
+      .catch((err) => { this.setState({loginErr: err.message, loading: false})});
   }
 
   showRegister() {
@@ -155,7 +154,9 @@ export default class App extends Component<{}> {
           showRegister={this.showRegister.bind(this)}
           email={this.state.email}
           username={this.state.username}
-          password={this.state.password} />);
+          password={this.state.password}
+          loading={this.state.loading}
+          error={this.state.loginErr} />);
       }
   }
 

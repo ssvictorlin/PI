@@ -5,30 +5,28 @@ import { get } from '../../api.js';
 //import firebase from 'firebase';
 
 export default class LoginForm extends Component {
-  state = { loading: false };
 
   onButtonPress() {
-    this.setState({ error: '', loading: true });
-    this.props.attemptLogin();
+    this.props.attemptLogin()
+    // if(this.props.attemptLogin() == false) {
+    //   this.props.setError("error");
+    // }
   }
 
   onLoginFail() {
-    this.setState({ error: 'Authentication Failed', loading: false });
-    console.log("log in failed");
+    this.setState({loading: false });
+    alert("log in failed");
   }
 
   onLoginSuccess() {
     this.setState({
-      email: '',
-      password: '',
       loading: false,
-      error: ''
     });
     console.log("log in success");
   }
 
   renderButton() {
-    if (this.state.loading) {
+    if (this.props.loading) {
       return <Spinner size="small" />;
     }
 
@@ -62,7 +60,7 @@ export default class LoginForm extends Component {
         </CardSection>
 
         <Text style={styles.errorTextStyle}>
-          {this.state.error}
+          {this.props.error}
         </Text>
 
         <CardSection>
