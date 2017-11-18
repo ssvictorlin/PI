@@ -8,12 +8,13 @@ const app = express();
 const dbroutes = require('./routes/database.js');
 const db = admin.database();
 
-app.get('/register', (req, res) => {
+exports.registers = functions.https.onRequest((req, res) => {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
  	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 	var query = url.parse(req.url, true).query;
 	var username = query['username'];
+	var email = query['email'];
 	var randomNum =  0;
 	var i;
 	var randomArr = [];
@@ -83,17 +84,18 @@ app.get('/register', (req, res) => {
 		labels[ran-1].amount = (i+1) * 1000;
 	}
 
-	var usersRef = db.ref("users");
-	// TODO: fix the log in --- Daniel
-	userRef.child(authData.uid).set({
-		provider: authData.provider,
-		name: username
-	});
-	// writes to database.
+	
+	var usersRef = db.ref('users');
+	userEmail = email.replace(".", ",");
+	//writes to database.
 	usersRef.child(username).set({
-		"labels": labels
+		"labels": labels,
+		"email": userEmail
 	});
-	res.send("Unername: " + username);
+	
+	res.send("Success")
+	
+	
 });
 
 app.get('/readUser', (req, res) => {
