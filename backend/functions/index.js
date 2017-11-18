@@ -8,7 +8,7 @@ const app = express();
 const dbroutes = require('./routes/database.js');
 const db = admin.database();
 
-app.get('/writeUser', (req, res)=> {
+app.get('/register', (req, res)=> {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
  	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
@@ -88,9 +88,10 @@ app.get('/writeUser', (req, res)=> {
 	var usersRef = db.ref('users');
 	userEmail = email.replace(".", ",");
 	//writes to database.
-	usersRef.child(username).set({
-		"labels": labels,
-		"email": userEmail
+	usersRef.child(userEmail).set({
+		"userName": username,
+		"labels": labels
+
 	});
 	
 	res.send("Success")
