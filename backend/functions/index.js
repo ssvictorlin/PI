@@ -84,6 +84,11 @@ app.get('/register', (req, res) => {
 	}
 
 	var usersRef = db.ref("users");
+	// TODO: fix the log in --- Daniel
+	userRef.child(authData.uid).set({
+		provider: authData.provider,
+		name: username
+	});
 	// writes to database.
 	usersRef.child(username).set({
 		"labels": labels
@@ -93,10 +98,11 @@ app.get('/register', (req, res) => {
 
 app.get('/readUser', (req, res) => {
 	res.header('Access-Control-Allow-Origin', '*');
-	 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
- 	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-	var usersRef = admin.database().ref().child('users');
-	usersRef.on('amount', snap=> {
+	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+	var usersRef = db.ref('users');
+	usersRef.on('value', snap => {
+		console.log(snap.val());
 		res.send(snap.val());
 	});
 });
@@ -125,7 +131,14 @@ app.get('/dbtest', dbroutes.test);
 // kind of useless now, just reseiving data and sending back
 app.put('/send', (req, res) => {
 	const result = req.body;
-	res.send({"DummyData": result});
+	var dummy = [{"label_names":["Lying down","Sitting","Walking","Running","Bicycling","Sleeping","Lab work","In class","In a meeting","At work","Indoors","Outside","In a car","On a bus","Drive - I'm the driver","Drive - I'm a passenger","At home","At a restaurant","Phone in pocket","Exercise","Cooking","Shopping","Strolling","Drinking (alcohol)","Bathing - shower","Cleaning","Doing laundry","Washing dishes","Watching TV","Surfing the internet","At a party","At a bar","At the beach","Singing","Talking","Computer work","Eating","Toilet","Grooming","Dressing","At the gym","Stairs - going up","Stairs - going down","Elevator","Standing","At school","Phone in hand","Phone in bag","Phone on table","With co-workers","With friends"],"label_probs":[0.15246273359778406,0.39510962481370043,0.7859408670360467,0.7268509822852176,0.6702527277320082,0.14569572055674318,0.5725481998446776,0.49117062609760614,0.37394161255782415,0.48370450569907075,0.22156122547013682,0.7603821888873771,0.4095799612030364,0.5330433002609154,0.4610361317893581,0.37504853690598083,0.2775996687849624,0.4203975827038401,0.7571758459695919,0.6910120864772202,0.5894202380939564,0.622998126120764,0.6824990370018089,0.45302994673989044,0.3955862566917546,0.7120771352516866,0.4661526069364162,0.47122730066483215,0.2684033783403562,0.4263050546972094,0.4623493796412541,0.45129988135084914,0.5299312804228788,0.5105423385050563,0.5873671502546757,0.4152714806849995,0.49518344743420534,0.5887873118943475,0.5219884255335008,0.6231409476989456,0.6487649915002957,0.7449327978485311,0.719529003956621,0.6977042409267759,0.6548906781423558,0.5172748451081547,0.6449004615709102,0.6098854406053127,0.19502173219094296,0.5719145820487397,0.5154038755239945]}, {"label_names":["Lying down","Sitting","Walking","Running","Bicycling","Sleeping","Lab work","In class","In a meeting","At work","Indoors","Outside","In a car","On a bus","Drive - I'm the driver","Drive - I'm a passenger","At home","At a restaurant","Phone in pocket","Exercise","Cooking","Shopping","Strolling","Drinking (alcohol)","Bathing - shower","Cleaning","Doing laundry","Washing dishes","Watching TV","Surfing the internet","At a party","At a bar","At the beach","Singing","Talking","Computer work","Eating","Toilet","Grooming","Dressing","At the gym","Stairs - going up","Stairs - going down","Elevator","Standing","At school","Phone in hand","Phone in bag","Phone on table","With co-workers","With friends"],"label_probs":[0.138243573782041,0.7842314756426568,0.34075463584351057,0.2677365074675167,0.15536012479392788,0.11582055863714273,0.618183340951403,0.6583786737524647,0.607568910130989,0.7135816781915726,0.6831663455941169,0.3021074109775519,0.1810777634754429,0.15706023753855047,0.1976471869979117,0.14109481434035057,0.30891596099339125,0.3267174246602178,0.44767416332122456,0.25694360342641803,0.5419052077476935,0.27921949587828765,0.349416251050262,0.3383141211529477,0.499712179938845,0.5005071610000156,0.5084674685174478,0.4451244423787174,0.4820379079923117,0.6222298751147557,0.27267693309441804,0.2800615494938252,0.23896180126597966,0.4100766262825724,0.5314809837467553,0.7511517868357833,0.5875069600005387,0.5035673390666272,0.4351354415048969,0.4635436513659416,0.4072351567427081,0.36918950393309463,0.358877550076117,0.3098556922815204,0.5588687766223757,0.6275020671933373,0.4004284702101998,0.3870378674638436,0.5929981081327199,0.5893133754678473,0.4285714556235328]}];
+	var usersRef = db.ref("users");
+	// writes to database.
+	usersRef.child("cccccc").set({
+		"labels": labels
+	});
+
+	// res.send({"DummyData": result});
 });
 
 exports.app = functions.https.onRequest(app);
