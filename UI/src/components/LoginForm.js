@@ -5,19 +5,11 @@ import { get } from '../../api.js';
 //import firebase from 'firebase';
 
 export default class LoginForm extends Component {
-  state = { email: '', password: '', error: '', loading: false };
+  state = { loading: false };
 
   onButtonPress() {
-    const { email, password } = this.state;
     this.setState({ error: '', loading: true });
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(this.onLoginSuccess)
-      .catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      this.onLoginFail;
-});
+    this.props.attemptLogin();
   }
 
   onLoginFail() {
@@ -54,8 +46,8 @@ export default class LoginForm extends Component {
           <Input
             placeholder="user@gmail.com"
             label="Email"
-            value={this.state.email}
-            onChangeText={email => this.setState({ email })}
+            value={this.props.email}
+            onChangeText={email => this.props.setEmail(email)}
           />
         </CardSection>
 
@@ -64,8 +56,8 @@ export default class LoginForm extends Component {
             secureTextEntry
             placeholder="password"
             label="Password"
-            value={this.state.password}
-            onChangeText={password => this.setState({ password })}
+            value={this.props.password}
+            onChangeText={password => this.props.setPassword(password)}
           />
         </CardSection>
 

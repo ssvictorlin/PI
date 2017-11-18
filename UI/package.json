@@ -11,14 +11,15 @@
     "firebase": "^4.6.2",
     "lodash.times": "^4.3.2",
     "react": "16.0.0-beta.5",
-    "react-native": "0.49.5",
+    "react-native": "^0.49.5",
     "react-native-elements": "^0.18.2",
     "react-native-fs": "^2.8.5",
     "react-native-pathjs-charts": "0.0.31",
     "react-native-tab-navigator": "^0.3.4",
     "react-native-vector-icons": "^4.4.2",
     "react-navigation": "^1.0.0-beta.19",
-    "utf8": "^2.1.2"
+    "utf8": "^2.1.2",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "babel-jest": "21.2.0",

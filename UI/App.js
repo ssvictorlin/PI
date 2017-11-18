@@ -24,8 +24,39 @@ export default class App extends Component<{}> {
   state = {
     selectedTab: 'profile',
     modalVisible: false,
-    loggedIn: true, // set to true for development purposes
+    loggedIn: false, // set to true for development purposes
+    email: null,
+    password: null,
+    username: null
   };
+
+  setEmail(str) {
+    this.setState({email: str});
+  }
+
+  setPassword(str) {
+    this.setState({password: str});
+  }
+
+  setUsername(str) {
+    this.setState({username: str});
+  }
+
+  attemptLogin() {
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() => {
+        this.setState({loggedIn: true});
+      })
+      .catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+    });
+  }
+
+  showRegister() {
+    return;
+  }
 
   componentWillMount() {
     // Initialize Firebase
@@ -46,7 +77,11 @@ export default class App extends Component<{}> {
   }
 
   logout = () => {
-    this.setState({ loggedIn: false });
+    this.setState({ loggedIn: false,
+      username: null,
+      password: null,
+      email: null
+    });
   }
 
   renderContent = () => {
@@ -113,7 +148,14 @@ export default class App extends Component<{}> {
           </TabNavigator>
         </View>)
       } else {
-        return (<LoginForm />);
+        return (<LoginForm attemptLogin={this.attemptLogin.bind(this)}
+          setEmail={this.setEmail.bind(this)}
+          setUsername={this.setUsername.bind(this)}
+          setPassword={this.setPassword.bind(this)}
+          showRegister={this.showRegister.bind(this)}
+          email={this.state.email}
+          username={this.state.username}
+          password={this.state.password} />);
       }
   }
 
