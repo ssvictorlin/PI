@@ -8,103 +8,264 @@ const app = express();
 const dbroutes = require('./routes/database.js');
 const db = admin.database();
 
-app.get('/register', (req, res) => {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
- 	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+
+/*
+	This creates a user's Group.
+	Parameters:
+		userEmail: The owner of the group's email.
+		groupName: Name of group to create.
+*/
+app.get('/createGroup', (req, res) => {
+    
+	/* Time Logic */
+	var date = new Date();
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+    printDate = year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
+	
+	/* Creating Group Logic */
+	var query = url.parse(req.url, true).query;
+	var userEmail = query['userEmail'];
+	var groupName = query['groupName'];
+	var groupRef =  admin.database().ref("groups")
+	var ownerRef = admin.database().ref('users/'+userEmail);
+	groupRef.child(groupName).set({
+		"owner": userEmail
+	});
+	ownerRef.child("ownerGroup").once('value').then(snapshot => {
+       ownerRef.child("ownerGroup").child(groupName).set({
+			"CreatedTime": printDate
+	   });
+		
+	});
+	res.send("Sucess")
+	
+});
+/*
+	This delete a friend from the friend list of User
+	Parameters:
+		userEmail =  the person's deleting email.
+		friendEmail = the person who is being deleted email.
+		
+*/
+
+app.get('/deleteFriend', (req, res)  => {
+	var query = url.parse(req.url, true).query;
+	var userEmail = query['userEmail'];
+	var friendEmail = query['friendEmail'];
+	var usersRef = admin.database().ref('users/'+userEmail);
+	var friendRef = admin.database().ref('users/'+friendEmail);
+	updates = {}
+	updates[friendEmail] = null
+	updates2 = {}
+	updates2[userEmail] = null
+	usersRef.child("friends").update(updates);
+	friendRef.child("friends").update(updates2);
+	res.send(friendEmail);
+	
+});
+
+/*
+	This adds a user to Group 
+	Parameters:
+		userName = person to add
+		userEmail = his/her email
+		groupName = name of group to add user to.
+*/
+app.get('/addToGroup', (req, res) => {
+	var date = new Date();
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+    printDate = year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
+	var query = url.parse(req.url, true).query;
+	var userName = query['userName'];
+	var userEmail = query['userEmail'];
+	var groupName = query['groupName'];
+	var groupRef =  admin.database().ref("groups");
+	var usersRef = admin.database().ref('users/'+userEmail);
+	
+	groupRef.child(groupName).child(userEmail).set({
+				"memberName": userName 	
+	});	
+	usersRef.child("memberofGroup").child(groupName).set({
+				"TimeJoined": printDate	
+	});	
+	res.send(userName);
+	
+});
+/*
+	This removes a user from Group.
+	Parameters:
+		userName = user to delete
+		userEmail = their email
+		groupName = name to delete user from.
+*/
+app.get('/removeFromGroup', (req, res) => {
+	
+	var query = url.parse(req.url, true).query;
+	var userName = query['userName'];
+	var userEmail = query['userEmail'];
+	var groupName = query['groupName'];
+	var groupRef =  admin.database().ref("groups");
+	var usersRef = admin.database().ref('users/'+userEmail);	
+	var updates = {}
+	updates[userEmail] = null
+	var updates2 = {}
+	updates2[groupName] = null
+	groupRef.child(groupName).update(updates);
+	usersRef.child("memberofGroup").update(updates2);
+	res.send(userName);
+	
+});
+
+
+/*
+	This adds a user to person's friend list.
+	Need to implement checking that the friend accepts request.
+	Parameters:
+		friendName = the friend to be added
+		userName = the person adding
+		userEmail = the email of the person adding
+		friendEmail = the email of the friend one is adding.
+*/
+app.get('/addFriend', (req, res) => {
+	var query = url.parse(req.url, true).query;
+	var friendName = query['friendName'];
+	var userName = query['userName'];
+	var userEmail = query['userEmail'];
+	var friendEmail = query['friendEmail'];
+	var usersRef = admin.database().ref('users/'+userEmail);
+	var friendRef = admin.database().ref('users/'+friendEmail);
+	var friends = usersRef.child("friends");
+	
+	usersRef.child("friends").child(friendEmail).set({
+				"friendName" : friendName
+	});
+	friendRef.child("friends").child(userEmail).set({
+				"friendName" : userName
+	});
+		
+	res.send(friendName);
+	
+});
+/* 
+	Creates a user to be used later in our database
+		Parameters:
+			username = the username the user wants.
+			email = the email of the user.
+*/
+app.get('/register', (req, res) =>{
 	var query = url.parse(req.url, true).query;
 	var username = query['username'];
+	var email = query['email'];
 	var randomNum =  0;
 	var i;
+	
 	var randomArr = [];
 	for (i = 0; i < 6; i++) {
 		randomNum = Math.floor((Math.random() * 51) + 1);
 		randomArr.push(randomNum);
 	}
 
-	var labels = [];
+	labels = {};
+	labels["Lying down"] = 0;
+	labels["Sitting"] =0;
+	labels["Standing"] =0;
+	labels["Walking"] =0;
+	labels["Running"] = 0;
+	labels["Bicycling"] = 0;
+	labels["Sleeping"] = 0;
+	labels["Lab work"] = 0;
+	labels["In class"] = 0;
+	labels["In a meeting"] = 0;
+	labels["At work"] = 0;
+	labels["Indoors"] = 0;
+	labels["Outside"] = 0;
+	labels["In a car"] = 0;
+	labels["On a bus"] = 0;
+	labels["Drive – I’m the driver"] = 0;
+	labels["Driver – I’m the passenger"] = 0;
+	labels["At home"] = 0;
+	labels["At school"] = 0;
+	labels["At a restaurant"]  = 0;
+	labels["Exercising"] = 0;
+	labels["Cooking"]  = 0;
+	labels["Shopping"]  = 0;
+	labels["Strolling"]  = 0 ;
+	labels["Drinking (alcohol)"] = 0;
+	labels["Bathing – shower"]= 0;
+	labels["Cleaning"] = 0;
+	labels["Doing laundry"] = 0;
+	labels["Washing dishes"] = 0;
+	labels["Watching TV"] = 0;
+	labels["Surfing the internet"] = 0;
+	labels["At a party"] = 0;
+	labels["At a bar"] = 0;
+	labels["At the beach"] = 0;
+	labels["Singing"] = 0;
+	labels["Talking"] = 0
+	labels["Computer work"] = 0;
+	labels["Eating"] = 0;
+	labels["Toilet"] = 0;
+	labels["Grooming"] = 0;
+	labels["Dressing"] = 0;
+	labels["At the gym"] = 0;
+	labels["Stairs – going up"] = 0;
+	labels["Stairs – going down"] = 0;
+	labels["Elevator"] = 0;
+	labels["Phone in pocket"] = 0;
+	labels["Phone in hand"] = 0 ;
+	labels["Phone in bag"] = 0;
+	labels["Phone on table"] = 0;
+	labels["With co-workers"] = 0;
+	labels["With friends"] =  0;
 
-	labels.push({label: "Lying down ", amount: 0});
-	labels.push({label: "Sitting", amount: 0});
-	labels.push({label: "Standing", amount: 0});
-	labels.push({label: "Walking", amount: 0});
-	labels.push({label: "Running", amount: 0});
-	labels.push({label: "Bicycling", amount: 0});
-	labels.push({label: "Sleeping", amount: 0});
-	labels.push({label: "Lab work", amount: 0});
-	labels.push({label: "In class", amount: 0});
-	labels.push({label: "In a meeting", amount: 0});
-	labels.push({label: "At work", amount: 0});
-	labels.push({label: "Indoors", amount: 0});
-	labels.push({label: "Outside", amount: 0});
-	labels.push({label: "In a car", amount: 0});
-	labels.push({label: "On a bus", amount: 0});
-	labels.push({label: "Drive – I’m the driver", amount: 0});
-	labels.push({label: "Driver – I’m the passenger", amount: 0});
-	labels.push({label: "At home", amount: 0});
-	labels.push({label: "At school", amount: 0});
-	labels.push({label: "At a restaurant", amount: 0});
-	labels.push({label: "Exercising", amount: 0});
-	labels.push({label: "Cooking", amount: 0});
-	labels.push({label: "Shopping", amount: 0});
-	labels.push({label: "Strolling", amount: 0});
-	labels.push({label: "Drinking (alcohol)", amount: 0});
-	labels.push({label: "Bathing – shower", amount: 0});
-	labels.push({label: "Cleaning", amount: 0});
-	labels.push({label: "Doing laundry", amount: 0});
-	labels.push({label: "Washing dishes", amount: 0});
-	labels.push({label: "Watching TV", amount: 0});
-	labels.push({label: "Surfing the internet", amount: 0});
-	labels.push({label: "At a party", amount: 0});
-	labels.push({label: "At a bar", amount: 0});
-	labels.push({label: "At the beach", amount: 0});
-	labels.push({label: "Singing", amount: 0});
-	labels.push({label: "Talking", amount: 0});
-	labels.push({label: "Computer work", amount: 0});
-	labels.push({label: "Eating", amount: 0});
-	labels.push({label: "Toilet", amount: 0});
-	labels.push({label: "Grooming", amount: 0});
-	labels.push({label: "Dressing", amount: 0});
-	labels.push({label: "At the gym", amount: 0});
-	labels.push({label: "Stairs – going up", amount: 0});
-	labels.push({label: "Stairs – going down", amount: 0});
-	labels.push({label: "Elevator", amount: 0});
-	labels.push({label: "Phone in pocket", amount: 0});
-	labels.push({label: "Phone in hand", amount: 0});
-	labels.push({label: "Phone in bag", amount: 0});
-	labels.push({label: "Phone on table", amount: 0});
-	labels.push({label: "With co-workers", amount: 0});
-	labels.push({label: "With friends", amount: 0});
 
-	console.log(labels[3].label);
-
-	for (i = 0; i < 6; i++) {
-		var ran = randomArr[i];
-		labels[ran-1].amount = (i+1) * 1000;
-	}
-
-	var usersRef = db.ref("users");
-	// TODO: fix the log in --- Daniel
-	userRef.child(authData.uid).set({
-		provider: authData.provider,
-		name: username
+	
+	var usersRef = db.ref('users');
+	userEmail = email.replace(".", ",");
+	//writes to database.
+	usersRef.child(userEmail).set({
+		"userName": username,
+		"labels": labels,
 	});
-	// writes to database.
-	usersRef.child(username).set({
-		"labels": labels
-	});
-	res.send("Unername: " + username);
+	res.send("Success")
+	
+	
 });
 
+/*
+	grab the labels of the user to be used to update
+	their information
+	Parameters:
+		userEmail = the email of the user to update.
+*/
 app.get('/readUser', (req, res) => {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+	var query = url.parse(req.url, true).query;
 	var usersRef = db.ref('users');
-	usersRef.on('value', snap => {
-		console.log(snap.val());
+	var userEmail = query['userEmail'];
+	usersRef.child(userEmail).on('value', snap => {
 		res.send(snap.val());
 	});
+	
 });
 
 app.get('/testroute', (req, res) => {
