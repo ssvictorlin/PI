@@ -24,8 +24,38 @@ export default class App extends Component<{}> {
   state = {
     selectedTab: 'profile',
     modalVisible: false,
-    loggedIn: true, // set to true for development purposes
+    loggedIn: false, // set to true for development purposes
+    email: null,
+    password: null,
+    username: null,
+    loading: false,
+    loginErr: ''
   };
+
+  setEmail(str) {
+    this.setState({email: str});
+  }
+
+  setPassword(str) {
+    this.setState({password: str});
+  }
+
+  setUsername(str) {
+    this.setState({username: str});
+  }
+
+  attemptLogin() {
+    this.setState({loading: true});
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() => {
+        this.setState({loggedIn: true, loading: false});
+      })
+      .catch((err) => { this.setState({loginErr: err.message, loading: false})});
+  }
+
+  showRegister() {
+    return;
+  }
 
   componentWillMount() {
     // Initialize Firebase
@@ -46,7 +76,11 @@ export default class App extends Component<{}> {
   }
 
   logout = () => {
-    this.setState({ loggedIn: false });
+    this.setState({ loggedIn: false,
+      username: null,
+      password: null,
+      email: null
+    });
   }
 
   renderContent = () => {
@@ -75,7 +109,8 @@ export default class App extends Component<{}> {
             </View>
           </Modal>
           <Header
-            centerComponent={{ text: 'PersonalityInsights', style: { fontSize: 26, color: '#fff' } }}
+            outerContainerStyles={{height: 50, padding: 10}}
+            centerComponent={{ text: 'PersonalityInsights', style: { fontSize: 24, color: '#fff' } }}
             rightComponent={<Setting openModal={this.setModalVisible.bind(this)}/>}
           />
           <TabNavigator style={styles.container}>
@@ -112,7 +147,16 @@ export default class App extends Component<{}> {
           </TabNavigator>
         </View>)
       } else {
-        return (<LoginForm />);
+        return (<LoginForm attemptLogin={this.attemptLogin.bind(this)}
+          setEmail={this.setEmail.bind(this)}
+          setUsername={this.setUsername.bind(this)}
+          setPassword={this.setPassword.bind(this)}
+          showRegister={this.showRegister.bind(this)}
+          email={this.state.email}
+          username={this.state.username}
+          password={this.state.password}
+          loading={this.state.loading}
+          error={this.state.loginErr} />);
       }
   }
 

@@ -5,38 +5,28 @@ import { get } from '../../api.js';
 //import firebase from 'firebase';
 
 export default class LoginForm extends Component {
-  state = { email: '', password: '', error: '', loading: false };
 
   onButtonPress() {
-    const { email, password } = this.state;
-    this.setState({ error: '', loading: true });
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(this.onLoginSuccess)
-      .catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      this.onLoginFail;
-});
+    this.props.attemptLogin()
+    // if(this.props.attemptLogin() == false) {
+    //   this.props.setError("error");
+    // }
   }
 
   onLoginFail() {
-    this.setState({ error: 'Authentication Failed', loading: false });
-    console.log("log in failed");
+    this.setState({loading: false });
+    alert("log in failed");
   }
 
   onLoginSuccess() {
     this.setState({
-      email: '',
-      password: '',
       loading: false,
-      error: ''
     });
     console.log("log in success");
   }
 
   renderButton() {
-    if (this.state.loading) {
+    if (this.props.loading) {
       return <Spinner size="small" />;
     }
 
@@ -54,8 +44,8 @@ export default class LoginForm extends Component {
           <Input
             placeholder="user@gmail.com"
             label="Email"
-            value={this.state.email}
-            onChangeText={email => this.setState({ email })}
+            value={this.props.email}
+            onChangeText={email => this.props.setEmail(email)}
           />
         </CardSection>
 
@@ -64,13 +54,13 @@ export default class LoginForm extends Component {
             secureTextEntry
             placeholder="password"
             label="Password"
-            value={this.state.password}
-            onChangeText={password => this.setState({ password })}
+            value={this.props.password}
+            onChangeText={password => this.props.setPassword(password)}
           />
         </CardSection>
 
         <Text style={styles.errorTextStyle}>
-          {this.state.error}
+          {this.props.error}
         </Text>
 
         <CardSection>

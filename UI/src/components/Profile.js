@@ -102,7 +102,8 @@ export default class Profile extends Component {
 			console.log(this.state.data);
     }
     catch(err) {
-      alert(err);
+      console.log(err);
+      // alert("No ExtraSensory Data on this phone!");
     }
 	};
 
