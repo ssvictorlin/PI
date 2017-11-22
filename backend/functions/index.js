@@ -164,7 +164,6 @@ app.get('/addFriend', (req, res) => {
 	});
 		
 	res.send(friendName);
-	
 });
 
 /* 
@@ -276,14 +275,15 @@ app.get('/testroute', (req, res) => {
 app.get('/profile', (req, res) => {
 	var query = url.parse(req.url, true).query;
   var email = query['email'];
-  userEmail = email.replace(".", ",");
-  console.log(userEmail);
+  const userEmail = email.replace(".", ",");
   var usersRef = db.ref('users');
   usersRef.child(userEmail).on('value', snap => {
-    const username = snap.val()['userName'];
+	const username = snap.val()['userName'];
+	const labels = snap.val()['labels'];
     res.send({
       "username": username,
-      "avatar": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+	    "avatar": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+	    "labels": labels,
     });
   });
   
@@ -301,12 +301,26 @@ app.get('/dbtest', dbroutes.test);
 
 /*
   This will choose top 5 activities with the highest probability and update user's database
-  TODO: Currently the user is assigned statically.
+  data looks like this:
+  {
+    "labels": [
+      {"label_names":["Lying down",...,"At Work"],
+       "label_probs":[0.138243573782041,...,0.4285714556235328]
+      }
+    ],
+    "email":user.email
+  }
+  TODO: test successfully using postman and local server, but not on the firebase. There may be some bugs during transfer
   Parameter:
+    email: the current user's email, specifying which user's data to update
     result: an array of json object read from ExtraSensory .json files
 */
 app.put('/send', (req, res) => {
-  const result = req.body;
+  const data = JSON.parse(req.body);
+  const result = data['labels'];
+  const email = data['email'];
+  const userEmail = email.replace(".", ",");
+
   for (var j = 0; j < result.length; j++) {
     var probs = result[j]['label_probs'];
     var names = result[j]['label_names'];
@@ -326,9 +340,9 @@ app.put('/send', (req, res) => {
       probs.splice(maxIdx, 1);
       names.splice(maxIdx, 1);
     }
-    for (var k = 0; k < 5; k++) {
-      console.log(top5[k]);
-    }
+    // for (var k = 0; k < 5; k++) {
+    //   console.log(top5[k]);
+    // }
 
     var usersRef = db.ref("users");
     // update database
@@ -336,16 +350,16 @@ app.put('/send', (req, res) => {
     for (var i = 0; i < 5; i++) {
       var snap_val = 0;
       // get snapshot of current data
-      usersRef.child("dkostins@ucsd,edu").child("labels").child(top5[i]).on('value', snap => {
+      usersRef.child(userEmail).child("labels").child(top5[i]).on('value', snap => {
         snap_val = snap.val();
       });
       // increment by 1
-      updates['dkostins@ucsd,edu/labels/' + top5[i]] = snap_val + 1;
+      updates[userEmail + '/labels/' + top5[i]] = snap_val + 1;
+      // update command
+      usersRef.update(updates);
     }
-    // update command
-    usersRef.update(updates);
   }
-	res.send(result);
+	res.send(data);
 });
 
 exports.app = functions.https.onRequest(app);
