@@ -176,7 +176,7 @@ app.get('/addFriend', (req, res) => {
 app.get('/register', (req, res) =>{
 	var query = url.parse(req.url, true).query;
 	var username = query['username'];
-	var email = query['email'];
+  var email = query['email'];
 	var randomNum =  0;
 	var i;
 	
@@ -262,19 +262,32 @@ app.get('/readUser', (req, res) => {
 	usersRef.child(userEmail).on('value', snap => {
 		res.send(snap.val());
 	});
-	
 });
 
 app.get('/testroute', (req, res) => {
   res.send({"DummyData": "Truly Dummy Data"});
 });
 
+/*
+  This will get the profile of designated user
+  Parameter:
+    email: the email for fetching the designated user's data
+*/
 app.get('/profile', (req, res) => {
-  res.send({
-  	"name": "Butter Croissants",
-  	"radarChart": "https://i.imgur.com/rgJ7bXi.png",
-  	"avatar": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+	var query = url.parse(req.url, true).query;
+  var email = query['email'];
+  userEmail = email.replace(".", ",");
+  console.log(userEmail);
+  var usersRef = db.ref('users');
+  usersRef.child(userEmail).on('value', snap => {
+    const username = snap.val()['userName'];
+    res.send({
+      "username": username,
+      "avatar": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+    });
   });
+  
+
 });
 
 app.get('/crowns', (req, res) => {

@@ -9,6 +9,7 @@ import Profile from './src/components/Profile';
 import Crowns from './src/components/Crowns';
 import Setting from './src/components/Setting';
 import LoginForm from './src/components/LoginForm';
+import RegisterForm from './src/components/RegisterForm';
 import { Button, Spinner } from './src/components/common';
 import firebase from 'firebase';
 
@@ -24,7 +25,7 @@ export default class App extends Component<{}> {
   state = {
     selectedTab: 'profile',
     modalVisible: false,
-    loggedIn: false, // set to true for development purposes
+    loggedIn: false,
     email: null,
     password: null,
     username: null,
@@ -93,6 +94,9 @@ export default class App extends Component<{}> {
             onRequestClose={() => this.setModalVisible(false)}
           >
             <View style={{marginTop: 22}}>
+              <Text>
+                Hi, {this.state.email} !
+              </Text>
               <View>
                 <Text>Setting</Text>
                 <TouchableHighlight onPress={() => {
@@ -132,7 +136,7 @@ export default class App extends Component<{}> {
               renderSelectedIcon={() => <Icon name="user" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'profile'})}
             >
-              <Profile />
+              <Profile email={this.state.email}/>
             </TabNavigator.Item>
             <TabNavigator.Item
               selected={this.state.selectedTab === 'crowns'}
@@ -147,16 +151,19 @@ export default class App extends Component<{}> {
           </TabNavigator>
         </View>)
       } else {
-        return (<LoginForm attemptLogin={this.attemptLogin.bind(this)}
-          setEmail={this.setEmail.bind(this)}
-          setUsername={this.setUsername.bind(this)}
-          setPassword={this.setPassword.bind(this)}
-          showRegister={this.showRegister.bind(this)}
-          email={this.state.email}
-          username={this.state.username}
-          password={this.state.password}
-          loading={this.state.loading}
-          error={this.state.loginErr} />);
+        return (
+          <LoginForm attemptLogin={this.attemptLogin.bind(this)}
+            setEmail={this.setEmail.bind(this)}
+            setUsername={this.setUsername.bind(this)}
+            setPassword={this.setPassword.bind(this)}
+            showRegister={this.showRegister.bind(this)}
+            email={this.state.email}
+            username={this.state.username}
+            password={this.state.password}
+            loading={this.state.loading}
+            error={this.state.loginErr}
+          />
+        );
       }
   }
 
