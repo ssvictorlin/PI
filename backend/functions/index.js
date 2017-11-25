@@ -50,6 +50,7 @@ app.get('/createGroup', (req, res) => {
 	res.send("Sucess")
 	
 });
+
 /*
 	This delete a friend from the friend list of User
 	Parameters:
@@ -57,7 +58,6 @@ app.get('/createGroup', (req, res) => {
 		friendEmail = the person who is being deleted email.
 		
 */
-
 app.get('/deleteFriend', (req, res)  => {
 	var query = url.parse(req.url, true).query;
 	var userEmail = query['userEmail'];
@@ -111,6 +111,7 @@ app.get('/addToGroup', (req, res) => {
 	res.send(userName);
 	
 });
+
 /*
 	This removes a user from Group.
 	Parameters:
@@ -136,10 +137,9 @@ app.get('/removeFromGroup', (req, res) => {
 	
 });
 
-
 /*
 	This adds a user to person's friend list.
-	Need to implement checking that the friend accepts request.
+	TODO: Need to implement checking that the friend accepts request.
 	Parameters:
 		friendName = the friend to be added
 		userName = the person adding
@@ -166,24 +166,25 @@ app.get('/addFriend', (req, res) => {
 	res.send(friendName);
 	
 });
+
 /* 
 	Creates a user to be used later in our database
-		Parameters:
-			username = the username the user wants.
-			email = the email of the user.
+	Parameters:
+		username = the username the user wants.
+		email = the email of the user.
 */
 app.get('/register', (req, res) =>{
 	var query = url.parse(req.url, true).query;
 	var username = query['username'];
-	var email = query['email'];
+  var email = query['email'];
 	var randomNum =  0;
 	var i;
 	
-	var randomArr = [];
-	for (i = 0; i < 6; i++) {
-		randomNum = Math.floor((Math.random() * 51) + 1);
-		randomArr.push(randomNum);
-	}
+	// var randomArr = [];
+	// for (i = 0; i < 6; i++) {
+	// 	randomNum = Math.floor((Math.random() * 51) + 1);
+	// 	randomArr.push(randomNum);
+	// }
 
 	labels = {};
 	labels["Lying down"] = 0;
@@ -237,8 +238,6 @@ app.get('/register', (req, res) =>{
 	labels["Phone on table"] = 0;
 	labels["With co-workers"] = 0;
 	labels["With friends"] =  0;
-
-
 	
 	var usersRef = db.ref('users');
 	userEmail = email.replace(".", ",");
@@ -248,8 +247,6 @@ app.get('/register', (req, res) =>{
 		"labels": labels,
 	});
 	res.send("Success")
-	
-	
 });
 
 /*
@@ -265,19 +262,32 @@ app.get('/readUser', (req, res) => {
 	usersRef.child(userEmail).on('value', snap => {
 		res.send(snap.val());
 	});
-	
 });
 
 app.get('/testroute', (req, res) => {
   res.send({"DummyData": "Truly Dummy Data"});
 });
 
+/*
+  This will get the profile of designated user
+  Parameter:
+    email: the email for fetching the designated user's data
+*/
 app.get('/profile', (req, res) => {
-  res.send({
-  	"name": "Butter Croissants",
-  	"radarChart": "https://i.imgur.com/rgJ7bXi.png",
-  	"avatar": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+	var query = url.parse(req.url, true).query;
+  var email = query['email'];
+  userEmail = email.replace(".", ",");
+  console.log(userEmail);
+  var usersRef = db.ref('users');
+  usersRef.child(userEmail).on('value', snap => {
+    const username = snap.val()['userName'];
+    res.send({
+      "username": username,
+      "avatar": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+    });
   });
+  
+
 });
 
 app.get('/crowns', (req, res) => {
@@ -289,17 +299,53 @@ app.get('/crowns', (req, res) => {
 
 app.get('/dbtest', dbroutes.test);
 
-// kind of useless now, just reseiving data and sending back
+/*
+  This will choose top 5 activities with the highest probability and update user's database
+  TODO: Currently the user is assigned statically.
+  Parameter:
+    result: an array of json object read from ExtraSensory .json files
+*/
 app.put('/send', (req, res) => {
-	const result = req.body;
-	var dummy = [{"label_names":["Lying down","Sitting","Walking","Running","Bicycling","Sleeping","Lab work","In class","In a meeting","At work","Indoors","Outside","In a car","On a bus","Drive - I'm the driver","Drive - I'm a passenger","At home","At a restaurant","Phone in pocket","Exercise","Cooking","Shopping","Strolling","Drinking (alcohol)","Bathing - shower","Cleaning","Doing laundry","Washing dishes","Watching TV","Surfing the internet","At a party","At a bar","At the beach","Singing","Talking","Computer work","Eating","Toilet","Grooming","Dressing","At the gym","Stairs - going up","Stairs - going down","Elevator","Standing","At school","Phone in hand","Phone in bag","Phone on table","With co-workers","With friends"],"label_probs":[0.15246273359778406,0.39510962481370043,0.7859408670360467,0.7268509822852176,0.6702527277320082,0.14569572055674318,0.5725481998446776,0.49117062609760614,0.37394161255782415,0.48370450569907075,0.22156122547013682,0.7603821888873771,0.4095799612030364,0.5330433002609154,0.4610361317893581,0.37504853690598083,0.2775996687849624,0.4203975827038401,0.7571758459695919,0.6910120864772202,0.5894202380939564,0.622998126120764,0.6824990370018089,0.45302994673989044,0.3955862566917546,0.7120771352516866,0.4661526069364162,0.47122730066483215,0.2684033783403562,0.4263050546972094,0.4623493796412541,0.45129988135084914,0.5299312804228788,0.5105423385050563,0.5873671502546757,0.4152714806849995,0.49518344743420534,0.5887873118943475,0.5219884255335008,0.6231409476989456,0.6487649915002957,0.7449327978485311,0.719529003956621,0.6977042409267759,0.6548906781423558,0.5172748451081547,0.6449004615709102,0.6098854406053127,0.19502173219094296,0.5719145820487397,0.5154038755239945]}, {"label_names":["Lying down","Sitting","Walking","Running","Bicycling","Sleeping","Lab work","In class","In a meeting","At work","Indoors","Outside","In a car","On a bus","Drive - I'm the driver","Drive - I'm a passenger","At home","At a restaurant","Phone in pocket","Exercise","Cooking","Shopping","Strolling","Drinking (alcohol)","Bathing - shower","Cleaning","Doing laundry","Washing dishes","Watching TV","Surfing the internet","At a party","At a bar","At the beach","Singing","Talking","Computer work","Eating","Toilet","Grooming","Dressing","At the gym","Stairs - going up","Stairs - going down","Elevator","Standing","At school","Phone in hand","Phone in bag","Phone on table","With co-workers","With friends"],"label_probs":[0.138243573782041,0.7842314756426568,0.34075463584351057,0.2677365074675167,0.15536012479392788,0.11582055863714273,0.618183340951403,0.6583786737524647,0.607568910130989,0.7135816781915726,0.6831663455941169,0.3021074109775519,0.1810777634754429,0.15706023753855047,0.1976471869979117,0.14109481434035057,0.30891596099339125,0.3267174246602178,0.44767416332122456,0.25694360342641803,0.5419052077476935,0.27921949587828765,0.349416251050262,0.3383141211529477,0.499712179938845,0.5005071610000156,0.5084674685174478,0.4451244423787174,0.4820379079923117,0.6222298751147557,0.27267693309441804,0.2800615494938252,0.23896180126597966,0.4100766262825724,0.5314809837467553,0.7511517868357833,0.5875069600005387,0.5035673390666272,0.4351354415048969,0.4635436513659416,0.4072351567427081,0.36918950393309463,0.358877550076117,0.3098556922815204,0.5588687766223757,0.6275020671933373,0.4004284702101998,0.3870378674638436,0.5929981081327199,0.5893133754678473,0.4285714556235328]}];
-	var usersRef = db.ref("users");
-	// writes to database.
-	usersRef.child("cccccc").set({
-		"labels": labels
-	});
+  const result = req.body;
+  for (var j = 0; j < result.length; j++) {
+    var probs = result[j]['label_probs'];
+    var names = result[j]['label_names'];
+    var max, maxIdx = 0;
+    var top5 = [];
+    // getting the top 5 activities
+    for (var counter = 0; counter < 5; counter++) {
+      max = 0;
+      for (var i = 0; i < probs.length; i++) {
+        if (probs[i] > max) {
+          max = probs[i];
+          maxIdx = i;
+        }
+      }
+      top5.push(names[maxIdx]);
+      // deleted the highest one so far from two arrays
+      probs.splice(maxIdx, 1);
+      names.splice(maxIdx, 1);
+    }
+    for (var k = 0; k < 5; k++) {
+      console.log(top5[k]);
+    }
 
-	// res.send({"DummyData": result});
+    var usersRef = db.ref("users");
+    // update database
+    var updates = {};
+    for (var i = 0; i < 5; i++) {
+      var snap_val = 0;
+      // get snapshot of current data
+      usersRef.child("dkostins@ucsd,edu").child("labels").child(top5[i]).on('value', snap => {
+        snap_val = snap.val();
+      });
+      // increment by 1
+      updates['dkostins@ucsd,edu/labels/' + top5[i]] = snap_val + 1;
+    }
+    // update command
+    usersRef.update(updates);
+  }
+	res.send(result);
 });
 
 exports.app = functions.https.onRequest(app);

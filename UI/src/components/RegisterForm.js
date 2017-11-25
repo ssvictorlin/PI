@@ -22,7 +22,7 @@ export default class RegisterForm extends Component {
   // set login information to backend by POST request
   sendUserData = async () => {
     try {
-      const response = await get('app/register?username='+this.state.username);
+      const response = await get('app/register?username='+this.state.username+ '&email=' + this.state.email);
       this.setState({loading: false});
     }
     catch(err) {

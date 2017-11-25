@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Image, Button, ActivityIndicator } from 'react-
 import { get, put } from '../../api.js';
 import RadarGraph from './radar.js';
 import { Icon, List, ListItem } from 'react-native-elements';
+import firebase from 'firebase';
 
 // require the module
 var RNFS = require('react-native-fs');
@@ -31,13 +32,13 @@ const list = [
 ]
 
 export default class Profile extends Component {
+	
 	constructor() {
-    super();
+		super();
     this.state = {
-    	radarChart: "",
-      name: "",
-      avatar: "",
-			data: "TODO",
+			email: null,
+      name: null,
+      avatar: null,
 			loading: false
     };
   }
@@ -48,7 +49,7 @@ export default class Profile extends Component {
 	}
 	// get a list of files and directories in the ExtraSensory directory and send to backend
 	sendData = async () => {
-		this.setState({loading: true});
+		this.setState({email: this.props.email, loading: true});
 		try {
 			var extraSensoryPath = RNFS.ExternalStorageDirectoryPath + '/Android/data/edu.ucsd.calab.extrasensory/files/Documents/';
 			// 8 digits phone UID
@@ -96,10 +97,6 @@ export default class Profile extends Component {
 	    const response = await put('app/send', extraSensoryData);
 	    console.log("get response");
 			const data = await response.json();
-			this.setState({
-	    	data: data.DummyData,
-			});
-			console.log(this.state.data);
     }
     catch(err) {
       console.log(err);
@@ -110,14 +107,20 @@ export default class Profile extends Component {
 	getData = async () => {
 		this.setState({loading: true});
     try {
-      const response = await get('app/profile');
-      const data = await response.json();
-      this.setState({
-      	name: data.name,
-      	radarChart: data.radarChart,
-      	avatar: data.avatar,
-				loading: false
-			});
+			var user = firebase.auth().currentUser;
+			if (user) {
+				// User is signed in.
+				const response = await get('app/profile?email=' + user.email);
+				const data = await response.json();
+				console.log(data.name);
+				this.setState({
+					name: data.username,
+					avatar: data.avatar,
+					loading: false
+				});
+			} else {
+				// No user is signed in.
+			}
     }
     catch(err) {
       alert(err);
