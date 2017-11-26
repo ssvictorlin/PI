@@ -8,29 +8,6 @@ import firebase from 'firebase';
 // require the module
 var RNFS = require('react-native-fs');
 
-const list = [
-  {
-    name: 'Running',
-    icon: 'run'
-  },
-  {
-    name: 'Walking',
-		icon: 'walk'
-  },
-  {
-    name: 'In a car',
-    icon: 'car'
-  },
-  {
-    name: 'Bicycling',
-    icon: 'bike'
-  },
-  {
-    name: 'Sleeping',
-    icon: 'sleep'
-  },
-]
-
 export default class Profile extends Component {
 
 	constructor(props) {
@@ -109,7 +86,7 @@ export default class Profile extends Component {
     try {
 			if (this.props.email) {
 				// User is signed in.
-				const response = await get('app/profile?email=dkostins@ucsd.edu');// + this.props.email);
+				const response = await get('app/profile?email=' + this.props.email);
 				const data = await response.json();
 				console.log(data.name);
 				this.setState({
@@ -136,6 +113,34 @@ export default class Profile extends Component {
 	      />
 	    );
 		} else {
+      /* The list of things to show, hard coded for now */
+      /* TODO, replace below with something like this:
+         var list = this.getList();
+         which will get the list of stuff from the settings,
+         which should be stored in App.js once set
+       */
+      var list = [
+        {
+          name: 'Running',
+          icon: 'run'
+        },
+        {
+          name: 'Walking',
+      		icon: 'walk'
+        },
+        {
+          name: 'In a car',
+          icon: 'car'
+        },
+        {
+          name: 'Bicycling',
+          icon: 'bike'
+        },
+        {
+          name: 'Sleeping',
+          icon: 'sleep'
+        },
+      ]
 	  	return (
 	    	<ScrollView>
 					<RadarGraph />

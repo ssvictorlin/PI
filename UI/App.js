@@ -59,17 +59,17 @@ export default class App extends Component<{}> {
   attemptRegister(email, password, username) {
     this.setState({ error: '', loading: true });
     firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then(this.sendUserData())
+      .then(this.sendUserData(email, username))
       .catch((error) => {
       this.setState({registerErr: error.message, loading: false});
     });
   }
 
   // set login information to backend by POST request
-  sendUserData = async () => {
+  sendUserData = async (email, username) => {
     try {
-      const response = await get('app/register?username='+this.state.username+ '&email=' + this.state.email);
-      this.setState({loading: false, registering: false});
+      const response = await get('app/register?username='+ username+ '&email=' + email);
+      this.setState({loading: false, registering: false})
     }
     catch(err) {
       console.log(err);
