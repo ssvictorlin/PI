@@ -8,17 +8,8 @@ export default class RegisterForm extends Component {
   state = { email: '', password: '', username: '', error: '', loading: false };
 
   onButtonPress() {
+    this.setState({loading: true})
     this.props.attemptRegister(this.state.email, this.state.password, this.state.username);
-    /*
-    const { email, password, username } = this.state;
-    this.setState({ error: '', loading: true });
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then(this.sendUserData())
-      .catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-    });*/
   }
 
   renderButton() {
