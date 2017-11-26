@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { Button, Card, CardSection, Input, Spinner } from './common';
 import { get } from '../../api.js';
 import firebase from 'firebase';
@@ -8,6 +8,8 @@ export default class RegisterForm extends Component {
   state = { email: '', password: '', username: '', error: '', loading: false };
 
   onButtonPress() {
+    this.props.attemptRegister(this.state.email, this.state.password, this.state.username);
+    /*
     const { email, password, username } = this.state;
     this.setState({ error: '', loading: true });
     firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -16,32 +18,7 @@ export default class RegisterForm extends Component {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
-    });
-  }
-
-  // set login information to backend by POST request
-  sendUserData = async () => {
-    try {
-      const response = await get('app/register?username='+this.state.username+ '&email=' + this.state.email);
-      this.setState({loading: false});
-    }
-    catch(err) {
-      console.log(err);
-    }
-  }
-
-  onLoginFail() {
-    this.setState({ error: 'Authentication Failed', loading: false });
-  }
-
-  onLoginSuccess() {
-    this.setState({
-      email: '',
-      password: '',
-      username: '',
-      loading: false,
-      error: ''
-    });
+    });*/
   }
 
   renderButton() {
@@ -58,43 +35,52 @@ export default class RegisterForm extends Component {
 
   render() {
     return (
-      <Card>
-        <CardSection>
-          <Input
-            placeholder="user@gmail.com"
-            label="Email"
-            value={this.state.email}
-            onChangeText={email => this.setState({ email })}
-          />
-        </CardSection>
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <Text style={{alignSelf: 'stretch', height: 50, fontSize: 30, textAlign: 'center', color: 'white', backgroundColor: 'lightblue'}}>Register</Text>
+        <Card>
+          <CardSection>
+            <Input
+              placeholder="user@gmail.com"
+              label="Email"
+              value={this.state.email}
+              onChangeText={email => this.setState({ email })}
+            />
+          </CardSection>
 
-        <CardSection>
-          <Input
-            secureTextEntry
-            placeholder="password"
-            label="Password"
-            value={this.state.password}
-            onChangeText={password => this.setState({ password })}
-          />
-        </CardSection>
+          <CardSection>
+            <Input
+              placeholder="username"
+              label="Username"
+              value={this.state.username}
+              onChangeText={username => this.setState({ username })}
+            />
+          </CardSection>
 
-        <CardSection>
-          <Input
-            placeholder="username"
-            label="Username"
-            value={this.state.username}
-            onChangeText={username => this.setState({ username })}
-          />
-        </CardSection>
+          <CardSection>
+            <Input
+              secureTextEntry
+              placeholder="password"
+              label="Password"
+              value={this.state.password}
+              onChangeText={password => this.setState({ password })}
+            />
+          </CardSection>
 
-        <Text style={styles.errorTextStyle}>
-          {this.state.error}
-        </Text>
+          <Text style={styles.errorTextStyle}>
+            {this.state.error}
+          </Text>
 
-        <CardSection>
-          {this.renderButton()}
-        </CardSection>
-      </Card>
+          <CardSection>
+            {this.renderButton()}
+          </CardSection>
+
+          <CardSection>
+            <Button onPress={() => this.props.showLogin()}>
+              Back
+            </Button>
+          </CardSection>
+        </Card>
+      </View>
     );
   }
 }

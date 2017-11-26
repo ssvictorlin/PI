@@ -32,9 +32,9 @@ const list = [
 ]
 
 export default class Profile extends Component {
-	
-	constructor() {
-		super();
+
+	constructor(props) {
+		super(props);
     this.state = {
 			email: null,
       name: null,
@@ -107,10 +107,9 @@ export default class Profile extends Component {
 	getData = async () => {
 		this.setState({loading: true});
     try {
-			var user = firebase.auth().currentUser;
-			if (user) {
+			if (this.props.email) {
 				// User is signed in.
-				const response = await get('app/profile?email=' + user.email);
+				const response = await get('app/profile?email=dkostins@ucsd.edu');// + this.props.email);
 				const data = await response.json();
 				console.log(data.name);
 				this.setState({

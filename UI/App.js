@@ -26,11 +26,13 @@ export default class App extends Component<{}> {
     selectedTab: 'profile',
     modalVisible: false,
     loggedIn: false,
+    registering: false,
     email: null,
     password: null,
     username: null,
     loading: false,
-    loginErr: ''
+    loginErr: '',
+    registerErr: ''
   };
 
   setEmail(str) {
@@ -54,8 +56,32 @@ export default class App extends Component<{}> {
       .catch((err) => { this.setState({loginErr: err.message, loading: false})});
   }
 
+  attemptRegister(email, password, username) {
+    this.setState({ error: '', loading: true });
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(this.sendUserData())
+      .catch((error) => {
+      this.setState({registerErr: error.message, loading: false});
+    });
+  }
+
+  // set login information to backend by POST request
+  sendUserData = async () => {
+    try {
+      const response = await get('app/register?username='+this.state.username+ '&email=' + this.state.email);
+      this.setState({loading: false, registering: false});
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
+
   showRegister() {
-    return;
+    this.setState({registering: true});
+  }
+
+  showLogin() {
+    this.setState({registering: false});
   }
 
   componentWillMount() {
@@ -151,20 +177,27 @@ export default class App extends Component<{}> {
           </TabNavigator>
         </View>)
       } else {
-        return (
-          <LoginForm attemptLogin={this.attemptLogin.bind(this)}
-            setEmail={this.setEmail.bind(this)}
-            setUsername={this.setUsername.bind(this)}
-            setPassword={this.setPassword.bind(this)}
-            showRegister={this.showRegister.bind(this)}
-            email={this.state.email}
-            username={this.state.username}
-            password={this.state.password}
-            loading={this.state.loading}
-            error={this.state.loginErr}
-          />
-        );
+        if (this.state.registering) {
+          return <RegisterForm
+              attemptRegister={this.attemptRegister.bind(this)}
+              showLogin={this.showLogin.bind(this)}
+              />
+        } else {
+          return (
+            <LoginForm attemptLogin={this.attemptLogin.bind(this)}
+              setEmail={this.setEmail.bind(this)}
+              setUsername={this.setUsername.bind(this)}
+              setPassword={this.setPassword.bind(this)}
+              showRegister={this.showRegister.bind(this)}
+              email={this.state.email}
+              username={this.state.username}
+              password={this.state.password}
+              loading={this.state.loading}
+              error={this.state.loginErr}
+            />
+          );
       }
+    }
   }
 
   render() {
