@@ -30,7 +30,9 @@ export default class App extends Component<{}> {
     password: null,
     username: null,
     loading: false,
-    loginErr: ''
+    loginErr: '',
+    //activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand']
+    activityList: ['Sitting']
   };
 
   setEmail(str) {
@@ -146,7 +148,7 @@ export default class App extends Component<{}> {
               renderSelectedIcon={() => <Icon name="trophy" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'crowns'})}
             >
-              <Crowns />
+              <Crowns activityList={this.state.activityList}/>
             </TabNavigator.Item>
           </TabNavigator>
         </View>)
