@@ -12,18 +12,17 @@ export default class Crowns extends Component {
       crownHolder: "",
       pieChart: "",
       loading: false,
-      friendsObjList: []
+      friendsObjList: [] // friends' objects list
     };
   }
 
   componentWillMount() {
     this.getData()
-    //this.getFriendsData()
-    
-    console.log("Activities in crowns: "+ this.props.activityList)
-    console.log("Yahoo!")
   }
-
+  /*
+    getData: will get page data (i.e. images etc.) and friends' data 
+    and will store the data in the state of Crown
+  */
   getData = async () => {
     this.setState({loading: true});
     var user = firebase.auth().currentUser
@@ -58,35 +57,6 @@ export default class Crowns extends Component {
     }
   };
 
-  // getFriendsData = async () => {
-  //   this.setState({loading: true});    
-  //   const activities = this.props.activityList
-  //   var user = firebase.auth().currentUser
-
-  //   if (user == null) {
-  //     throw "user not signed in"
-  //   }
-  //   try {
-  //     const email = user.email.replace('.',',')
-  //     const response = await get('app/readUser'+'?userEmail='+email)
-  //     const data = await response.json()
-  //     var result = []
-  //     result.push(data)
-  //     for (var key in data.friends) {
-  //       const r = await get('app/readUser'+'?userEmail='+key)
-  //       const d = await r.json()
-  //       result.push(d)
-  //     }
-  //     console.log("thelist is %O", result)  // list of object
-  //     this.setState({
-  //       friendsObjList: result
-  //     });
-  //   }
-  //   catch(err) {
-  //     alert(err);
-  //   }
-  // };
-
 	render() {
     /*
       CreatePieList: loop through activityList and return every piechart item.
@@ -98,6 +68,7 @@ export default class Crowns extends Component {
           <CardSection>
             <View style={ styles.container }>
               <View style={ styles.crownHolderContainer }>
+                <Text style={ styles.subtitle }> { element } </Text>
                 <Image
                   style={ styles.crownHolder }
                   source={{ uri: props.crownHolder }}
@@ -140,6 +111,13 @@ const styles = {
     flexDirection: 'row',
     borderColor: '#ddd',
     position: 'relative'
+  },
+  subtitle: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 15,
+    marginTop: 0,
+    width: 150,
   },
   crownHolder: {
     height: 100,

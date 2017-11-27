@@ -3,7 +3,7 @@ import { ScrollView, View, Image, Text } from 'react-native';
 import { get, put } from '../../api.js';
 import { Card, CardSection } from './common';
 import { Pie } from 'react-native-pathjs-charts';
-
+import { randomColor } from 'randomcolor';
 /*
   PieGraph: draw a PieGraph with data passed in as prop
     Every entry need to have name and munutes.
@@ -20,7 +20,12 @@ export default class PieGraph extends Component {
   componentWillMount() {
     console.log("Activity to piechart is: "+ this.props.activity)
   }
-
+  
+  /* 
+    getTop5List: will use his.props.friendsObjList to find out top 5 people
+    (including current user) that have the most minutes on the activity 
+    this piechart is for. It will skip zero minute usage.
+  */
   getTop5List() {
     var acti = this.props.activity
     function compare(a,b) {
@@ -35,41 +40,29 @@ export default class PieGraph extends Component {
     result = []
     
     for (var i = 0; i < 5; i++) {
+      if (sortedObjList[i]['labels'][acti] == 0) break; 
       let item = {
         "name": sortedObjList[i]['userName'],
         "minutes": sortedObjList[i]['labels'][acti]
       }
       if (item['name'] == this.props.friendsObjList[0]['userName']) {
-        item['color'] = {'r':123,'g':154,'b':20}
+        item['color'] = {'r':66,'g':111,'b':183}
+        item['name'] = 'You'
+
       }
       result.push(item)
     }
     return result
-
   }
 
   render() {
     let data = this.getTop5List()
     console.log("data is: %O", data)
-    let data2 = [{
-      "name": "Angelique",
-      "minutes": 7694,
-      "color": {'r':223,'g':154,'b':20}
-      }, {
-      "name": "Zinon",
-      "minutes": 2584,
-      }, {
-      "name": "Vikki",
-      "minutes": 659,
-      }, {
-      "name": "Martin",
-      "minutes": 728
-      }]
-      console.log("data2 is: %O", data2)
+    
     let options = {
       width: 180,
       height: 180,
-      color: '#42f4b0',
+      color: randomColor({ luminosity: 'dark' }),
       r: 20,
       R: 90,
       legendPosition: 'topRight',
@@ -80,7 +73,7 @@ export default class PieGraph extends Component {
       },
       label: {
           fontFamily: 'Arial',
-          fontSize: 8,
+          fontSize: 10,
           fontWeight: true,
           color: '#ECF0F1',
       }

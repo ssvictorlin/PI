@@ -31,8 +31,7 @@ export default class App extends Component<{}> {
     username: null,
     loading: false,
     loginErr: '',
-    //activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand']
-    activityList: ['Sitting']
+    activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand']
   };
 
   setEmail(str) {
