@@ -84,15 +84,17 @@ export default class Profile extends Component {
             return Promise.all(promises);
           })
           .then((content) => {
-            extraSensoryData.push(content);
+            for (var i = 0; i < content.length; i++)
+              extraSensoryData.push(JSON.parse(content[i]));
+            return Promise.all(extraSensoryData);
           })
           .catch((err) => {
             console.log(err.message, err.code);
           });
         // sendingData looks like this
         // {"labels": [{"label_names":["Lying down",...,"At Work"],"label_probs":[0.138243573782041,...,0.4285714556235328]}],"email":user.email}
-        sendingData = {'labels': extraSensoryData[0], 'email':this.props.email};
-
+        sendingData = {'labels': extraSensoryData, 'email':this.props.email};
+        console.log(sendingData);
         // can successfully put data to backend and get same data back
         const response = await put('app/send', sendingData);
         // will get status 500 when sending data by phone, but normal when using postman
@@ -116,7 +118,6 @@ export default class Profile extends Component {
         // User is signed in.
         const response = await get('app/profile?email=' + this.props.email);
         const data = await response.json();
-        console.log(data.labels);
         this.setState({
           name: data.username,
           avatar: data.avatar,

@@ -310,11 +310,10 @@ app.get('/dbtest', dbroutes.test);
     result: an array of json object read from ExtraSensory .json files
 */
 app.put('/send', (req, res) => {
-  const data = JSON.parse(req.body);
+  const data = req.body;
   const result = data['labels'];
   const email = data['email'];
-  
-  res.send(data);
+  // res.send(data); response 200 here
   const userEmail = email.replace(".", ",");
 
   for (var j = 0; j < result.length; j++) {
@@ -355,7 +354,7 @@ app.put('/send', (req, res) => {
       usersRef.update(updates);
     }
   }
-  // res.send(data);
+  res.send(data); // response 500 here....
 });
 
 exports.app = functions.https.onRequest(app);
