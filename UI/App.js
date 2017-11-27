@@ -10,6 +10,7 @@ import Crowns from './src/components/Crowns';
 import Setting from './src/components/Setting';
 import LoginForm from './src/components/LoginForm';
 import RegisterForm from './src/components/RegisterForm';
+import SettingModal from './src/components/SettingModal';
 import { Button, Spinner } from './src/components/common';
 import firebase from 'firebase';
 
@@ -41,6 +42,10 @@ export default class App extends Component<{}> {
 
   setPassword(str) {
     this.setState({password: str});
+  }
+
+  getEmail() {
+    return this.state.email;
   }
 
   setUsername(str) {
@@ -119,24 +124,12 @@ export default class App extends Component<{}> {
             visible={this.state.modalVisible}
             onRequestClose={() => this.setModalVisible(false)}
           >
-            <View style={{marginTop: 22}}>
-              <Text>
-                Hi, {this.state.email} !
-              </Text>
-              <View>
-                <Text>Setting</Text>
-                <TouchableHighlight onPress={() => {
-                  this.setModalVisible(!this.state.modalVisible)
-                }}>
-                  <Text>Hide Modal</Text>
-                </TouchableHighlight>
-                <TouchableHighlight onPress={() => {
-                  this.logout()
-                }}>
-                  <Text>Logout</Text>
-                </TouchableHighlight>
-              </View>
-            </View>
+            <SettingModal
+              logout={this.logout.bind(this)}
+              setModalVisible={this.setModalVisible.bind(this)}
+              modalVisible={this.state.modalVisible}
+              email={this.state.email}
+            />
           </Modal>
           <Header
             outerContainerStyles={{height: 50, padding: 10}}
