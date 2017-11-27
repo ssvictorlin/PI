@@ -12,11 +12,11 @@ export default class SettingModal extends Component {
   }
 
   showDetailed() {
-    this.setState(settingsView: true);
+    this.setState({settingsView: true});
   }
 
   hideDetailed() {
-    this.setState(settingsView: false);
+    this.setState({settingsView: false});
   }
 
   render() {

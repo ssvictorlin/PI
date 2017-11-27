@@ -5,7 +5,13 @@ import { get } from '../../api.js';
 import firebase from 'firebase';
 
 export default class RegisterForm extends Component {
-  state = { email: '', password: '', username: '', error: '', loading: false };
+  state = {
+    email: '',
+    password: '',
+    username: '',
+    error: '',
+    loading: false
+  };
 
   onButtonPress() {
     this.setState({loading: true})

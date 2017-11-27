@@ -57,7 +57,10 @@ export default class App extends Component<{}> {
     this.setState({loading: true});
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
-        this.setState({loggedIn: true, loading: false});
+        this.setState({
+          loggedIn: true,
+          loading: false}
+        );
       })
       .catch((err) => { this.setState({loginErr: err.message, loading: false})});
   }
@@ -75,7 +78,10 @@ export default class App extends Component<{}> {
   sendUserData = async (email, username) => {
     try {
       const response = await get('app/register?username='+ username+ '&email=' + email);
-      this.setState({loading: false, registering: false})
+      this.setState({
+        loading: false,
+        registering: false
+      })
     }
     catch(err) {
       console.log(err);
@@ -109,7 +115,8 @@ export default class App extends Component<{}> {
   }
 
   logout = () => {
-    this.setState({ loggedIn: false,
+    this.setState({
+      loggedIn: false,
       username: null,
       password: null,
       email: null
@@ -118,7 +125,8 @@ export default class App extends Component<{}> {
 
   renderContent = () => {
     if (this.state.loggedIn) {
-      return (<View style={{flex:1}}>
+      return (
+        <View style={{flex:1}}>
           <Modal
             animationType="slide"
             transparent={false}
@@ -172,13 +180,16 @@ export default class App extends Component<{}> {
         </View>)
       } else {
         if (this.state.registering) {
-          return <RegisterForm
+          return (
+            <RegisterForm
               attemptRegister={this.attemptRegister.bind(this)}
               showLogin={this.showLogin.bind(this)}
-              />
+            />
+          )
         } else {
           return (
-            <LoginForm attemptLogin={this.attemptLogin.bind(this)}
+            <LoginForm
+              attemptLogin={this.attemptLogin.bind(this)}
               setEmail={this.setEmail.bind(this)}
               setUsername={this.setUsername.bind(this)}
               setPassword={this.setPassword.bind(this)}
