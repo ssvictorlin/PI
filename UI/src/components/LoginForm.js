@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { Button, Card, CardSection, Input, Spinner } from './common';
 import { get } from '../../api.js';
 //import firebase from 'firebase';
@@ -25,48 +25,58 @@ export default class LoginForm extends Component {
     console.log("log in success");
   }
 
+  registerPress() {
+    alert("TODO");
+  }
+
   renderButton() {
     if (this.props.loading) {
       return <Spinner size="small" />;
     }
 
     return (
-      <Button onPress={this.onButtonPress.bind(this)}>
-        Log in
-      </Button>
+      <CardSection>
+        <Button onPress={this.onButtonPress.bind(this)}>
+          Log in
+        </Button>
+      </CardSection>
     );
   }
 
   render() {
     return (
-      <Card>
-        <CardSection>
-          <Input
-            placeholder="user@gmail.com"
-            label="Email"
-            value={this.props.email}
-            onChangeText={email => this.props.setEmail(email)}
-          />
-        </CardSection>
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <Card>
+          <CardSection>
+            <Input
+              placeholder="user@gmail.com"
+              label="Email"
+              value={this.props.email}
+              onChangeText={email => this.props.setEmail(email)}
+            />
+          </CardSection>
 
-        <CardSection>
-          <Input
-            secureTextEntry
-            placeholder="password"
-            label="Password"
-            value={this.props.password}
-            onChangeText={password => this.props.setPassword(password)}
-          />
-        </CardSection>
+          <CardSection>
+            <Input
+              secureTextEntry
+              placeholder="password"
+              label="Password"
+              value={this.props.password}
+              onChangeText={password => this.props.setPassword(password)}
+            />
+          </CardSection>
 
-        <Text style={styles.errorTextStyle}>
-          {this.props.error}
-        </Text>
-
-        <CardSection>
+          <Text style={styles.errorTextStyle}>
+            {this.props.error}
+          </Text>
           {this.renderButton()}
-        </CardSection>
-      </Card>
+          <CardSection>
+            <Button onPress={() => this.props.showRegister()}>
+              Register
+            </Button>
+          </CardSection>
+        </Card>
+      </View>
     );
   }
 }
