@@ -59,8 +59,9 @@ export default class App extends Component<{}> {
       .then(() => {
         this.setState({
           loggedIn: true,
-          loading: false}
-        );
+          loading: false,
+          modalVisible: false
+        });
       })
       .catch((err) => { this.setState({loginErr: err.message, loading: false})});
   }
@@ -119,7 +120,8 @@ export default class App extends Component<{}> {
       loggedIn: false,
       username: null,
       password: null,
-      email: null
+      email: null,
+      modalVisible: false
     });
   }
 

@@ -240,6 +240,7 @@ app.get('/register', (req, res) =>{
   usersRef.child(userEmail).set({
     "userName": username,
     "labels": labels,
+    "avatar": 'https://api.adorable.io/avatars/250/'+ userEmail + '.png'
   });
   res.send("Success")
 });
@@ -276,9 +277,10 @@ app.get('/profile', (req, res) => {
   var usersRef = db.ref('users');
   usersRef.child(userEmail).on('value', snap => {
     const username = snap.val()['userName'];
+    const avatar = snap.val()['avatar'];
     res.send({
       "username": username,
-      "avatar": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
+      "avatar": avatar,
     });
   });
 });

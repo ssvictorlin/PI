@@ -155,8 +155,8 @@ export default class Profile extends Component {
                 source={{ uri: this.state.avatar }}
               />
             </View>
-            <View style={ styles.headerContent }>
-              <Text style={ styles.headerText }>{ this.state.name }</Text>
+            <View style={ styles.nameContainer }>
+              <Text style={ styles.name }>{ this.state.name }</Text>
             </View>
           </View>
           <List containerStyle={{marginBottom: 20}} hideChevron={true}>
@@ -186,16 +186,17 @@ const styles = {
     borderColor: '#ddd',
     position: 'relative'
   },
-  headerContent: {
+  nameContainer: {
     flexDirection: 'column',
     justifyContent: 'space-around'
   },
-  headerText: {
-    fontSize: 18
+  name: {
+    fontSize: 24
   },
   thumbnail: {
-    height: 50,
-    width: 50
+    height: 80,
+    width: 80,
+    borderRadius: 50,
   },
   thumbnailContainer: {
     justifyContent: 'center',
