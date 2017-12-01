@@ -36,10 +36,12 @@ app.get('/createGroup', (req, res) => {
   var query = url.parse(req.url, true).query;
   var userEmail = query['userEmail'];
   var groupName = query['groupName'];
-  var groupRef =  admin.database().ref("groups")
-  var ownerRef = admin.database().ref('users/'+userEmail);
+  var groupRef =  db.ref("groups")
+  var ownerRef = db.ref('users/'+userEmail);
   groupRef.child(groupName).set({
-      "owner": userEmail
+      "owner": userEmail,
+      "avatar": "https://api.adorable.io/avatars/250/" + groupName + ".png",
+      "top3": ["On the bus", "At work", "Standing"]
   });
   ownerRef.child("ownerGroup").once('value').then(snapshot => {
       ownerRef.child("ownerGroup").child(groupName).set({
@@ -260,8 +262,25 @@ app.get('/readUser', (req, res) => {
   });
 });
 
-app.get('/testroute', (req, res) => {
-  res.send({"DummyData": "Truly Dummy Data"});
+app.get('/groups', (req, res) => {
+  var query = url.parse(req.url, true).query;
+  var email = query['email'];
+  userEmail = email.replace(".", ",");
+  var groupRef = db.ref('groups');
+  groupRef.on('value', snap => {
+    var result = [];
+    for (var groupName in snap.val()){
+      groupRef.child(groupName).on('value', snapshot => {
+        var groupObject = {};
+        groupObject['groupName'] = groupName;
+        groupObject['top3'] = snapshot.val()['top3'];
+        groupObject['avatar'] = snapshot.val()['avatar'];
+        groupObject['memberList'] = snapshot.val()['memberList'];
+        result.push(groupObject);
+      });
+    }
+    res.send(result);
+  });
 });
 
 /*
@@ -273,7 +292,7 @@ app.get('/profile', (req, res) => {
   var query = url.parse(req.url, true).query;
   var email = query['email'];
   userEmail = email.replace(".", ",");
-  console.log(userEmail);
+  // console.log(userEmail);
   var usersRef = db.ref('users');
   usersRef.child(userEmail).on('value', snap => {
     const username = snap.val()['userName'];
@@ -291,8 +310,6 @@ app.get('/crowns', (req, res) => {
     "pieChart": "https://cdn-images-1.medium.com/max/1600/1*RSqZ9sw6-mOXAAptmvz4Dg.png"
   });
 });
-
-app.get('/dbtest', dbroutes.test);
 
 /*
   This will choose top 5 activities with the highest probability and update user's database

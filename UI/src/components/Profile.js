@@ -92,7 +92,6 @@ export default class Profile extends Component {
         // User is signed in.
         const response = await get('app/profile?email=' + this.props.email);
         const data = await response.json();
-        console.log(data.name);
         this.setState({
           name: data.username,
           avatar: data.avatar,

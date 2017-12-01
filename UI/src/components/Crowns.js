@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ScrollView, View, Image, Text, ActivityIndicator } from 'react-native';
-import { get, put } from '../../api.js';
+import { get } from '../../api.js';
 import { Card, CardSection } from './common';
 import PieGraph from './pie.js'
 import firebase from 'firebase';
@@ -80,19 +80,22 @@ export default class Crowns extends Component {
           </CardSection>
         </Card>
       );
-      return pieItems
+      return pieItems;
     }
 
     if (this.state.loading == true) {
-			return (<ActivityIndicator
-	        animating={this.state.loading}
-	        style={[styles.centering, {height: 80}]}
-	        size="large"
-	      />);
+			return (
+        <ActivityIndicator
+          animating={this.state.loading}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />
+      );
     } else {
   		return (
     	  <ScrollView>
-          <CreatePieList activities={this.props.activityList}
+          <CreatePieList
+            activities={this.props.activityList}
             crownHolder={this.state.crownHolder}
             friendsObjList={this.state.friendsObjList}
           />

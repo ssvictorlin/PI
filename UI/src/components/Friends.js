@@ -1,41 +1,98 @@
 import React, { Component } from 'react';
-import { View, Text, Button } from 'react-native';
-import { get, put } from '../../api.js';
+import { ScrollView, View, Image, Text, ActivityIndicator, Button } from 'react-native';
+import { Card, CardSection } from './common';
+import { get } from '../../api.js';
+import firebase from 'firebase';
 
-export default class Friends extends Component {
-  constructor() {
-    super();
+export default class Groups extends Component {
+  constructor(props) {
+    super(props);
     this.state = {
-      data: "no data",
-      loading: false,
+      groups: [],
+      loading: false
     };
-    //this.fetchComments = fetchComments.bind(this);
   }
 
-  fetchComments = async () => {
-    this.setState({loading: true})
+  componentWillMount() {
+    this.getData();
+  }
+
+  getData = async () => {
+    this.setState({loading: true});
+    var user = firebase.auth().currentUser;
+
+    if (user == null) {
+      throw "user not signed in"
+    }
     try {
-      const response = await get('app/testroute');
-      const dummy = await response.json();
+      const response = await get('app/groups?email=' + user.email);
+      const data = await response.json();
+      console.log(data);
       this.setState({
-        data: dummy.DummyData,
-        loading: false});
+        groups: data,
+        loading: false
+      });
     }
     catch(err) {
       alert(err);
     }
   };
 
-  render() {
-    let fillertext = this.state.loading ? "Loading" : this.state.data;
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          {fillertext}
-        </Text>
+  renderGroups = () => {
+    return this.state.groups.map(group =>
+      <Group key={ group.groupName } group={ group } />
+    );
+  }
 
-        <Button onPress={this.fetchComments} title="Test" />
-      </View>
+  render() {
+    /*
+      CreateGroupList: loop through groups and return every group item.
+    */
+    function CreateGroupList(props) {
+      const groups = props.groups;
+      const groupItems = groups.map((element, index) => 
+        <Card key={index}>
+          <CardSection>
+            <View style={styles.container}>
+              <Text>{ element.groupName }</Text>
+              <Image
+                style={ styles.thumbnail }
+                source={{ uri: element.avatar }}
+              />
+              <Button onPress={this.join} title="Join" />
+            </View>
+            <View>
+              <Text>{ element.top3[0] }</Text>
+              <Text>{ element.top3[1] }</Text>
+              <Text>{ element.top3[2] }</Text>
+            </View>
+          </CardSection>
+        </Card>
+      );
+      return groupItems;
+    }
+
+    if (this.state.loading == true) {
+			return (
+        <ActivityIndicator
+          animating={this.state.loading}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />
+      );
+    } else {
+  		return (
+    	  <ScrollView>
+          <CreateGroupList
+            groups={this.state.groups}
+          />
+      	</ScrollView>
+    	);
+    }
+    return (
+      <ScrollView>
+        { this.renderGroups }
+      </ScrollView>
     )
   }
 }
@@ -47,9 +104,27 @@ const styles = {
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  nameContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-around'
+  },
+  name: {
+    fontSize: 24
+  },
+  thumbnail: {
+    height: 80,
+    width: 80,
+    borderRadius: 50,
+  },
+  thumbnailContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10
+  },
+  image: {
+    height: 300,
+    flex: 1,
+    width: null,
   },
 }
