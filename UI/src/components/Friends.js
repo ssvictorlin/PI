@@ -59,12 +59,17 @@ export default class Groups extends Component {
                 style={ styles.thumbnail }
                 source={{ uri: element.avatar }}
               />
-              <Button onPress={this.join} title="Join" />
+              <Button title="Join" />
             </View>
             <View>
               <Text>{ element.top3[0] }</Text>
               <Text>{ element.top3[1] }</Text>
               <Text>{ element.top3[2] }</Text>
+            </View>
+            <View>
+              <Text>{ element.intersectList[0] }</Text>
+              <Text>{ element.intersectList[1] }</Text>
+              <Text>is also in this group</Text>
             </View>
           </CardSection>
         </Card>

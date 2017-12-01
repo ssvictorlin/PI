@@ -267,19 +267,39 @@ app.get('/groups', (req, res) => {
   var email = query['email'];
   userEmail = email.replace(".", ",");
   var groupRef = db.ref('groups');
-  groupRef.on('value', snap => {
-    var result = [];
-    for (var groupName in snap.val()){
-      groupRef.child(groupName).on('value', snapshot => {
-        var groupObject = {};
-        groupObject['groupName'] = groupName;
-        groupObject['top3'] = snapshot.val()['top3'];
-        groupObject['avatar'] = snapshot.val()['avatar'];
-        groupObject['memberList'] = snapshot.val()['memberList'];
-        result.push(groupObject);
+  var userFriendRef = db.ref('users/' + userEmail + '/friends');
+
+  var friendList = []
+  userFriendRef.on('value', snap1 => { 
+    for (var friendEmail in snap1.val()){
+      userFriendRef.child(friendEmail).on('value', snap2 => {
+        friendList.push(snap2.val()['friendName']);
       });
     }
-    res.send(result);
+    // console.log(friendList);
+    groupRef.on('value', snap3 => {
+      var result = [];
+      for (var groupName in snap3.val()){
+        groupRef.child(groupName).on('value', snap4 => {
+          var groupObject = {};
+          var memberList = [];
+          groupObject['groupName'] = groupName;
+          groupObject['top3'] = snap4.val()['top3'];
+          groupObject['avatar'] = snap4.val()['avatar'];
+          
+          // get member list of a group
+          for (var groupMember in snap4.val()['memberList']) {
+            memberList.push(snap4.val()['memberList'][groupMember]['memberName']);
+          }
+          // find intersection between friend list of user and member list of a group
+          var intersectList = friendList.filter((n) => memberList.includes(n));
+          groupObject['intersectList'] = intersectList;
+
+          result.push(groupObject);
+        });
+      }
+      res.send(result);
+    });
   });
 });
 
