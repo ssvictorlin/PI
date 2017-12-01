@@ -20,43 +20,26 @@ export default class PieGraph extends Component {
   componentWillMount() {
     console.log("Activity to piechart is: "+ this.props.activity)
   }
-  
-  /* 
-    getTop5List: will use his.props.friendsObjList to find out top 5 people
-    (including current user) that have the most minutes on the activity 
-    this piechart is for. It will skip zero minute usage.
-  */
-  getTop5List() {
+
+  getTop5Data() {
     var acti = this.props.activity
-    function compare(a,b) {
-      if (a['labels'][acti] < b['labels'][acti])
-        return 1;
-      if (a['labels'][acti] > b['labels'][acti])
-        return -1;
-      return 0;
-    }
-    var sortedObjList = this.props.friendsObjList.slice(0)
-    sortedObjList.sort(compare)
     result = []
-    
-    for (var i = 0; i < 5; i++) {
-      if (sortedObjList[i]['labels'][acti] == 0) break; 
+    for (var i = 0; i < this.props.top5List.length; i++) {
       let item = {
-        "name": sortedObjList[i]['userName'],
-        "minutes": sortedObjList[i]['labels'][acti]
+        "name": this.props.top5List[i]['userName'],
+        "minutes": this.props.top5List[i]['labels'][acti]
       }
-      if (item['name'] == this.props.friendsObjList[0]['userName']) {
+      if (item['name'] == this.props.curUserName) {
         item['color'] = {'r':66,'g':111,'b':183}
         item['name'] = 'You'
-
       }
       result.push(item)
     }
     return result
   }
-
+  
   render() {
-    let data = this.getTop5List()
+    let data = this.getTop5Data()
     console.log("data is: %O", data)
     
     let options = {

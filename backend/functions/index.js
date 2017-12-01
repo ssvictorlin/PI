@@ -307,7 +307,8 @@ app.get('/profile', (req, res) => {
 app.get('/crowns', (req, res) => {
   res.send({
     "crownHolder": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
-    "pieChart": "https://cdn-images-1.medium.com/max/1600/1*RSqZ9sw6-mOXAAptmvz4Dg.png"
+    "pieChart": "https://cdn-images-1.medium.com/max/1600/1*RSqZ9sw6-mOXAAptmvz4Dg.png",
+    "crownIcon": "https://image.ibb.co/kna94b/icons8_crown_48.png",
   });
 });
 

@@ -11,6 +11,7 @@ export default class Crowns extends Component {
     this.state = {
       crownHolder: "",
       pieChart: "",
+      crownIcon: "",
       loading: false,
       friendsObjList: [] // friends' objects list
     };
@@ -48,6 +49,7 @@ export default class Crowns extends Component {
       this.setState({
         crownHolder: pageData.crownHolder,
         pieChart: pageData.pieChart,
+        crownIcon: pageData.crownIcon,
         loading: false,
         friendsObjList: result
       });
@@ -68,14 +70,20 @@ export default class Crowns extends Component {
           <CardSection>
             <View style={ styles.container }>
               <View style={ styles.crownHolderContainer }>
-                <Text style={ styles.subtitle }> { element } </Text>
+                <Text style={ styles.title }> { element } </Text>
+                <Image
+                  style={ styles.crownIcon }
+                  source={{ uri: props.crownIcon }}
+                />
                 <Image
                   style={ styles.crownHolder }
-                  source={{ uri: props.crownHolder }}
+                  source={{ uri: props.sortedLists[element][0]['avatar'] }}
                 />
+                <Text style={ styles.subtitle }> { props.sortedLists[element][0]['userName'] } </Text>
               </View>
               <PieGraph activity={ element }
-              friendsObjList={props.friendsObjList}/>
+              top5List={ props.sortedLists[element] }
+              curUserName = { props.friendsObjList[0]['userName'] }/>
             </View>
           </CardSection>
         </Card>
@@ -92,16 +100,50 @@ export default class Crowns extends Component {
         />
       );
     } else {
+      rankedListsforAllActivities = {}
+      for (var i = 0; i < this.props.activityList.length; i++) {
+        var acti = this.props.activityList[i]
+        rankedListsforAllActivities[acti] = this.getTop5List(acti)
+      }
+      console.log(rankedListsforAllActivities)
   		return (
     	  <ScrollView>
           <CreatePieList
             activities={this.props.activityList}
             crownHolder={this.state.crownHolder}
+            crownIcon = {this.state.crownIcon}
             friendsObjList={this.state.friendsObjList}
+            sortedLists = { rankedListsforAllActivities }
           />
       	</ScrollView>
     	);
     }
+  }
+   /* 
+    getTop5List: will use friendsObjList to find out top 5 people
+    (including current user) that have the most minutes on the activity 
+    this piechart is for. It will skip zero minute usage.
+  */
+  getTop5List(acti) {
+    function compare(a,b) {
+      if (a['labels'][acti] < b['labels'][acti])
+        return 1;
+      if (a['labels'][acti] > b['labels'][acti])
+        return -1;
+      return 0;
+    }
+    var sortedObjList = this.state.friendsObjList.slice(0)
+    sortedObjList.sort(compare)
+    result = []
+    
+    for (var i = 0; i < 5; i++) {
+      if (sortedObjList[i]['labels'][acti] == 0) break;
+      if (sortedObjList[i]['userName'] == this.state.friendsObjList[0]['userName']) {
+        sortedObjList[i]['userName'] = 'It\'s You!'
+      }
+      result.push(sortedObjList[i])
+    }
+    return result
   }
 };
 
@@ -115,12 +157,25 @@ const styles = {
     borderColor: '#ddd',
     position: 'relative'
   },
+  title: {
+    textAlign: 'left',
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginTop: 0,
+    marginBottom: 15,
+    width: 150,
+  },
   subtitle: {
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 15,
     marginTop: 0,
     width: 150,
+  },
+  crownIcon: {
+    height: 48,
+    width: 48,
+    alignItems: 'center',
   },
   crownHolder: {
     height: 80,
