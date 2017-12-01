@@ -315,6 +315,7 @@ app.put('/send', (req, res) => {
   const email = data['email'];
   // res.send(data); response 200 here
   const userEmail = email.replace(".", ",");
+  var labelRef = db.ref("users/" + userEmail + '/labels');
 
   for (var j = 0; j < result.length; j++) {
     var probs = result[j]['label_probs'];
@@ -335,24 +336,24 @@ app.put('/send', (req, res) => {
       probs.splice(maxIdx, 1);
       names.splice(maxIdx, 1);
     }
-    // for (var k = 0; k < 5; k++) {
-    //   console.log(top5[k]);
-    // }
+    for (var k = 0; k < 5; k++) {
+      console.log(top5[k]);
+    }
 
-    var usersRef = db.ref("users");
+    
     // update database
     var updates = {};
-    for (var i = 0; i < 5; i++) {
-      var snap_val = 0;
-      // get snapshot of current data
-      usersRef.child(userEmail).child("labels").child(top5[i]).on('value', snap => {
-        snap_val = snap.val();
-      });
-      // increment by 1
-      updates[userEmail + '/labels/' + top5[i]] = snap_val + 1;
+    // get snapshot of current data
+    labelRef.on('value', snap => {
+      for (var i = 0; i < 5; i++) {
+        // increment value by 1
+        updates[userEmail + '/labels/' + top5[i]] = snap.val()[top5[i]] + 1;
+      }
+      console.log(updates);
       // update command
-      usersRef.update(updates);
-    }
+      // usersRef.update(updates);
+      console.log("update finished");
+    });
   }
   res.send(data); // response 500 here....
 });
