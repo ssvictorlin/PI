@@ -158,13 +158,14 @@ export default class Profile extends Component {
               <Text style={ styles.name }>{ this.state.name }</Text>
             </View>
           </View>
-          <List containerStyle={{marginBottom: 20}} hideChevron={true}>
+          <List containerStyle={{marginBottom: 20}}>
             {
               list.map((item, i) => (
                 <ListItem
                   key={i}
                   title={item.name}
                   leftIcon={{name: item.icon, type: 'material-community'}}
+                  hideChevron={true}
                 />
               ))
             }

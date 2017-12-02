@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Header } from 'react-native-elements';
-import { Dimensions, View, Modal, Text, TouchableHighlight } from 'react-native';
+import { Header, SearchBar, List, ListItem } from 'react-native-elements';
+import { Dimensions, View, Modal, Text, TouchableHighlight, ListView, ActivityIndicator, Alert } from 'react-native';
 import { get, put } from './api.js';
-import Friends from './src/components/Friends';
+import Groups from './src/components/Groups';
 import Profile from './src/components/Profile';
 import Crowns from './src/components/Crowns';
 import Setting from './src/components/Setting';
@@ -23,19 +23,26 @@ function px2dp(px) {
 }
 
 export default class App extends Component<{}> {
-  state = {
-    selectedTab: 'profile',
-    modalVisible: false,
-    loggedIn: false,
-    registering: false,
-    email: null,
-    password: null,
-    username: null,
-    loading: false,
-    loginErr: '',
-    activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
-    registerErr: ''
-  };
+  constructor() {
+    super();
+    this.state = {
+      selectedTab: 'profile',
+      modalVisible: false,
+      loggedIn: false,
+      registering: false,
+      email: null,
+      password: null,
+      username: null,
+      loading: false,
+      loginErr: '',
+      activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
+      registerErr: '',
+      hasTermInSearchBar: false,
+      term: '',
+      dataSource: null
+    };
+    this.userList = [];
+  }
 
   setEmail(str) {
     this.setState({email: str});
@@ -111,6 +118,59 @@ export default class App extends Component<{}> {
     firebase.initializeApp(config);
   }
 
+  componentDidMount() {
+    return get('app/fetchUsers')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+      this.setState({
+        dataSource: ds.cloneWithRows(responseJson),
+      }, function() {
+
+        // In this block you can do something with new state.
+        this.userList = responseJson ;
+        console.log(this.userList);
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  GetListViewItem (userName) {
+    Alert.alert(userName);
+  }
+
+  SearchFilterFunction(term){
+    const newData = this.userList.filter(function(item){
+      const itemData = item.userName.toUpperCase()
+      const textData = term.toUpperCase()
+      return itemData.indexOf(textData) > -1
+    })
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(newData),
+      term: term,
+      hasTermInSearchBar: true
+    })
+    if (term == '') {
+      this.setState({
+        hasTermInSearchBar: false
+      });
+    }
+  }
+
+  renderRow (rowData, sectionID) {
+    return (
+      <ListItem
+        roundAvatar
+        key={sectionID}
+        title={rowData.userName}
+        avatar={{uri:rowData.avatar}}
+        hideChevron={true}
+      />
+    )
+  }
+
   setModalVisible = (visible) => {
     this.setState({modalVisible: visible});
   }
@@ -147,16 +207,30 @@ export default class App extends Component<{}> {
             centerComponent={{ text: 'PersonalityInsights', style: { fontSize: 24, color: '#fff' } }}
             rightComponent={<Setting openModal={this.setModalVisible.bind(this)}/>}
           />
+          <SearchBar
+            lightTheme
+            onChangeText={(term) => this.SearchFilterFunction(term)}
+            placeholder='Search friends or groups'
+          />
+          { this.state.hasTermInSearchBar
+              ? <List>
+                  <ListView
+                    renderRow={this.renderRow}
+                    dataSource={this.state.dataSource}
+                  />
+                </List>
+              : null
+          }
           <TabNavigator style={styles.container}>
             <TabNavigator.Item
-              selected={this.state.selectedTab === 'friends'}
-              title="Friends"
+              selected={this.state.selectedTab === 'groups'}
+              title="Groups"
               selectedTitleStyle={{color: "#3496f0"}}
               renderIcon={() => <Icon name="users" size={px2dp(22)} color="#666"/>}
               renderSelectedIcon={() => <Icon name="users" size={px2dp(22)} color="#3496f0"/>}
-              onPress={() => this.setState({selectedTab: 'friends'})}
+              onPress={() => this.setState({selectedTab: 'groups'})}
             >
-              <Friends />
+              <Groups />
             </TabNavigator.Item>
             <TabNavigator.Item
               selected={this.state.selectedTab === 'profile'}
@@ -222,5 +296,9 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  rowViewContainer: {
+    fontSize: 17,
+    padding: 10
   }
 }

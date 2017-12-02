@@ -262,6 +262,18 @@ app.get('/readUser', (req, res) => {
   });
 });
 
+app.get('/fetchUsers', (req, res) => {
+  var query = url.parse(req.url, true).query;
+  var usersRef = db.ref('users');
+  var usersList = [];
+  usersRef.on('value', snap => {
+    snap.forEach(function(data) {
+      usersList.push({'email' : data.key, 'userName' : data.val()['userName'], avatar : data.val()['avatar']});
+    });
+    res.send(usersList);
+  });
+});
+
 app.get('/groups', (req, res) => {
   var query = url.parse(req.url, true).query;
   var email = query['email'];
