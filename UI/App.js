@@ -33,7 +33,7 @@ export default class App extends Component<{}> {
     username: null,
     loading: false,
     loginErr: '',
-    activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
+    activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'], // Hardcoded for now
     registerErr: ''
   };
 
@@ -166,7 +166,10 @@ export default class App extends Component<{}> {
               renderSelectedIcon={() => <Icon name="user" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'profile'})}
             >
-              <Profile email={this.state.email}/>
+              <Profile 
+                email={this.state.email}
+                activityList={this.state.activityList}
+              />
             </TabNavigator.Item>
             <TabNavigator.Item
               selected={this.state.selectedTab === 'crowns'}
