@@ -45,6 +45,7 @@ export default class SettingModal extends Component {
           }}>
             <Text>Logout</Text>
           </TouchableHighlight>
+          <Text>{this.props.fullList}</Text>
         </View>
       </View>
     );
