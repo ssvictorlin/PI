@@ -61,7 +61,7 @@ export default class App extends Component<{}> {
   attemptLogin() {
     this.setState({loading: true});
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() => {
+      .then(async() => {
         // TODO get readUser with email, replace . with ,
         const fullResponse = await get('app/readUser?userEmail=' + this.state.email.replace(".", ","));
         const fullData = await response.json();
@@ -149,6 +149,13 @@ export default class App extends Component<{}> {
               setModalVisible={this.setModalVisible.bind(this)}
               modalVisible={this.state.modalVisible}
               email={this.state.email}
+              fullList={this.state.fullList.map(x => {
+                if (this.state.activityList.includes(x[0])) {
+                  return [x[0], true];
+                } else {
+                  return [x[0], false];
+                }
+              })}
             />
           </Modal>
           <Header
