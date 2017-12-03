@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import TabNavigator from 'react-native-tab-navigator';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { Header } from 'react-native-elements';
-import { Dimensions, View, Modal, Text, TouchableHighlight } from 'react-native';
+// import Icon from 'react-native-vector-icons/FontAwesome';
+import { Header, SearchBar, List, ListItem, Icon } from 'react-native-elements';
+import { Dimensions, View, Modal, Text, TouchableHighlight, ListView, ActivityIndicator, Alert } from 'react-native';
 import { get, put } from './api.js';
+import Groups from './src/components/Groups';
 import Friends from './src/components/Friends';
 import Profile from './src/components/Profile';
 import Crowns from './src/components/Crowns';
@@ -23,20 +24,23 @@ function px2dp(px) {
 }
 
 export default class App extends Component<{}> {
-  state = {
-    selectedTab: 'profile',
-    modalVisible: false,
-    loggedIn: false,
-    registering: false,
-    email: null,
-    password: null,
-    username: null,
-    loading: false,
-    loginErr: '',
-    activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
-    fullList: [],
-    registerErr: ''
-  };
+  constructor() {
+    super();
+    this.state = {
+      selectedTab: 'profile',
+      modalVisible: false,
+      loggedIn: false,
+      registering: false,
+      email: null,
+      password: null,
+      username: null,
+      loading: false,
+      loginErr: '',
+      activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
+      fullList: [],
+      registerErr: ''
+    };
+  }
 
   setEmail(str) {
     this.setState({email: str});
@@ -154,11 +158,21 @@ export default class App extends Component<{}> {
           />
           <TabNavigator style={styles.container}>
             <TabNavigator.Item
+              selected={this.state.selectedTab === 'groups'}
+              title="Groups"
+              selectedTitleStyle={{color: "#3496f0"}}
+              renderIcon={() => <Icon name="object-group" type="font-awesome" size={px2dp(22)} color="#666"/>}
+              renderSelectedIcon={() => <Icon name="object-group" type="font-awesome" size={px2dp(22)} color="#3496f0"/>}
+              onPress={() => this.setState({selectedTab: 'groups'})}
+            >
+              <Groups />
+            </TabNavigator.Item>
+            <TabNavigator.Item
               selected={this.state.selectedTab === 'friends'}
               title="Friends"
               selectedTitleStyle={{color: "#3496f0"}}
-              renderIcon={() => <Icon name="users" size={px2dp(22)} color="#666"/>}
-              renderSelectedIcon={() => <Icon name="users" size={px2dp(22)} color="#3496f0"/>}
+              renderIcon={() => <Icon name="users" type="font-awesome" size={px2dp(22)} color="#666"/>}
+              renderSelectedIcon={() => <Icon name="users" type="font-awesome" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'friends'})}
             >
               <Friends />
@@ -167,18 +181,21 @@ export default class App extends Component<{}> {
               selected={this.state.selectedTab === 'profile'}
               title="Profile"
               selectedTitleStyle={{color: "#3496f0"}}
-              renderIcon={() => <Icon name="user" size={px2dp(22)} color="#666"/>}
-              renderSelectedIcon={() => <Icon name="user" size={px2dp(22)} color="#3496f0"/>}
+              renderIcon={() => <Icon name="user" type="font-awesome" size={px2dp(22)} color="#666"/>}
+              renderSelectedIcon={() => <Icon name="user" type="font-awesome" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'profile'})}
             >
-              <Profile email={this.state.email}/>
+              <Profile
+                email={this.state.email}
+                activityList={this.state.activityList}
+              />
             </TabNavigator.Item>
             <TabNavigator.Item
               selected={this.state.selectedTab === 'crowns'}
               title="Crowns"
               selectedTitleStyle={{color: "#3496f0"}}
-              renderIcon={() => <Icon name="trophy" size={px2dp(22)} color="#666"/>}
-              renderSelectedIcon={() => <Icon name="trophy" size={px2dp(22)} color="#3496f0"/>}
+              renderIcon={() => <Icon name="trophy" type="font-awesome" size={px2dp(22)} color="#666"/>}
+              renderSelectedIcon={() => <Icon name="trophy" type="font-awesome" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'crowns'})}
             >
               <Crowns activityList={this.state.activityList}/>
@@ -227,5 +244,9 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  rowViewContainer: {
+    fontSize: 17,
+    padding: 10
   }
 }
