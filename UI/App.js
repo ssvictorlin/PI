@@ -42,6 +42,17 @@ export default class App extends Component<{}> {
     };
   }
 
+  setActivityList(str) {
+    var oldList = this.state.activityList;
+    var i = oldList.indexOf(str);
+    if (i > -1) {
+      oldList.splice(i, 1);
+    } else {
+      oldList.push(str);
+    }
+    this.setState({activityList: oldList});
+  }
+
   setEmail(str) {
     this.setState({email: str});
   }
@@ -64,7 +75,7 @@ export default class App extends Component<{}> {
       .then(async() => {
         // TODO get readUser with email, replace . with ,
         const fullResponse = await get('app/readUser?userEmail=' + this.state.email.replace(".", ","));
-        const fullData = await response.json();
+        const fullData = await fullResponse.json();
         this.setState({
           fullList: Object.entries(fullData.labels),
           loggedIn: true,
@@ -147,6 +158,7 @@ export default class App extends Component<{}> {
             <SettingModal
               logout={this.logout.bind(this)}
               setModalVisible={this.setModalVisible.bind(this)}
+              setActivityList={this.setActivityList.bind(this)}
               modalVisible={this.state.modalVisible}
               email={this.state.email}
               fullList={this.state.fullList.map(x => {
