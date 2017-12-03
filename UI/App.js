@@ -24,25 +24,6 @@ function px2dp(px) {
 }
 
 export default class App extends Component<{}> {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  state = {
-    selectedTab: 'profile',
-    modalVisible: false,
-    loggedIn: false,
-    registering: false,
-    email: null,
-    password: null,
-    username: null,
-    loading: false,
-    loginErr: '',
-    activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
-    fullList: [],
-    registerErr: ''
-  };
-=======
-=======
->>>>>>> selection
   constructor() {
     super();
     this.state = {
@@ -56,17 +37,10 @@ export default class App extends Component<{}> {
       loading: false,
       loginErr: '',
       activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
-<<<<<<< HEAD
-      registerErr: ''
-    };
-  }
->>>>>>> 9302ca91dbab04a1be29444bdb1f14cc4e4751ba
-=======
       fullList: [],
       registerErr: ''
     };
   }
->>>>>>> selection
 
   setEmail(str) {
     this.setState({email: str});
@@ -218,11 +192,7 @@ export default class App extends Component<{}> {
               renderSelectedIcon={() => <Icon name="user" type="font-awesome" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'profile'})}
             >
-<<<<<<< HEAD
-              <Profile 
-=======
               <Profile
->>>>>>> selection
                 email={this.state.email}
                 activityList={this.state.activityList}
               />
