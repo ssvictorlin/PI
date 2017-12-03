@@ -6,23 +6,23 @@ import { Card, CardSection } from './common';
 import { get } from '../../api.js';
 import firebase from 'firebase';
 
-export default class Friends extends Component {
+export default class Groups extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      friends: [],
+      groups: [],
       loading: false,
       hasTermInSearchBar: false,
       term: '',
       dataSource: null
     };
-    this.userList = [];
-  }
+    this.groupList = [];
+  };
 
   componentWillMount() {
-    this.fetchUsersFriends(); 
+    this.fetchGroupsUserIn();
     var user = firebase.auth().currentUser;
-    return get('app/fetchAllUsers?userEmail=' + user.email)
+    return get('app/fetchAllGroups?userEmail=' + user.email)
     .then((response) => response.json())
     .then((responseJson) => {
       let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -30,9 +30,9 @@ export default class Friends extends Component {
         dataSource: ds.cloneWithRows(responseJson),
         loading: false
       }, function() {
+
         // In this block you can do something with new state.
-        this.userList = responseJson ;
-        console.log(this.userList);
+        this.groupList = responseJson ;
       });
     })
     .catch((error) => {
@@ -40,7 +40,7 @@ export default class Friends extends Component {
     });
   }
 
-  fetchUsersFriends = async () => {
+  fetchGroupsUserIn = async () => {
     this.setState({loading: true});
     var user = firebase.auth().currentUser;
 
@@ -48,11 +48,11 @@ export default class Friends extends Component {
       throw "user not signed in"
     }
     try {
-      const response = await get('app/fetchUsersFriends?userEmail=' + user.email);
+      const response = await get('app/fetchGroupsUserIn?userEmail=' + user.email);
       const data = await response.json();
       console.log(data);
       this.setState({
-        friends: data,
+        groups: data,
       });
     }
     catch(err) {
@@ -60,13 +60,13 @@ export default class Friends extends Component {
     }
   };
 
-  GetListViewItem (userName) {
-    Alert.alert(userName);
+  GetListViewItem (groupName) {
+    Alert.alert(groupName);
   }
 
   SearchFilterFunction(term){
-    const newData = this.userList.filter(function(item){
-      const itemData = item.userName.toUpperCase()
+    const newData = this.groupList.filter(function(item){
+      const itemData = item.groupName.toUpperCase()
       const textData = term.toUpperCase()
       return itemData.indexOf(textData) > -1
     })
@@ -83,14 +83,15 @@ export default class Friends extends Component {
   }
 
   renderRow (rowData, sectionID) {
-    if (rowData.isFriend) {
+    if (rowData.isJoined) {
       return (
         <ListItem
           roundAvatar
           key={sectionID}
-          title={rowData.userName}
-          subtitle='Friend'
+          title={rowData.groupName}
+          subtitle={rowData.subtitle}
           avatar={{uri:rowData.avatar}}
+          rightTitle='Joined'
           hideChevron={true}
         />
       )
@@ -99,11 +100,10 @@ export default class Friends extends Component {
         <ListItem
           roundAvatar
           key={sectionID}
-          title={rowData.userName}
-          subtitle='Stranger'
+          title={rowData.groupName}
+          subtitle={rowData.subtitle}
           avatar={{uri:rowData.avatar}}
           hideChevron={true}
-          // rightIcon={{name: 'plus', style: {marginRight: 10}, type: 'material-community'}}
         />
       )
     }
@@ -111,28 +111,33 @@ export default class Friends extends Component {
 
   render() {
     /*
-      CreateFriendList: loop through user's friend and return every friend item.
+      CreateGroupList: loop through groups and return every group item.
     */
-    function CreateFriendList(props) {
-      const friends = props.friends;
-      const friendItems = friends.map((element, index) => 
+    function CreateGroupList(props) {
+      const groups = props.groups;
+      const groupItems = groups.map((element, index) => 
         <Card key={index}>
           <CardSection>
             <View style={styles.container}>
-              <Text>{ element.userName }</Text>
+              <Text>{ element.groupName }</Text>
               <Image
                 style={ styles.thumbnail }
                 source={{ uri: element.avatar }}
               />
             </View>
+            <View>
+              <Text>{ element.top3[0] }</Text>
+              <Text>{ element.top3[1] }</Text>
+              <Text>{ element.top3[2] }</Text>
+            </View>
           </CardSection>
         </Card>
       );
-      return friendItems;
+      return groupItems;
     }
 
     if (this.state.loading == true) {
-      return (
+			return (
         <ActivityIndicator
           animating={this.state.loading}
           style={[styles.centering, {height: 80}]}
@@ -140,12 +145,12 @@ export default class Friends extends Component {
         />
       );
     } else {
-      return (
-        <ScrollView>
+  		return (
+    	  <ScrollView>
           <SearchBar
             lightTheme
             onChangeText={(term) => this.SearchFilterFunction(term)}
-            placeholder='Search friends'
+            placeholder='Search groups'
           />
           { this.state.hasTermInSearchBar
               ? <List>
@@ -154,12 +159,12 @@ export default class Friends extends Component {
                     dataSource={this.state.dataSource}
                   />
                 </List>
-              : <CreateFriendList
-                  friends={this.state.friends}
+              : <CreateGroupList
+                  groups={this.state.groups}
                 />
           }
-        </ScrollView>
-      );
+      	</ScrollView>
+    	);
     }
   }
 }

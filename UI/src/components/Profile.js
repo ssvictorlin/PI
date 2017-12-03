@@ -4,6 +4,7 @@ import { get, put } from '../../api.js';
 import RadarGraph from './radar.js';
 import { Icon, List, ListItem } from 'react-native-elements';
 import firebase from 'firebase';
+import Bar from './bar.js';
 
 // require the module
 var RNFS = require('react-native-fs');
@@ -16,6 +17,7 @@ export default class Profile extends Component {
       email: null,
       name: null,
       avatar: null,
+      userData: null,
       loading: false
     };
   }
@@ -85,16 +87,26 @@ export default class Profile extends Component {
     }
   };
 
+  /* getData: first checked if user signed in and get user 
+        activities and their minutes
+        TODO: Not signed in -> redirect to sign in page 
+  */
   getData = async () => {
     this.setState({loading: true});
     try {
       if (this.props.email) {
         // User is signed in.
-        const response = await get('app/profile?email=' + this.props.email);
-        const data = await response.json();
+        const responseFromProfile = await get('app/profile?email=' + this.props.email);
+        const dataFromProfile = await responseFromProfile.json();
+
+        const email = this.props.email.replace('.',',')
+        const responseFromCurUser = await get('app/readUser'+'?userEmail='+ email)
+        const dataFromCurUser = await responseFromCurUser.json()
+
         this.setState({
-          name: data.username,
-          avatar: data.avatar,
+          name: dataFromProfile.username,
+          avatar: dataFromProfile.avatar,
+          userData: dataFromCurUser,
           loading: false
         });
       } else {
@@ -116,38 +128,17 @@ export default class Profile extends Component {
         />
       );
     } else {
-      /* The list of things to show, hard coded for now */
-      /* TODO, replace below with something like this:
-         var list = this.getList();
-         which will get the list of stuff from the settings,
-         which should be stored in App.js once set
-       */
-      var list = [
-        {
-          name: 'Running',
-          icon: 'run'
-        },
-        {
-          name: 'Walking',
-          icon: 'walk'
-        },
-        {
-          name: 'In a car',
-          icon: 'car'
-        },
-        {
-          name: 'Bicycling',
-          icon: 'bike'
-        },
-        {
-          name: 'Sleeping',
-          icon: 'sleep'
-        },
-      ]
+      barList = {}
+      for (var i = 0; i < this.props.activityList.length; i++) {
+        var acti = this.props.activityList[i]
+        console.log(this.props.activityList[i])
+        barList[acti] = this.state.userData['labels'][acti]
+      }
+      console.log(barList)
       return (
         <ScrollView>
           <RadarGraph />
-          <View style={ styles.container }>
+          <View style={styles.container}>
             <View style={ styles.thumbnailContainer }>
               <Image
                 style={ styles.thumbnail }
@@ -158,17 +149,10 @@ export default class Profile extends Component {
               <Text style={ styles.name }>{ this.state.name }</Text>
             </View>
           </View>
-          <List containerStyle={{marginBottom: 20}} hideChevron={true}>
-            {
-              list.map((item, i) => (
-                <ListItem
-                  key={i}
-                  title={item.name}
-                  leftIcon={{name: item.icon, type: 'material-community'}}
-                />
-              ))
-            }
-          </List>
+          <Text style={styles.subtitle}> Your Activity Summary: </Text>
+          <Bar 
+            barList = { barList }
+          />
         </ScrollView>
       );
     }
@@ -207,6 +191,10 @@ const styles = {
     height: 300,
     flex: 1,
     width: null,
+  },
+  subtitle: {
+    fontSize: 16,
+    marginTop: 5
   },
   activity: {
     height: 40,
