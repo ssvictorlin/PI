@@ -149,6 +149,7 @@ export default class Profile extends Component {
               <Text style={ styles.name }>{ this.state.name }</Text>
             </View>
           </View>
+          <Text style={styles.subtitle}> Your Activity Summary: </Text>
           <Bar 
             barList = { barList }
           />
@@ -190,6 +191,10 @@ const styles = {
     height: 300,
     flex: 1,
     width: null,
+  },
+  subtitle: {
+    fontSize: 16,
+    marginTop: 5
   },
   activity: {
     height: 40,

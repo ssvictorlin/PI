@@ -30,15 +30,17 @@ export default class Bar extends Component {
 
     getWidth (itemNameList) {
         const deviceWidth = Dimensions.get('window').width
-        const maxWidth = 350
+        const maxWidth = Math.round(deviceWidth - 50)
         const unit = Math.floor(maxWidth / 360)
         let width = {}
         let widthCap // Give with a max cap
         itemNameList.forEach(item => {
           /* React-Native bug: if width=0 at first time, the borderRadius can't be implemented in the View */
           widthCap = this.props.barList[item] * unit
-          width[item] = widthCap <= (deviceWidth - 50) ? widthCap : (deviceWidth - 50)
+          width[item] = widthCap
         })
+        width['maxWidth'] = maxWidth
+        console.log('deviceWidth is ' + deviceWidth)
         console.log(width)
         return width
     }
@@ -60,9 +62,10 @@ export default class Bar extends Component {
                 <Text style={styles.label}>{element}</Text>
                 <View style={styles.data}>
                     {this.state[element] &&
-                    <Animated.View style={[styles.bar, styles.barcolor, {width: this.state[element]._value}]} />
+                    <Animated.View style={[styles.bar,  {backgroundColor: randomColor()}, 
+                      {width: ((this.state[element] <= this.state['maxWidth']) ? this.state[element] : 360)}]} />
                     }
-                    <Text style={styles.dataNumber}>{this.state[element]._value}</Text>
+                    <Text style={styles.dataNumber}>{this.state[element]}</Text>
                 </View>
               </View>
             </View>
@@ -79,11 +82,11 @@ const styles = StyleSheet.create({
   // Item
   item: {
     flexDirection: 'column',
-    marginBottom: 5,
-    paddingHorizontal: 10
+    marginBottom: 1,
+    paddingHorizontal: 5
   },
   label: {
-    color: '#CBCBCB',
+    color: '#5b5b5b',
     flex: 1,
     fontSize: 12,
     position: 'relative',
@@ -95,7 +98,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   dataNumber: {
-    color: '#CBCBCB',
+    color: '#5b5b5b',
     fontSize: 11
   },
   // Bar
