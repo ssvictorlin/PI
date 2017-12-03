@@ -262,9 +262,33 @@ app.get('/readUser', (req, res) => {
   });
 });
 
-app.get('/groups', (req, res) => {
+app.get('/fetchUsers', (req, res) => {
   var query = url.parse(req.url, true).query;
-  var email = query['email'];
+  var usersRef = db.ref('users');
+  var userList = [];
+  usersRef.on('value', snap => {
+    snap.forEach(function(data) {
+      userList.push({'email' : data.key, 'userName' : data.val()['userName'], avatar : data.val()['avatar']});
+    });
+    res.send(userList);
+  });
+});
+
+// app.get('/fetchGroups', (req, res) => {
+//   var query = url.parse(req.url, true).query;
+//   var usersRef = db.ref('groups');
+//   var groupList = [];
+//   usersRef.on('value', snap => {
+//     snap.forEach(function(data) {
+//       groupList.push({'groupName' : data.key, 'avatar' : data.val()['avatar']});
+//     });
+//     res.send(groupList);
+//   });
+// });
+
+app.get('/fetchAllGroups', (req, res) => {
+  var query = url.parse(req.url, true).query;
+  var email = query['userEmail'];
   userEmail = email.replace(".", ",");
   var groupRef = db.ref('groups');
   var userFriendRef = db.ref('users/' + userEmail + '/friends');
@@ -279,14 +303,12 @@ app.get('/groups', (req, res) => {
     // console.log(friendList);
     groupRef.on('value', snap3 => {
       var result = [];
-      for (var groupName in snap3.val()){
+      for (var groupName in snap3.val()) {
         groupRef.child(groupName).on('value', snap4 => {
           var groupObject = {};
           var memberList = [];
           groupObject['groupName'] = groupName;
-          groupObject['top3'] = snap4.val()['top3'];
           groupObject['avatar'] = snap4.val()['avatar'];
-          
           // get member list of a group
           for (var groupMember in snap4.val()['memberList']) {
             memberList.push(snap4.val()['memberList'][groupMember]['memberName']);
@@ -295,11 +317,46 @@ app.get('/groups', (req, res) => {
           var intersectList = friendList.filter((n) => memberList.includes(n));
           groupObject['intersectList'] = intersectList;
 
+          if (intersectList.length === 1) {
+            groupObject['subtitle'] = intersectList[0] + ' is in this group';
+          } else if (intersectList.length === 2) {
+            groupObject['subtitle'] = intersectList[0] + ' and ' + intersectList[1] + ' are in this group';
+          } else if (intersectList.length > 2) {
+            groupObject['subtitle'] = intersectList[0] + ' and ' + intersectList[1] + 
+              ' and ' + intersectList.length-2 + ' more friends are in this group';
+          }
+
           result.push(groupObject);
         });
       }
       res.send(result);
     });
+  });
+});
+
+app.get('/fetchGroupsUserIn', (req, res) => {
+  var query = url.parse(req.url, true).query;
+  var email = query['userEmail'];
+  userEmail = email.replace(".", ",");
+  var groupRef = db.ref('groups');
+  var userRef = db.ref('users/' + userEmail + '/joinedGroup');
+
+  groupRef.on('value', snap1 => {
+    var groupsUserIn = [];
+    for (var groupName in snap1.val()) {
+      groupRef.child(groupName).on('value', snap2 => {
+        var groupObject = {};
+        for (var user in snap2.val()['memberList']) {
+          if (user === userEmail) {
+            groupObject['groupName'] = groupName;
+            groupObject['avatar'] = snap2.val()['avatar'];
+            groupObject['top3'] = snap2.val()['top3'];
+            groupsUserIn.push(groupObject);
+          }
+        }
+      });
+    }
+    res.send(groupsUserIn);
   });
 });
 
