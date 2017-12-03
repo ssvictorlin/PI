@@ -262,29 +262,54 @@ app.get('/readUser', (req, res) => {
   });
 });
 
-app.get('/fetchUsers', (req, res) => {
+app.get('/fetchAllUsers', (req, res) => {
   var query = url.parse(req.url, true).query;
   var usersRef = db.ref('users');
+  var userEmail = query['userEmail'].replace(".", ",");
   var userList = [];
   usersRef.on('value', snap => {
     snap.forEach(function(data) {
-      userList.push({'email' : data.key, 'userName' : data.val()['userName'], avatar : data.val()['avatar']});
+      var userObj = {};
+      if (data.key !== userEmail) {
+        userObj['userEmail'] = data.key;
+        userObj['userName'] = data.val()['userName'];
+        userObj['avatar'] = data.val()['avatar'];
+        // userObj['joinedGroup'] = data.val()['joinedGroup'];
+        // userObj['labels'] = data.val()['labels'];
+        if (snap.val()[data.key]['friends'].hasOwnProperty(userEmail)) {
+          userObj['isFriend'] = true;
+        } else {
+          userObj['isFriend'] = false;
+        }
+        userList.push(userObj);
+      }
     });
+    console.log(userList);
     res.send(userList);
   });
 });
 
-// app.get('/fetchGroups', (req, res) => {
-//   var query = url.parse(req.url, true).query;
-//   var usersRef = db.ref('groups');
-//   var groupList = [];
-//   usersRef.on('value', snap => {
-//     snap.forEach(function(data) {
-//       groupList.push({'groupName' : data.key, 'avatar' : data.val()['avatar']});
-//     });
-//     res.send(groupList);
-//   });
-// });
+app.get('/fetchUsersFriends', (req, res) => {
+  var query = url.parse(req.url, true).query;
+  var userEmail = query['userEmail'].replace(".", ",");
+  var userRef = db.ref('users');
+  
+  userRef.on('value', snap => {
+    var friendList = [];
+    for (var user in snap.val()) {
+      var friendObj = {};
+      if (user === userEmail) continue;
+      if (snap.val()[user]['friends'].hasOwnProperty(userEmail)) {
+        friendObj['userName'] = snap.val()[user]['userName'];
+        friendObj['avatar'] = snap.val()[user]['avatar'];
+        friendObj['joinedGroup'] = snap.val()[user]['joinedGroup'];
+        friendObj['labels'] = snap.val()[user]['labels'];
+        friendList.push(friendObj);
+      }
+    }
+    res.send(friendList);
+  });
+});
 
 app.get('/fetchAllGroups', (req, res) => {
   var query = url.parse(req.url, true).query;
@@ -309,6 +334,11 @@ app.get('/fetchAllGroups', (req, res) => {
           var memberList = [];
           groupObject['groupName'] = groupName;
           groupObject['avatar'] = snap4.val()['avatar'];
+          if (snap4.val()['memberList'].hasOwnProperty(userEmail)) {
+            groupObject['isJoined'] = true;
+          } else {
+            groupObject['isJoined'] = false;
+          }
           // get member list of a group
           for (var groupMember in snap4.val()['memberList']) {
             memberList.push(snap4.val()['memberList'][groupMember]['memberName']);

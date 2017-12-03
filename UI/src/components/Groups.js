@@ -20,7 +20,7 @@ export default class Groups extends Component {
   };
 
   componentWillMount() {
-    this.getData();
+    this.fetchGroupsUserIn();
     var user = firebase.auth().currentUser;
     return get('app/fetchAllGroups?userEmail=' + user.email)
     .then((response) => response.json())
@@ -40,7 +40,7 @@ export default class Groups extends Component {
     });
   }
 
-  getData = async () => {
+  fetchGroupsUserIn = async () => {
     this.setState({loading: true});
     var user = firebase.auth().currentUser;
 
@@ -83,18 +83,30 @@ export default class Groups extends Component {
   }
 
   renderRow (rowData, sectionID) {
-    console.log(rowData.subtitle);
-    return (
-      <ListItem
-        roundAvatar
-        key={sectionID}
-        title={rowData.groupName}
-        subtitle={rowData.subtitle}
-        avatar={{uri:rowData.avatar}}
-        hideChevron={true}
-        // onPress={this.GetListViewItem.bind(this, rowData.groupName)}
-      />
-    )
+    if (rowData.isJoined) {
+      return (
+        <ListItem
+          roundAvatar
+          key={sectionID}
+          title={rowData.groupName}
+          subtitle={rowData.subtitle}
+          avatar={{uri:rowData.avatar}}
+          rightTitle='Joined'
+          hideChevron={true}
+        />
+      )
+    } else {
+      return (
+        <ListItem
+          roundAvatar
+          key={sectionID}
+          title={rowData.groupName}
+          subtitle={rowData.subtitle}
+          avatar={{uri:rowData.avatar}}
+          hideChevron={true}
+        />
+      )
+    }
   }
 
   render() {
