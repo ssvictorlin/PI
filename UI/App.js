@@ -34,6 +34,7 @@ export default class App extends Component<{}> {
     loading: false,
     loginErr: '',
     activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
+    fullList: [],
     registerErr: ''
   };
 
@@ -57,7 +58,11 @@ export default class App extends Component<{}> {
     this.setState({loading: true});
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
+        // TODO get readUser with email, replace . with ,
+        const fullResponse = await get('app/readUser?userEmail=' + this.state.email.replace(".", ","));
+        const fullData = await response.json();
         this.setState({
+          fullList: Object.entries(fullData.labels),
           loggedIn: true,
           loading: false,
           modalVisible: false
