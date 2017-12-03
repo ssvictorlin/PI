@@ -61,10 +61,8 @@ export default class Bar extends Component {
               <View style={styles.item}>
                 <Text style={styles.label}>{element}</Text>
                 <View style={styles.data}>
-                    {this.state[element] &&
                     <Animated.View style={[styles.bar,  {backgroundColor: randomColor()}, 
                       {width: ((this.state[element] <= this.state['maxWidth']) ? this.state[element] : 360)}]} />
-                    }
                     <Text style={styles.dataNumber}>{this.state[element]}</Text>
                 </View>
               </View>
