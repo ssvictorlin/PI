@@ -6,7 +6,7 @@ import { Card, CardSection } from './common';
 import { get } from '../../api.js';
 import firebase from 'firebase';
 
-export default class Groups extends Component {
+export default class Friends extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -16,13 +16,12 @@ export default class Groups extends Component {
       term: '',
       dataSource: null
     };
-    this.groupList = [];
-  };
+    this.userList = [];
+  }
 
   componentWillMount() {
     this.getData();
-    var user = firebase.auth().currentUser;
-    return get('app/fetchAllGroups?userEmail=' + user.email)
+    return get('app/fetchUsers')
     .then((response) => response.json())
     .then((responseJson) => {
       let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -32,7 +31,8 @@ export default class Groups extends Component {
       }, function() {
 
         // In this block you can do something with new state.
-        this.groupList = responseJson ;
+        this.userList = responseJson ;
+        console.log(this.userList);
       });
     })
     .catch((error) => {
@@ -48,11 +48,11 @@ export default class Groups extends Component {
       throw "user not signed in"
     }
     try {
-      const response = await get('app/fetchGroupsUserIn?userEmail=' + user.email);
+      const response = await get('app/groups?email=' + user.email);
       const data = await response.json();
       console.log(data);
       this.setState({
-        groups: data,
+        groups: data
       });
     }
     catch(err) {
@@ -60,13 +60,13 @@ export default class Groups extends Component {
     }
   };
 
-  GetListViewItem (groupName) {
-    Alert.alert(groupName);
+  GetListViewItem (userName) {
+    Alert.alert(userName);
   }
 
   SearchFilterFunction(term){
-    const newData = this.groupList.filter(function(item){
-      const itemData = item.groupName.toUpperCase()
+    const newData = this.userList.filter(function(item){
+      const itemData = item.userName.toUpperCase()
       const textData = term.toUpperCase()
       return itemData.indexOf(textData) > -1
     })
@@ -83,16 +83,13 @@ export default class Groups extends Component {
   }
 
   renderRow (rowData, sectionID) {
-    console.log(rowData.subtitle);
     return (
       <ListItem
         roundAvatar
         key={sectionID}
-        title={rowData.groupName}
-        subtitle={rowData.subtitle}
+        title={rowData.userName}
         avatar={{uri:rowData.avatar}}
         hideChevron={true}
-        // onPress={this.GetListViewItem.bind(this, rowData.groupName)}
       />
     )
   }
@@ -112,11 +109,17 @@ export default class Groups extends Component {
                 style={ styles.thumbnail }
                 source={{ uri: element.avatar }}
               />
+              <Button title="Join" />
             </View>
             <View>
               <Text>{ element.top3[0] }</Text>
               <Text>{ element.top3[1] }</Text>
               <Text>{ element.top3[2] }</Text>
+            </View>
+            <View>
+              <Text>{ element.intersectList[0] }</Text>
+              <Text>{ element.intersectList[1] }</Text>
+              <Text>is also in this group</Text>
             </View>
           </CardSection>
         </Card>
@@ -125,7 +128,7 @@ export default class Groups extends Component {
     }
 
     if (this.state.loading == true) {
-			return (
+      return (
         <ActivityIndicator
           animating={this.state.loading}
           style={[styles.centering, {height: 80}]}
@@ -133,12 +136,12 @@ export default class Groups extends Component {
         />
       );
     } else {
-  		return (
-    	  <ScrollView>
+      return (
+        <ScrollView>
           <SearchBar
             lightTheme
             onChangeText={(term) => this.SearchFilterFunction(term)}
-            placeholder='Search groups'
+            placeholder='Search friends'
           />
           { this.state.hasTermInSearchBar
               ? <List>
@@ -151,8 +154,8 @@ export default class Groups extends Component {
                   groups={this.state.groups}
                 />
           }
-      	</ScrollView>
-    	);
+        </ScrollView>
+      );
     }
   }
 }
