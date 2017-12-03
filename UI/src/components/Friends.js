@@ -10,7 +10,7 @@ export default class Friends extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      groups: [],
+      friends: [],
       loading: false,
       hasTermInSearchBar: false,
       term: '',
@@ -20,8 +20,9 @@ export default class Friends extends Component {
   }
 
   componentWillMount() {
-    this.getData();
-    return get('app/fetchUsers')
+    this.fetchUsersFriends(); 
+    var user = firebase.auth().currentUser;
+    return get('app/fetchAllUsers?userEmail=' + user.email)
     .then((response) => response.json())
     .then((responseJson) => {
       let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -29,7 +30,6 @@ export default class Friends extends Component {
         dataSource: ds.cloneWithRows(responseJson),
         loading: false
       }, function() {
-
         // In this block you can do something with new state.
         this.userList = responseJson ;
         console.log(this.userList);
@@ -40,7 +40,7 @@ export default class Friends extends Component {
     });
   }
 
-  getData = async () => {
+  fetchUsersFriends = async () => {
     this.setState({loading: true});
     var user = firebase.auth().currentUser;
 
@@ -48,11 +48,11 @@ export default class Friends extends Component {
       throw "user not signed in"
     }
     try {
-      const response = await get('app/groups?email=' + user.email);
+      const response = await get('app/fetchUsersFriends?userEmail=' + user.email);
       const data = await response.json();
       console.log(data);
       this.setState({
-        groups: data
+        friends: data,
       });
     }
     catch(err) {
@@ -83,48 +83,52 @@ export default class Friends extends Component {
   }
 
   renderRow (rowData, sectionID) {
-    return (
-      <ListItem
-        roundAvatar
-        key={sectionID}
-        title={rowData.userName}
-        avatar={{uri:rowData.avatar}}
-        hideChevron={true}
-      />
-    )
+    if (rowData.isFriend) {
+      return (
+        <ListItem
+          roundAvatar
+          key={sectionID}
+          title={rowData.userName}
+          subtitle='Friend'
+          avatar={{uri:rowData.avatar}}
+          hideChevron={true}
+        />
+      )
+    } else {
+      return (
+        <ListItem
+          roundAvatar
+          key={sectionID}
+          title={rowData.userName}
+          subtitle='Stranger'
+          avatar={{uri:rowData.avatar}}
+          hideChevron={true}
+          // rightIcon={{name: 'plus', style: {marginRight: 10}, type: 'material-community'}}
+        />
+      )
+    }
   }
 
   render() {
     /*
-      CreateGroupList: loop through groups and return every group item.
+      CreateFriendList: loop through user's friend and return every friend item.
     */
-    function CreateGroupList(props) {
-      const groups = props.groups;
-      const groupItems = groups.map((element, index) => 
+    function CreateFriendList(props) {
+      const friends = props.friends;
+      const friendItems = friends.map((element, index) => 
         <Card key={index}>
           <CardSection>
             <View style={styles.container}>
-              <Text>{ element.groupName }</Text>
+              <Text>{ element.userName }</Text>
               <Image
                 style={ styles.thumbnail }
                 source={{ uri: element.avatar }}
               />
-              <Button title="Join" />
-            </View>
-            <View>
-              <Text>{ element.top3[0] }</Text>
-              <Text>{ element.top3[1] }</Text>
-              <Text>{ element.top3[2] }</Text>
-            </View>
-            <View>
-              <Text>{ element.intersectList[0] }</Text>
-              <Text>{ element.intersectList[1] }</Text>
-              <Text>is also in this group</Text>
             </View>
           </CardSection>
         </Card>
       );
-      return groupItems;
+      return friendItems;
     }
 
     if (this.state.loading == true) {
@@ -150,8 +154,8 @@ export default class Friends extends Component {
                     dataSource={this.state.dataSource}
                   />
                 </List>
-              : <CreateGroupList
-                  groups={this.state.groups}
+              : <CreateFriendList
+                  friends={this.state.friends}
                 />
           }
         </ScrollView>
