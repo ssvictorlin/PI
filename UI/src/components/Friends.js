@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Image, Text, ActivityIndicator, Button, ListView } from 'react-native';
+import { ScrollView, View, Image, Text, ActivityIndicator, Button, ListView, Alert } from 'react-native';
 import { SearchBar, List, ListItem } from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import { Card, CardSection } from './common';
@@ -17,6 +17,9 @@ export default class Friends extends Component {
       dataSource: null
     };
     this.userList = [];
+    // const { navigation } = this.props;
+    // const { navigate } = this.props.navigation;
+    // console.log(this.props.navigation.navigate);
   }
 
   componentWillMount() {
@@ -60,9 +63,9 @@ export default class Friends extends Component {
     }
   };
 
-  GetListViewItem (userName) {
-    Alert.alert(userName);
-  }
+  onLearnMore() {
+    Alert.alert('item pressed');
+  };
 
   SearchFilterFunction(term){
     const newData = this.userList.filter(function(item){
@@ -92,6 +95,7 @@ export default class Friends extends Component {
           subtitle='Friend'
           avatar={{uri:rowData.avatar}}
           hideChevron={true}
+          onPress={() => {this.navigate('ScreenTwo', { user: rowData.userEmail })}}
         />
       )
     } else {
@@ -103,7 +107,7 @@ export default class Friends extends Component {
           subtitle='Stranger'
           avatar={{uri:rowData.avatar}}
           hideChevron={true}
-          // rightIcon={{name: 'plus', style: {marginRight: 10}, type: 'material-community'}}
+          onPress={() => this.onLearnMore(rowData.userEmail)}
         />
       )
     }
@@ -140,6 +144,7 @@ export default class Friends extends Component {
         />
       );
     } else {
+      console.log(this.props.navigation.navigate);
       return (
         <ScrollView>
           <SearchBar

@@ -300,6 +300,7 @@ app.get('/fetchUsersFriends', (req, res) => {
       var friendObj = {};
       if (user === userEmail) continue;
       if (snap.val()[user]['friends'].hasOwnProperty(userEmail)) {
+        friendObj['userEmail'] = user;
         friendObj['userName'] = snap.val()[user]['userName'];
         friendObj['avatar'] = snap.val()[user]['avatar'];
         friendObj['joinedGroup'] = snap.val()[user]['joinedGroup'];
