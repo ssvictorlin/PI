@@ -150,9 +150,7 @@ export default class Profile extends Component {
             </View>
           </View>
           <Text style={styles.subtitle}> Your Activity Summary: </Text>
-          <Bar 
-            barList = { barList }
-          />
+          <Bar barList = { barList }/>
         </ScrollView>
       );
     }
