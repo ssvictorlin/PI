@@ -317,9 +317,9 @@ app.put('/send', (req, res) => {
   const userEmail = email.replace(".", ",");
   var labelRef = db.ref("users/" + userEmail + '/labels');
 
-  for (var j = 0; j < result.length; j++) {
-    var probs = result[j]['label_probs'];
-    var names = result[j]['label_names'];
+  // for (var j = 0; j < result.length; j++) {
+    var probs = result[0]['label_probs'];
+    var names = result[0]['label_names'];
     var max, maxIdx = 0;
     var top5 = [];
     // getting the top 5 activities
@@ -336,26 +336,34 @@ app.put('/send', (req, res) => {
       probs.splice(maxIdx, 1);
       names.splice(maxIdx, 1);
     }
-    for (var k = 0; k < 5; k++) {
-      console.log(top5[k]);
-    }
 
+    console.log(top5);
     
     // update database
-    var updates = {};
-    // get snapshot of current data
+    var labels = {}
     labelRef.on('value', snap => {
+      labels = snap.val();
+      console.log(labels);
       for (var i = 0; i < 5; i++) {
-        // increment value by 1
-        updates[userEmail + '/labels/' + top5[i]] = snap.val()[top5[i]] + 1;
+      // increment value by 1
+        labels[top5[i]] = labels[top5[i]] + 1;
       }
-      console.log(updates);
-      // update command
-      // usersRef.update(updates);
-      console.log("update finished");
+      console.log('after for');
+      res.send(labels);
     });
-  }
-  res.send(data); // response 500 here....
+    // console.log(labels);
+    // labelRef.set(labels);
+    // labelRef.on('value', snap => {
+    //   var labels2 = snap.val();
+    //   for(var i in labels2) {
+    //     // console.log('labels2 : ' + labels2[i])
+    //     // console.log('labels : ' + labels[i])
+    //   }
+    // });
+});
+
+app.put('/send', (req, res) => {
+
 });
 
 exports.app = functions.https.onRequest(app);
