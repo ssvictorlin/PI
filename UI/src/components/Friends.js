@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Image, Text, ActivityIndicator, Button, ListView, Alert } from 'react-native';
+import { ScrollView, View, Image, Text, ActivityIndicator, Button, ListView, Alert, TouchableHighlight } from 'react-native';
 import { SearchBar, List, ListItem } from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
+import FriendDetail from './FriendDetail';
 import { Card, CardSection } from './common';
 import { get } from '../../api.js';
 import firebase from 'firebase';
@@ -18,8 +19,9 @@ export default class Friends extends Component {
     };
     this.userList = [];
     // const { navigation } = this.props;
-    // const { navigate } = this.props.navigation;
-    // console.log(this.props.navigation.navigate);
+    const { navigate } = this.props.navigation;
+    // console.log(navigation);
+    console.log(this.props.navigation.navigate);
   }
 
   componentWillMount() {
@@ -63,10 +65,6 @@ export default class Friends extends Component {
     }
   };
 
-  onLearnMore() {
-    Alert.alert('item pressed');
-  };
-
   SearchFilterFunction(term){
     const newData = this.userList.filter(function(item){
       const itemData = item.userName.toUpperCase()
@@ -85,54 +83,60 @@ export default class Friends extends Component {
     }
   }
 
-  renderRow (rowData, sectionID) {
-    if (rowData.isFriend) {
-      return (
-        <ListItem
-          roundAvatar
-          key={sectionID}
-          title={rowData.userName}
-          subtitle='Friend'
-          avatar={{uri:rowData.avatar}}
-          hideChevron={true}
-          onPress={() => {this.navigate('ScreenTwo', { user: rowData.userEmail })}}
-        />
-      )
-    } else {
-      return (
-        <ListItem
-          roundAvatar
-          key={sectionID}
-          title={rowData.userName}
-          subtitle='Stranger'
-          avatar={{uri:rowData.avatar}}
-          hideChevron={true}
-          onPress={() => this.onLearnMore(rowData.userEmail)}
-        />
-      )
-    }
-  }
+  
 
   render() {
-    /*
-      CreateFriendList: loop through user's friend and return every friend item.
-    */
+    const { navigate } = this.props.navigation;
     function CreateFriendList(props) {
       const friends = props.friends;
       const friendItems = friends.map((element, index) => 
         <Card key={index}>
           <CardSection>
-            <View style={styles.container}>
-              <Text>{ element.userName }</Text>
-              <Image
-                style={ styles.thumbnail }
-                source={{ uri: element.avatar }}
-              />
-            </View>
+            <TouchableHighlight
+              style={styles.container}
+              onPress={() => navigate('FriendDetail', { userName: element.userName, userEmail: element.userEmail, isFriend: true })}
+            >
+              <View>
+                <Text>{ element.userName }</Text>
+                <Image
+                  style={ styles.thumbnail }
+                  source={{ uri: element.avatar }}
+                />
+              </View>
+            </TouchableHighlight>
           </CardSection>
         </Card>
       );
       return friendItems;
+    }
+
+    function renderRow (rowData, sectionID) {
+      console.log(rowData);
+      if (rowData.isFriend) {
+        return (
+          <ListItem
+            roundAvatar
+            key={sectionID}
+            title={rowData.userName}
+            subtitle='Friend'
+            avatar={{uri:rowData.avatar}}
+            hideChevron={true}
+            onPress={() => navigate('FriendDetail', { userName: rowData.userName, userEmail: rowData.userEmail, isFriend: rowData.isFriend })}
+          />
+        )
+      } else {
+        return (
+          <ListItem
+            roundAvatar
+            key={sectionID}
+            title={rowData.userName}
+            subtitle='Stranger'
+            avatar={{uri:rowData.avatar}}
+            hideChevron={true}
+            onPress={() => navigate('FriendDetail', { userName: rowData.userName, userEmail: rowData.userEmail, isFriend: rowData.isFriend })}
+          />
+        )
+      }
     }
 
     if (this.state.loading == true) {
@@ -144,7 +148,7 @@ export default class Friends extends Component {
         />
       );
     } else {
-      console.log(this.props.navigation.navigate);
+      // console.log(this.props.navigation.navigate);
       return (
         <ScrollView>
           <SearchBar
@@ -155,7 +159,7 @@ export default class Friends extends Component {
           { this.state.hasTermInSearchBar
               ? <List>
                   <ListView
-                    renderRow={this.renderRow}
+                    renderRow={renderRow}
                     dataSource={this.state.dataSource}
                   />
                 </List>
@@ -199,4 +203,9 @@ const styles = {
     flex: 1,
     width: null,
   },
+  button: {
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10
+  }
 }

@@ -34,58 +34,58 @@ export default class Profile extends Component {
       email: this.props.email,
       loading: true
     });
-    try {
-      var extraSensoryPath = RNFS.ExternalStorageDirectoryPath + '/Android/data/edu.ucsd.calab.extrasensory/files/Documents/';
-      // 8 digits phone UID
-      var phoneUID;
-      // try to read last 8 digits
-      await RNFS.readDir(extraSensoryPath)
-        .then((result) => {
-          // stat the first file (which also have one directory in our case)
-          return Promise.all([RNFS.stat(result[0].path), result[0].path]);
-        })
-        .then((statResult) => {
-          // only extrasensory.labels.xxxxxxxx directory exists
-          if (statResult[0].isDirectory()) {
-            // if we have a directory, read it
-            phoneUID = statResult[1].substr(statResult[1].length - 8);
-          }
-        })
-        .catch((err) => {
-          console.log(err.message, err.code);
-        });
-      // construct new complete path
-      extraSensoryPath = extraSensoryPath + 'extrasensory.labels.' + phoneUID;
-      // an array to store promises
-      var promises = [];
-      // an array to store
-      var extraSensoryData = [];
-      // construct extraSensoryData by appending all data into an array
-      await RNFS.readDir(extraSensoryPath)
-        .then((result) => {
-          for (var i = 0; i < result.length; i++) {
-            // push promise into array
-            promises.push(RNFS.readFile(result[i].path, 'utf8'));
-          }
-          // wait for all promises to finish and execute 'then'
-          return Promise.all(promises);
-        })
-        .then((content) => {
-          extraSensoryData.push(content);
-        })
-        .catch((err) => {
-          console.log(err.message, err.code);
-        });
+    // try {
+    //   var extraSensoryPath = RNFS.ExternalStorageDirectoryPath + '/Android/data/edu.ucsd.calab.extrasensory/files/Documents/';
+    //   // 8 digits phone UID
+    //   var phoneUID;
+    //   // try to read last 8 digits
+    //   await RNFS.readDir(extraSensoryPath)
+    //     .then((result) => {
+    //       // stat the first file (which also have one directory in our case)
+    //       return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+    //     })
+    //     .then((statResult) => {
+    //       // only extrasensory.labels.xxxxxxxx directory exists
+    //       if (statResult[0].isDirectory()) {
+    //         // if we have a directory, read it
+    //         phoneUID = statResult[1].substr(statResult[1].length - 8);
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err.message, err.code);
+    //     });
+    //   // construct new complete path
+    //   extraSensoryPath = extraSensoryPath + 'extrasensory.labels.' + phoneUID;
+    //   // an array to store promises
+    //   var promises = [];
+    //   // an array to store
+    //   var extraSensoryData = [];
+    //   // construct extraSensoryData by appending all data into an array
+    //   await RNFS.readDir(extraSensoryPath)
+    //     .then((result) => {
+    //       for (var i = 0; i < result.length; i++) {
+    //         // push promise into array
+    //         promises.push(RNFS.readFile(result[i].path, 'utf8'));
+    //       }
+    //       // wait for all promises to finish and execute 'then'
+    //       return Promise.all(promises);
+    //     })
+    //     .then((content) => {
+    //       extraSensoryData.push(content);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err.message, err.code);
+    //     });
 
-      // can successfully put data to backend and get same data back
-      const response = await put('app/send', extraSensoryData);
-      console.log("get response");
-      const data = await response.json();
-    }
-    catch(err) {
-      console.log(err);
-      // alert("No ExtraSensory Data on this phone!");
-    }
+    //   // can successfully put data to backend and get same data back
+    //   const response = await put('app/send', extraSensoryData);
+    //   console.log("get response");
+    //   const data = await response.json();
+    // }
+    // catch(err) {
+    //   console.log(err);
+    //   // alert("No ExtraSensory Data on this phone!");
+    // }
   };
 
   /* getData: first checked if user signed in and get user
@@ -137,7 +137,6 @@ export default class Profile extends Component {
       }
       return (
         <ScrollView>
-          <RadarGraph />
           <View style={styles.container}>
             <View style={ styles.thumbnailContainer }>
               <Image
@@ -149,6 +148,7 @@ export default class Profile extends Component {
               <Text style={ styles.name }>{ this.state.name }</Text>
             </View>
           </View>
+          <RadarGraph />
           <Text style={styles.subtitle}> Your Activity Summary: </Text>
           <Bar
             barList = { barList }

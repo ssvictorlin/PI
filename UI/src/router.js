@@ -3,7 +3,7 @@ import { StackNavigator } from 'react-navigation';
 import { Icon } from 'react-native-elements';
 
 import Friends from './components/Friends';
-import ScreenTwo from './components/ScreenTwo';
+import FriendDetail from './components/FriendDetail';
 
 export const FriendStack = StackNavigator({
   Friends: {
@@ -12,10 +12,10 @@ export const FriendStack = StackNavigator({
       header: null
     },
   },
-  ScreenTwo: {
-    screen: ScreenTwo,
+  FriendDetail: {
+    screen: FriendDetail,
     navigationOptions: ({ navigation }) => ({
-      title: `${navigation.state.params.name.first.toUpperCase()} ${navigation.state.params.name.last.toUpperCase()}`,
+      title: navigation.state.params.userName
     }),
   },
 });
