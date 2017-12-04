@@ -18,7 +18,9 @@ export default class FriendDetail extends Component {
       loading: false,
       barList: {},
       activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
-      isFriend: false
+      isFriend: false,
+      curUserName: null,
+      curUserEmail: null
     };
   }
 
@@ -48,7 +50,9 @@ export default class FriendDetail extends Component {
         avatar: dataFromProfile.avatar,
         userData: dataFromCurUser,
         loading: false,
-        isFriend: state.params.isFriend
+        isFriend: state.params.isFriend,
+        curUserName: state.params.curUserName,
+        curUserEmail: state.params.curUserEmail
       });
     }
     catch(err) {
@@ -57,7 +61,7 @@ export default class FriendDetail extends Component {
   };
 
   onButtonPressed() {
-    console.log('hello');
+    
   }
 
   render() {
@@ -90,11 +94,34 @@ export default class FriendDetail extends Component {
               <Text style={ styles.name }>{ this.state.name }</Text>
             </View>
             { this.state.isFriend
-                ? <Text />
-                : <Button title='add' onPress={this.onButtonPressed()} />
+                ? <Button title='unfriend' onPress={async () => {
+                    try {
+                      console.log('friendEmail: ' + this.state.email);
+                      console.log('userEmail: ' + this.state.curUserEmail);
+                      const response = await get('app/deleteFriend?friendEmail=' + this.state.email
+                        + '&userEmail=' + this.state.curUserEmail);
+                    }
+                    catch(err) {
+                      alert(err);
+                    }
+                    }}
+                  />
+                : <Button title='add' onPress={async () => {
+                    try {
+                      console.log('friendEmail: ' + this.state.email);
+                      console.log('userEmail: ' + this.state.curUserEmail);
+                      const response = await get('app/addFriend?friendName=' +
+                        this.state.name + '&friendEmail=' + this.state.email +
+                         '&userName=' + this.state.curUserName + '&userEmail=' + this.state.curUserEmail);
+                      }
+                      catch(err) {
+                        alert(err);
+                      }
+                    }}
+                  />
             }
           </View>
-          <RadarGraph />
+          <RadarGraph data={[barList]} />
           <Text style={styles.subtitle}> Your Activity Summary: </Text>
           <Bar
             barList = { barList }

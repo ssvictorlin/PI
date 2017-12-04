@@ -54,28 +54,6 @@ app.get('/createGroup', (req, res) => {
 });
 
 /*
-  This delete a friend from the friend list of User
-  Parameters:
-    userEmail =  the person's deleting email.
-    friendEmail = the person who is being deleted email.
-        
-*/
-app.get('/deleteFriend', (req, res)  => {
-  var query = url.parse(req.url, true).query;
-  var userEmail = query['userEmail'];
-  var friendEmail = query['friendEmail'];
-  var usersRef = admin.database().ref('users/'+userEmail);
-  var friendRef = admin.database().ref('users/'+friendEmail);
-  updates = {}
-  updates[friendEmail] = null
-  updates2 = {}
-  updates2[userEmail] = null
-  usersRef.child("friends").update(updates);
-  friendRef.child("friends").update(updates2);
-  res.send(friendEmail);
-});
-
-/*
   This adds a user to Group 
   Parameters:
     userName = person to add
@@ -165,6 +143,27 @@ app.get('/addFriend', (req, res) => {
   res.send(friendName);
 });
 
+/*
+  This delete a friend from the friend list of User
+  Parameters:
+    userEmail =  the person's deleting email.
+    friendEmail = the person who is being deleted email.
+*/
+app.get('/deleteFriend', (req, res)  => {
+  var query = url.parse(req.url, true).query;
+  var userEmail = query['userEmail'];
+  var friendEmail = query['friendEmail'];
+  var usersRef = admin.database().ref('users/'+userEmail);
+  var friendRef = admin.database().ref('users/'+friendEmail);
+  updates = {}
+  updates[friendEmail] = null
+  updates2 = {}
+  updates2[userEmail] = null
+  usersRef.child("friends").update(updates);
+  friendRef.child("friends").update(updates2);
+  res.send(friendEmail);
+});
+
 /* 
   Creates a user to be used later in our database
   Parameters:
@@ -177,12 +176,6 @@ app.get('/register', (req, res) =>{
   var email = query['email'];
   var randomNum =  0;
   var i;
-    
-  // var randomArr = [];
-  // for (i = 0; i < 6; i++) {
-  // 	randomNum = Math.floor((Math.random() * 51) + 1);
-  // 	randomArr.push(randomNum);
-  // }
 
   labels = {};
   labels["Lying down"] = 0;
@@ -257,7 +250,7 @@ app.get('/register', (req, res) =>{
 app.get('/readUser', (req, res) => {
   var query = url.parse(req.url, true).query;
   var usersRef = db.ref('users');
-  var userEmail = query['userEmail'];
+  var userEmail = query['userEmail'].replace(".", ",");
   usersRef.child(userEmail).on('value', snap => {
     res.send(snap.val());
   });
@@ -268,7 +261,13 @@ app.get('/fetchAllUsers', (req, res) => {
   var usersRef = db.ref('users');
   var userEmail = query['userEmail'].replace(".", ",");
   var userList = [];
+  var curUserName = '';
+  usersRef.child(userEmail).on('value', snap2 => {
+    curUserName = snap2.val()['userName'];
+  });
+
   usersRef.on('value', snap => {
+    console.log(curUserName);
     snap.forEach(function(data) {
       var userObj = {};
       if (data.key !== userEmail && snap.val()[data.key]['friends'] != null) {
@@ -277,6 +276,8 @@ app.get('/fetchAllUsers', (req, res) => {
         userObj['avatar'] = data.val()['avatar'];
         // userObj['joinedGroup'] = data.val()['joinedGroup'];
         // userObj['labels'] = data.val()['labels'];
+        userObj['curUserName'] = curUserName;
+        userObj['curUserEmail'] = userEmail;
         if (snap.val()[data.key]['friends'].hasOwnProperty(userEmail)) {
           userObj['isFriend'] = true;
         } else {

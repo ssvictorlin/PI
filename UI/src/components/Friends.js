@@ -15,7 +15,9 @@ export default class Friends extends Component {
       loading: false,
       hasTermInSearchBar: false,
       term: '',
-      dataSource: null
+      dataSource: null,
+      curUserName: null,
+      curUserEmail: null
     };
     this.userList = [];
     // const { navigation } = this.props;
@@ -26,6 +28,7 @@ export default class Friends extends Component {
 
   componentWillMount() {
     this.fetchUsersFriends(); 
+    this.getCurUser();
     var user = firebase.auth().currentUser;
     return get('app/fetchAllUsers?userEmail=' + user.email)
     .then((response) => response.json())
@@ -45,6 +48,23 @@ export default class Friends extends Component {
     });
   }
 
+  getCurUser = async () => {
+    var user = firebase.auth().currentUser;
+    try {
+      const response = await get('app/readUser?userEmail=' + user.email);
+      console.log(user.email);
+      const data = await response.json();
+      console.log(data);
+      this.setState({
+        curUserName: data['userName'],
+        curUserEmail: user.email
+      });
+    }
+    catch(err) {
+      alert(err);
+    }
+  };
+
   fetchUsersFriends = async () => {
     this.setState({loading: true});
     var user = firebase.auth().currentUser;
@@ -57,7 +77,7 @@ export default class Friends extends Component {
       const data = await response.json();
       console.log(data);
       this.setState({
-        friends: data,
+        friends: data
       });
     }
     catch(err) {
@@ -82,8 +102,6 @@ export default class Friends extends Component {
       });
     }
   }
-
-  
 
   render() {
     const { navigate } = this.props.navigation;
@@ -133,7 +151,13 @@ export default class Friends extends Component {
             subtitle='Stranger'
             avatar={{uri:rowData.avatar}}
             hideChevron={true}
-            onPress={() => navigate('FriendDetail', { userName: rowData.userName, userEmail: rowData.userEmail, isFriend: rowData.isFriend })}
+            onPress={() => navigate('FriendDetail', 
+            { userName: rowData.userName,
+              userEmail: rowData.userEmail,
+              isFriend: rowData.isFriend,
+              curUserName: rowData.curUserName,
+              curUserEmail:  rowData.curUserEmail
+            })}
           />
         )
       }
