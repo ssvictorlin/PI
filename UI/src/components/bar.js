@@ -11,9 +11,22 @@ import { randomColor } from 'randomcolor';
 export default class Bar extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
+        this.state = {};
     }
-
+    componentWillReceiveProps(nextProps) {
+      var newState = {};
+      var itemNameList = []
+      for(var k in nextProps.barList) {
+        itemNameList.push(k)
+      }
+      const width = this.getWidth(itemNameList)
+      newState['itemNameList'] = itemNameList
+      for(var k in width) {
+        newState[k] = width[k]
+      }
+      this.setState( newState );
+    }
     componentWillMount() {
         var newState = {};
         var itemNameList = []
@@ -55,7 +68,7 @@ export default class Bar extends Component {
 
 
     render () {
-        const barItems = this.state.itemNameList.map((element, index) =>
+        var barItems = this.state.itemNameList.map((element, index) =>
             <View key = {index} style={styles.container}>
               <View style={styles.item}>
                 <Text style={styles.label}>{element}</Text>
