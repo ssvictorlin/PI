@@ -18,7 +18,8 @@ export default class Profile extends Component {
       name: null,
       avatar: null,
       userData: null,
-      loading: false
+      loading: false,
+      barList: {}
     };
   }
 
