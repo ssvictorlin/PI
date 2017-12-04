@@ -42,6 +42,8 @@ app.get('/createGroup', (req, res) => {
       "owner": userEmail,
       "avatar": "https://api.adorable.io/avatars/250/" + groupName + ".png",
       "top3": ["On the bus", "At work", "Standing"]
+      // "memberList": {userEmail: {"memberName": userEmail}}
+
   });
   ownerRef.child("ownerGroup").once('value').then(snapshot => {
       ownerRef.child("ownerGroup").child(groupName).set({
@@ -270,7 +272,7 @@ app.get('/fetchAllUsers', (req, res) => {
   usersRef.on('value', snap => {
     snap.forEach(function(data) {
       var userObj = {};
-      if (data.key !== userEmail) {
+      if (data.key !== userEmail && snap.val()[data.key]['friends'] != null) {
         userObj['userEmail'] = data.key;
         userObj['userName'] = data.val()['userName'];
         userObj['avatar'] = data.val()['avatar'];
@@ -296,9 +298,9 @@ app.get('/fetchUsersFriends', (req, res) => {
   
   userRef.on('value', snap => {
     var friendList = [];
-    for (var user in snap.val()) {
+     for (var user in snap.val()) {
       var friendObj = {};
-      if (user === userEmail) continue;
+      if (user === userEmail || snap.val()[user]['friends'] == null) continue;
       if (snap.val()[user]['friends'].hasOwnProperty(userEmail)) {
         friendObj['userEmail'] = user;
         friendObj['userName'] = snap.val()[user]['userName'];
@@ -335,6 +337,7 @@ app.get('/fetchAllGroups', (req, res) => {
           var memberList = [];
           groupObject['groupName'] = groupName;
           groupObject['avatar'] = snap4.val()['avatar'];
+
           if (snap4.val()['memberList'].hasOwnProperty(userEmail)) {
             groupObject['isJoined'] = true;
           } else {

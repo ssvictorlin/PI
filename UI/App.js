@@ -12,7 +12,7 @@ import LoginForm from './src/components/LoginForm';
 import RegisterForm from './src/components/RegisterForm';
 import SettingModal from './src/components/SettingModal';
 import { Button, Spinner } from './src/components/common'
-import { FriendStack } from './src/router';
+import FriendNavigator from './src/components/FriendNavigator';
 import firebase from 'firebase';
 
 const deviceW = Dimensions.get('window').width
@@ -194,7 +194,7 @@ export default class App extends Component<{}> {
               renderSelectedIcon={() => <Icon name="users" type="font-awesome" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'friends'})}
             >
-              <FriendStack />
+              <FriendNavigator />
             </TabNavigator.Item>
             <TabNavigator.Item
               selected={this.state.selectedTab === 'profile'}

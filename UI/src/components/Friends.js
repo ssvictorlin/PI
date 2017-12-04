@@ -7,6 +7,19 @@ import { get } from '../../api.js';
 import firebase from 'firebase';
 
 export default class Friends extends Component {
+  static navigationOptions({navigation}) {
+    switch(navigation.state.routeName) {
+      case 'Friends':
+        return {
+          title: 'Friends',
+        };
+      case 'ScreenTwo':
+        return {
+          title: 'ScreenTwo',
+        }
+    }
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -17,6 +30,8 @@ export default class Friends extends Component {
       dataSource: null
     };
     this.userList = [];
+    this.renderRow = this.renderRow.bind(this);
+    this.onLearnMore = this.onLearnMore.bind(this);
     // const { navigation } = this.props;
     // const { navigate } = this.props.navigation;
     // console.log(this.props.navigation.navigate);
@@ -65,6 +80,8 @@ export default class Friends extends Component {
 
   onLearnMore() {
     Alert.alert('item pressed');
+    console.log('props:', this.props);
+    this.props.navigation.navigate('ScreenTwo', { user: 'qqq' });
   };
 
   SearchFilterFunction(term){
@@ -95,7 +112,7 @@ export default class Friends extends Component {
           subtitle='Friend'
           avatar={{uri:rowData.avatar}}
           hideChevron={true}
-          onPress={() => {this.navigate('ScreenTwo', { user: rowData.userEmail })}}
+          onPress={this.onLearnMore}
         />
       )
     } else {
@@ -107,7 +124,7 @@ export default class Friends extends Component {
           subtitle='Stranger'
           avatar={{uri:rowData.avatar}}
           hideChevron={true}
-          onPress={() => this.onLearnMore(rowData.userEmail)}
+          onPress={this.onLearnMore}
         />
       )
     }
@@ -144,7 +161,7 @@ export default class Friends extends Component {
         />
       );
     } else {
-      console.log(this.props.navigation.navigate);
+      // console.log(this.props.navigation.navigate);
       return (
         <ScrollView>
           <SearchBar
