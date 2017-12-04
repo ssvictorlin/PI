@@ -16,7 +16,7 @@ const db = admin.database();
     groupName: Name of group to create.
 */
 app.get('/createGroup', (req, res) => {
-    
+
   /* Time Logic */
   var date = new Date();
   var hour = date.getHours();
@@ -31,7 +31,7 @@ app.get('/createGroup', (req, res) => {
   var day  = date.getDate();
   day = (day < 10 ? "0" : "") + day;
   printDate = year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
-    
+
   /* Creating Group Logic */
   var query = url.parse(req.url, true).query;
   var userEmail = query['userEmail'];
@@ -47,7 +47,7 @@ app.get('/createGroup', (req, res) => {
       ownerRef.child("ownerGroup").child(groupName).set({
           "CreatedTime": printDate
       });
-      
+
   });
   res.send("Sucess")
 });
@@ -57,7 +57,7 @@ app.get('/createGroup', (req, res) => {
   Parameters:
     userEmail =  the person's deleting email.
     friendEmail = the person who is being deleted email.
-        
+
 */
 app.get('/deleteFriend', (req, res)  => {
   var query = url.parse(req.url, true).query;
@@ -75,7 +75,7 @@ app.get('/deleteFriend', (req, res)  => {
 });
 
 /*
-  This adds a user to Group 
+  This adds a user to Group
   Parameters:
     userName = person to add
     userEmail = his/her email
@@ -101,13 +101,13 @@ app.get('/addToGroup', (req, res) => {
   var groupName = query['groupName'];
   var groupRef =  admin.database().ref("groups");
   var usersRef = admin.database().ref('users/'+userEmail);
-    
+
   groupRef.child(groupName).child(userEmail).set({
-    "memberName": userName 	
-  });	
+    "memberName": userName
+  });
   usersRef.child("memberofGroup").child(groupName).set({
-    "TimeJoined": printDate	
-  });	
+    "TimeJoined": printDate
+  });
   res.send(userName);
 });
 
@@ -119,13 +119,13 @@ app.get('/addToGroup', (req, res) => {
     groupName = name to delete user from.
 */
 app.get('/removeFromGroup', (req, res) => {
-    
+
   var query = url.parse(req.url, true).query;
   var userName = query['userName'];
   var userEmail = query['userEmail'];
   var groupName = query['groupName'];
   var groupRef =  admin.database().ref("groups");
-  var usersRef = admin.database().ref('users/'+userEmail);	
+  var usersRef = admin.database().ref('users/'+userEmail);
   var updates = {}
   updates[userEmail] = null
   var updates2 = {}
@@ -153,18 +153,18 @@ app.get('/addFriend', (req, res) => {
   var usersRef = admin.database().ref('users/'+userEmail);
   var friendRef = admin.database().ref('users/'+friendEmail);
   var friends = usersRef.child("friends");
-    
+
   usersRef.child("friends").child(friendEmail).set({
     "friendName" : friendName
   });
   friendRef.child("friends").child(userEmail).set({
     "friendName" : userName
   });
-      
+
   res.send(friendName);
 });
 
-/* 
+/*
   Creates a user to be used later in our database
   Parameters:
     username = the username the user wants.
@@ -176,7 +176,7 @@ app.get('/register', (req, res) =>{
   var email = query['email'];
   var randomNum =  0;
   var i;
-    
+
   // var randomArr = [];
   // for (i = 0; i < 6; i++) {
   // 	randomNum = Math.floor((Math.random() * 51) + 1);
@@ -235,7 +235,7 @@ app.get('/register', (req, res) =>{
   labels["Phone on table"] = 0;
   labels["With co-workers"] = 0;
   labels["With friends"] =  0;
-    
+
   var usersRef = db.ref('users');
   userEmail = email.replace(".", ",");
   //writes to database.
@@ -262,64 +262,15 @@ app.get('/readUser', (req, res) => {
   });
 });
 
-app.get('/fetchAllUsers', (req, res) => {
+app.get('/groups', (req, res) => {
   var query = url.parse(req.url, true).query;
-  var usersRef = db.ref('users');
-  var userEmail = query['userEmail'].replace(".", ",");
-  var userList = [];
-  usersRef.on('value', snap => {
-    snap.forEach(function(data) {
-      var userObj = {};
-      if (data.key !== userEmail) {
-        userObj['userEmail'] = data.key;
-        userObj['userName'] = data.val()['userName'];
-        userObj['avatar'] = data.val()['avatar'];
-        // userObj['joinedGroup'] = data.val()['joinedGroup'];
-        // userObj['labels'] = data.val()['labels'];
-        if (snap.val()[data.key]['friends'].hasOwnProperty(userEmail)) {
-          userObj['isFriend'] = true;
-        } else {
-          userObj['isFriend'] = false;
-        }
-        userList.push(userObj);
-      }
-    });
-    console.log(userList);
-    res.send(userList);
-  });
-});
-
-app.get('/fetchUsersFriends', (req, res) => {
-  var query = url.parse(req.url, true).query;
-  var userEmail = query['userEmail'].replace(".", ",");
-  var userRef = db.ref('users');
-  
-  userRef.on('value', snap => {
-    var friendList = [];
-    for (var user in snap.val()) {
-      var friendObj = {};
-      if (user === userEmail) continue;
-      if (snap.val()[user]['friends'].hasOwnProperty(userEmail)) {
-        friendObj['userName'] = snap.val()[user]['userName'];
-        friendObj['avatar'] = snap.val()[user]['avatar'];
-        friendObj['joinedGroup'] = snap.val()[user]['joinedGroup'];
-        friendObj['labels'] = snap.val()[user]['labels'];
-        friendList.push(friendObj);
-      }
-    }
-    res.send(friendList);
-  });
-});
-
-app.get('/fetchAllGroups', (req, res) => {
-  var query = url.parse(req.url, true).query;
-  var email = query['userEmail'];
+  var email = query['email'];
   userEmail = email.replace(".", ",");
   var groupRef = db.ref('groups');
   var userFriendRef = db.ref('users/' + userEmail + '/friends');
 
   var friendList = []
-  userFriendRef.on('value', snap1 => { 
+  userFriendRef.on('value', snap1 => {
     for (var friendEmail in snap1.val()){
       userFriendRef.child(friendEmail).on('value', snap2 => {
         friendList.push(snap2.val()['friendName']);
@@ -328,17 +279,14 @@ app.get('/fetchAllGroups', (req, res) => {
     // console.log(friendList);
     groupRef.on('value', snap3 => {
       var result = [];
-      for (var groupName in snap3.val()) {
+      for (var groupName in snap3.val()){
         groupRef.child(groupName).on('value', snap4 => {
           var groupObject = {};
           var memberList = [];
           groupObject['groupName'] = groupName;
+          groupObject['top3'] = snap4.val()['top3'];
           groupObject['avatar'] = snap4.val()['avatar'];
-          if (snap4.val()['memberList'].hasOwnProperty(userEmail)) {
-            groupObject['isJoined'] = true;
-          } else {
-            groupObject['isJoined'] = false;
-          }
+
           // get member list of a group
           for (var groupMember in snap4.val()['memberList']) {
             memberList.push(snap4.val()['memberList'][groupMember]['memberName']);
@@ -347,46 +295,11 @@ app.get('/fetchAllGroups', (req, res) => {
           var intersectList = friendList.filter((n) => memberList.includes(n));
           groupObject['intersectList'] = intersectList;
 
-          if (intersectList.length === 1) {
-            groupObject['subtitle'] = intersectList[0] + ' is in this group';
-          } else if (intersectList.length === 2) {
-            groupObject['subtitle'] = intersectList[0] + ' and ' + intersectList[1] + ' are in this group';
-          } else if (intersectList.length > 2) {
-            groupObject['subtitle'] = intersectList[0] + ' and ' + intersectList[1] + 
-              ' and ' + intersectList.length-2 + ' more friends are in this group';
-          }
-
           result.push(groupObject);
         });
       }
       res.send(result);
     });
-  });
-});
-
-app.get('/fetchGroupsUserIn', (req, res) => {
-  var query = url.parse(req.url, true).query;
-  var email = query['userEmail'];
-  userEmail = email.replace(".", ",");
-  var groupRef = db.ref('groups');
-  var userRef = db.ref('users/' + userEmail + '/joinedGroup');
-
-  groupRef.on('value', snap1 => {
-    var groupsUserIn = [];
-    for (var groupName in snap1.val()) {
-      groupRef.child(groupName).on('value', snap2 => {
-        var groupObject = {};
-        for (var user in snap2.val()['memberList']) {
-          if (user === userEmail) {
-            groupObject['groupName'] = groupName;
-            groupObject['avatar'] = snap2.val()['avatar'];
-            groupObject['top3'] = snap2.val()['top3'];
-            groupsUserIn.push(groupObject);
-          }
-        }
-      });
-    }
-    res.send(groupsUserIn);
   });
 });
 
