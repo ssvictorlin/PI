@@ -425,6 +425,20 @@ app.get('/crowns', (req, res) => {
   Parameter:
     result: an array of json object read from ExtraSensory .json files
 */
+app.put('/update',(req,res) => {
+
+  const data = req.body;
+  var labels = data['labels'];   
+  var query = url.parse(req.url, true).query;
+
+  var usersRef = db.ref('users');
+  
+  var updates = {};
+  updates['labels/'] = labels;
+  usersRef.child(userEmail).update(updates);
+  res.send("Success");
+	
+});
 app.put('/send', (req, res) => {
   const result = req.body;
   for (var j = 0; j < result.length; j++) {
