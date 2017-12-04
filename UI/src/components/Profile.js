@@ -18,7 +18,8 @@ export default class Profile extends Component {
       name: null,
       avatar: null,
       userData: null,
-      loading: false
+      loading: false,
+      barList: {}
     };
   }
 
@@ -87,9 +88,9 @@ export default class Profile extends Component {
     }
   };
 
-  /* getData: first checked if user signed in and get user 
+  /* getData: first checked if user signed in and get user
         activities and their minutes
-        TODO: Not signed in -> redirect to sign in page 
+        TODO: Not signed in -> redirect to sign in page
   */
   getData = async () => {
     this.setState({loading: true});
@@ -134,7 +135,6 @@ export default class Profile extends Component {
         console.log(this.props.activityList[i])
         barList[acti] = this.state.userData['labels'][acti]
       }
-      console.log(barList)
       return (
         <ScrollView>
           <RadarGraph />
@@ -150,7 +150,7 @@ export default class Profile extends Component {
             </View>
           </View>
           <Text style={styles.subtitle}> Your Activity Summary: </Text>
-          <Bar 
+          <Bar
             barList = { barList }
           />
         </ScrollView>

@@ -21,20 +21,20 @@ export default class Crowns extends Component {
     this.getData()
   }
   /*
-    getData: will get page data (i.e. images etc.) and friends' data 
+    getData: will get page data (i.e. images etc.) and friends' data
     and will store the data in the state of Crown
   */
   getData = async () => {
     this.setState({loading: true});
     var user = firebase.auth().currentUser
-    
+
     if (user == null) {
       throw "user not signed in"
     }
     try {
       const response = await get('app/crowns')
       const pageData = await response.json()
-     
+
       const email = user.email.replace('.',',')
       const res = await get('app/readUser'+'?userEmail='+email)
       const userData = await res.json()
@@ -65,7 +65,7 @@ export default class Crowns extends Component {
     */
     function CreatePieList(props) {
       const activityList = props.activities
-      const pieItems = activityList.map((element, index) => 
+      const pieItems = activityList.map((element, index) =>
         <Card key={index}>
           <CardSection>
             <View style={ styles.container }>
@@ -119,9 +119,9 @@ export default class Crowns extends Component {
     	);
     }
   }
-   /* 
+   /*
     getTop5List: will use friendsObjList to find out top 5 people
-    (including current user) that have the most minutes on the activity 
+    (including current user) that have the most minutes on the activity
     this piechart is for. It will skip zero minute usage.
   */
   getTop5List(acti) {
@@ -135,7 +135,7 @@ export default class Crowns extends Component {
     var sortedObjList = this.state.friendsObjList.slice(0)
     sortedObjList.sort(compare)
     result = []
-    
+
     for (var i = 0; i < 5; i++) {
       if (sortedObjList[i]['labels'][acti] == 0) break;
       if (sortedObjList[i]['userName'] == this.state.friendsObjList[0]['userName']) {

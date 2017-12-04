@@ -11,12 +11,25 @@ import { randomColor } from 'randomcolor';
 export default class Bar extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
+        this.state = {};
     }
-
+    componentWillReceiveProps(nextProps) {
+      var newState = {};
+      var itemNameList = []
+      for(var k in nextProps.barList) {
+        itemNameList.push(k)
+      }
+      const width = this.getWidth(itemNameList)
+      newState['itemNameList'] = itemNameList
+      for(var k in width) {
+        newState[k] = width[k]
+      }
+      this.setState( newState );
+    }
     componentWillMount() {
         var newState = {};
-        var itemNameList = []        
+        var itemNameList = []
         for(var k in this.props.barList) {
           itemNameList.push(k)
         }
@@ -25,7 +38,7 @@ export default class Bar extends Component {
         for(var k in width) {
           newState[k] = width[k]
         }
-        this.setState( newState );    
+        this.setState( newState );
     }
 
     getWidth (itemNameList) {
@@ -52,16 +65,15 @@ export default class Bar extends Component {
             return timing(this.state[item], {toValue: width[item]})
         })).start()
     }
-        
+
 
     render () {
-        console.log(this.state)
-        const barItems = this.state.itemNameList.map((element, index) => 
+        var barItems = this.state.itemNameList.map((element, index) =>
             <View key = {index} style={styles.container}>
               <View style={styles.item}>
                 <Text style={styles.label}>{element}</Text>
                 <View style={styles.data}>
-                    <Animated.View style={[styles.bar,  {backgroundColor: randomColor()}, 
+                    <Animated.View style={[styles.bar,  {backgroundColor: randomColor()},
                       {width: ((this.state[element] <= this.state['maxWidth']) ? this.state[element] : 360)}]} />
                     <Text style={styles.dataNumber}>{this.state[element]}</Text>
                 </View>

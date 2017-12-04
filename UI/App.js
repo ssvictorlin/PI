@@ -37,8 +37,20 @@ export default class App extends Component<{}> {
       loading: false,
       loginErr: '',
       activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
+      fullList: [],
       registerErr: ''
     };
+  }
+
+  setActivityList(str) {
+    var oldList = this.state.activityList;
+    var i = oldList.indexOf(str);
+    if (i > -1) {
+      oldList.splice(i, 1);
+    } else {
+      oldList.push(str);
+    }
+    this.setState({activityList: oldList});
   }
 
   setEmail(str) {
@@ -60,8 +72,12 @@ export default class App extends Component<{}> {
   attemptLogin() {
     this.setState({loading: true});
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() => {
+      .then(async() => {
+        // TODO get readUser with email, replace . with ,
+        const fullResponse = await get('app/readUser?userEmail=' + this.state.email.replace(".", ","));
+        const fullData = await fullResponse.json();
         this.setState({
+          fullList: Object.entries(fullData.labels),
           loggedIn: true,
           loading: false,
           modalVisible: false
@@ -142,8 +158,16 @@ export default class App extends Component<{}> {
             <SettingModal
               logout={this.logout.bind(this)}
               setModalVisible={this.setModalVisible.bind(this)}
+              setActivityList={this.setActivityList.bind(this)}
               modalVisible={this.state.modalVisible}
               email={this.state.email}
+              fullList={this.state.fullList.map(x => {
+                if (this.state.activityList.includes(x[0])) {
+                  return [x[0], true];
+                } else {
+                  return [x[0], false];
+                }
+              })}
             />
           </Modal>
           <Header
@@ -180,7 +204,7 @@ export default class App extends Component<{}> {
               renderSelectedIcon={() => <Icon name="user" type="font-awesome" size={px2dp(22)} color="#3496f0"/>}
               onPress={() => this.setState({selectedTab: 'profile'})}
             >
-              <Profile 
+              <Profile
                 email={this.state.email}
                 activityList={this.state.activityList}
               />
