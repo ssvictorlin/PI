@@ -137,7 +137,7 @@ export default class Profile extends Component {
       }
       return (
         <ScrollView>
-          <RadarGraph />
+          <RadarGraph data={[barList]} />
           <View style={styles.container}>
             <View style={ styles.thumbnailContainer }>
               <Image
