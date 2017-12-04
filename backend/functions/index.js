@@ -1,4 +1,3 @@
-
 const functions = require('firebase-functions');
 const express = require('express');
 const url = require('url');
@@ -42,6 +41,8 @@ app.get('/createGroup', (req, res) => {
       "owner": userEmail,
       "avatar": "https://api.adorable.io/avatars/250/" + groupName + ".png",
       "top3": ["On the bus", "At work", "Standing"]
+      // "memberList": {userEmail: {"memberName": userEmail}}
+
   });
   ownerRef.child("ownerGroup").once('value').then(snapshot => {
       ownerRef.child("ownerGroup").child(groupName).set({
@@ -296,7 +297,7 @@ app.get('/fetchUsersFriends', (req, res) => {
   
   userRef.on('value', snap => {
     var friendList = [];
-    for (var user in snap.val()) {
+     for (var user in snap.val()) {
       var friendObj = {};
       if (user === userEmail || snap.val()[user]['friends'] == null) continue;
       if (snap.val()[user]['friends'].hasOwnProperty(userEmail)) {
@@ -335,6 +336,7 @@ app.get('/fetchAllGroups', (req, res) => {
           var memberList = [];
           groupObject['groupName'] = groupName;
           groupObject['avatar'] = snap4.val()['avatar'];
+
           if (snap4.val()['memberList'].hasOwnProperty(userEmail)) {
             groupObject['isJoined'] = true;
           } else {

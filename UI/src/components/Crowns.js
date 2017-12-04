@@ -18,8 +18,13 @@ export default class Crowns extends Component {
   }
 
   componentWillMount() {
-    this.getData()
+    this.getData();
   }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState(this.state);
+  }
+
   /*
     getData: will get page data (i.e. images etc.) and friends' data
     and will store the data in the state of Crown
@@ -59,38 +64,44 @@ export default class Crowns extends Component {
     }
   };
 
-	render() {
-    /*
-      CreatePieList: loop through activityList and return every piechart item.
-    */
-    function CreatePieList(props) {
-      const activityList = props.activities
-      const pieItems = activityList.map((element, index) =>
-        <Card key={index}>
-          <CardSection>
-            <View style={ styles.container }>
-              <View style={ styles.crownHolderContainer }>
-                <Text style={ styles.title }> { element } </Text>
-                <Image
-                  style={ styles.crownIcon }
-                  source={{ uri: props.crownIcon }}
-                />
-                <Image
-                  style={ styles.crownHolder }
-                  source={{ uri: props.sortedLists[element][0]['avatar'] }}
-                />
-                <Text style={ styles.subtitle }> { props.sortedLists[element][0]['userName'] } </Text>
-              </View>
-              <PieGraph activity={ element }
-              top5List={ props.sortedLists[element] }
-              curUserName = { props.friendsObjList[0]['userName'] }/>
-            </View>
-          </CardSection>
-        </Card>
-      );
-      return pieItems;
+  /*
+    CreatePieList: loop through activityList and return every piechart item.
+  */
+  CreatePieList() {
+    const activityList = this.props.activityList;
+    let sortedLists = {}
+    for (var i = 0; i < this.props.activityList.length; i++) {
+      var acti = this.props.activityList[i];
+      sortedLists[acti] = this.getTop5List(acti);
     }
+    /* TODO: update to map on sortedLists or do an if exists on sortedLists */
+    var pieItems = activityList.map((element, index) =>
+      <Card key={index}>
+        <CardSection>
+          <View style={ styles.container }>
+            <View style={ styles.crownHolderContainer }>
+              <Text style={ styles.title }> { element } </Text>
+              <Image
+                style={ styles.crownIcon }
+                source={{ uri: this.state.crownIcon }}
+              />
+              <Image
+                style={ styles.crownHolder }
+                source={{ uri: sortedLists[element][0]['avatar'] }}
+              />
+              <Text style={ styles.subtitle }> { sortedLists[element][0]['userName'] } </Text>
+            </View>
+            <PieGraph activity={ element }
+            top5List={ sortedLists[element] }
+            curUserName = { this.state.friendsObjList[0]['userName'] }/>
+          </View>
+        </CardSection>
+      </Card>
+    );
+    return pieItems;
+  }
 
+	render() {
     if (this.state.loading == true) {
 			return (
         <ActivityIndicator
@@ -100,21 +111,10 @@ export default class Crowns extends Component {
         />
       );
     } else {
-      rankedListsforAllActivities = {}
-      for (var i = 0; i < this.props.activityList.length; i++) {
-        var acti = this.props.activityList[i]
-        rankedListsforAllActivities[acti] = this.getTop5List(acti)
-      }
-      console.log(rankedListsforAllActivities)
+
   		return (
     	  <ScrollView>
-          <CreatePieList
-            activities={this.props.activityList}
-            crownHolder={this.state.crownHolder}
-            crownIcon = {this.state.crownIcon}
-            friendsObjList={this.state.friendsObjList}
-            sortedLists = { rankedListsforAllActivities }
-          />
+          {this.CreatePieList()}
       	</ScrollView>
     	);
     }
@@ -135,9 +135,9 @@ export default class Crowns extends Component {
     var sortedObjList = this.state.friendsObjList.slice(0)
     sortedObjList.sort(compare)
     result = []
-
+    console.log("list: " + JSON.stringify(sortedObjList));
     for (var i = 0; i < 5; i++) {
-      if (sortedObjList[i]['labels'][acti] == 0) break;
+      if (!sortedObjList[i] || (i > 0 && sortedObjList[i]['labels'][acti] == 0)) break;
       if (sortedObjList[i]['userName'] == this.state.friendsObjList[0]['userName']) {
         sortedObjList[i]['userName'] = 'It\'s You!'
       }

@@ -148,7 +148,7 @@ export default class Profile extends Component {
               <Text style={ styles.name }>{ this.state.name }</Text>
             </View>
           </View>
-          <RadarGraph />
+          <RadarGraph data={[barList]} />
           <Text style={styles.subtitle}> Your Activity Summary: </Text>
           <Bar
             barList = { barList }

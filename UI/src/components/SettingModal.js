@@ -51,7 +51,7 @@ export default class SettingModal extends Component {
           }>
             <Text style={{fontSize: 20, borderBottomWidth: 2, marginBottom: 10}}>{'<-- '}Back</Text>
           </TouchableHighlight>
-          <Text>Select your preferred insight labels (min 4, max 10)</Text>
+          <Text>Select your preferred insight labels (we recommend between 4 and 10 labels)</Text>
           <ScrollView>
             <View>
               {this.makeCheckList()}

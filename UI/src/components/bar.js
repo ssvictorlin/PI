@@ -29,7 +29,7 @@ export default class Bar extends Component {
     }
     componentWillMount() {
         var newState = {};
-        var itemNameList = []
+        var itemNameList = [];
         for(var k in this.props.barList) {
           itemNameList.push(k)
         }
@@ -38,23 +38,23 @@ export default class Bar extends Component {
         for(var k in width) {
           newState[k] = width[k]
         }
+        console.log("newState: " + JSON.stringify(newState));
         this.setState( newState );
     }
 
     getWidth (itemNameList) {
         const deviceWidth = Dimensions.get('window').width
         const maxWidth = Math.round(deviceWidth - 50)
-        const unit = Math.floor(maxWidth / 360)
+        const unit = Math.floor(maxWidth / 360) || 1;
         let width = {}
         let widthCap // Give with a max cap
+        console.log(unit);
         itemNameList.forEach(item => {
           /* React-Native bug: if width=0 at first time, the borderRadius can't be implemented in the View */
           widthCap = this.props.barList[item] * unit
           width[item] = widthCap
         })
         width['maxWidth'] = maxWidth
-        console.log('deviceWidth is ' + deviceWidth)
-        console.log(width)
         return width
     }
 

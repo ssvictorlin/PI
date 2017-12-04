@@ -10,16 +10,16 @@ export default class RadarGraph extends Component {
   }
 
   render() {
-    let data = [{
-      "Friend": 74,
-      "Eater": 29,
-      "Cardio": 40,
-      "Strength": 40,
-      "Relaxer": 30,
-      "Worker": 25,
-      "Example": 44,
-      "Test": 20
-    }]
+    // let data = [{
+    //   "Friend": 74,
+    //   "Eater": 29,
+    //   "Cardio": 40,
+    //   "Strength": 40,
+    //   "Relaxer": 30,
+    //   "Worker": 25,
+    //   "Example": 44,
+    //   "Test": 20
+    // }]
 
     let options = {
       width: 290,
@@ -49,7 +49,7 @@ export default class RadarGraph extends Component {
 
     return (
       <View style={styles.container}>
-        <Radar data={data} options={options} />
+        <Radar data={this.props.data} options={options} />
       </View>
     )
   }
