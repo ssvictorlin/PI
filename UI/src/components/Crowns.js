@@ -135,9 +135,9 @@ export default class Crowns extends Component {
     var sortedObjList = this.state.friendsObjList.slice(0)
     sortedObjList.sort(compare)
     result = []
-
+    console.log("list: " + JSON.stringify(sortedObjList));
     for (var i = 0; i < 5; i++) {
-      if (sortedObjList[i]['labels'][acti] == 0 && i > 0) break;
+      if (!sortedObjList[i] || (i > 0 && sortedObjList[i]['labels'][acti] == 0)) break;
       if (sortedObjList[i]['userName'] == this.state.friendsObjList[0]['userName']) {
         sortedObjList[i]['userName'] = 'It\'s You!'
       }
