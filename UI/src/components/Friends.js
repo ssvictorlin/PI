@@ -16,14 +16,11 @@ export default class Friends extends Component {
       hasTermInSearchBar: false,
       term: '',
       dataSource: null,
-      curUserName: null,
-      curUserEmail: null
+      curUserName: null
     };
     this.userList = [];
-    // const { navigation } = this.props;
-    const { navigate } = this.props.navigation;
-    // console.log(navigation);
-    console.log(this.props.navigation.navigate);
+    // const { navigate } = this.props.navigation;
+    // console.log(this.props.navigation.navigate);
   }
 
   componentWillMount() {
@@ -56,8 +53,7 @@ export default class Friends extends Component {
       const data = await response.json();
       console.log(data);
       this.setState({
-        curUserName: data['userName'],
-        curUserEmail: user.email
+        curUserName: data['userName']
       });
     }
     catch(err) {
@@ -112,7 +108,11 @@ export default class Friends extends Component {
           <CardSection>
             <TouchableHighlight
               style={styles.container}
-              onPress={() => navigate('FriendDetail', { userName: element.userName, userEmail: element.userEmail, isFriend: true })}
+              onPress={() => navigate('FriendDetail', {
+                userName: element.userName,
+                userEmail: element.userEmail,
+                isFriend: true
+              })}
             >
               <View>
                 <Text>{ element.userName }</Text>
@@ -139,7 +139,11 @@ export default class Friends extends Component {
             subtitle='Friend'
             avatar={{uri:rowData.avatar}}
             hideChevron={true}
-            onPress={() => navigate('FriendDetail', { userName: rowData.userName, userEmail: rowData.userEmail, isFriend: rowData.isFriend })}
+            onPress={() => navigate('FriendDetail', {
+              userName: rowData.userName,
+              userEmail: rowData.userEmail,
+              isFriend: rowData.isFriend
+            })}
           />
         )
       } else {
@@ -155,8 +159,7 @@ export default class Friends extends Component {
             { userName: rowData.userName,
               userEmail: rowData.userEmail,
               isFriend: rowData.isFriend,
-              curUserName: rowData.curUserName,
-              curUserEmail:  rowData.curUserEmail
+              curUserName: rowData.curUserName
             })}
           />
         )
@@ -172,7 +175,6 @@ export default class Friends extends Component {
         />
       );
     } else {
-      // console.log(this.props.navigation.navigate);
       return (
         <ScrollView>
           <SearchBar

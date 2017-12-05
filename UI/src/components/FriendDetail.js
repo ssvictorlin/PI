@@ -19,8 +19,7 @@ export default class FriendDetail extends Component {
       barList: {},
       activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
       isFriend: false,
-      curUserName: null,
-      curUserEmail: null
+      curUserName: null
     };
   }
 
@@ -51,8 +50,7 @@ export default class FriendDetail extends Component {
         userData: dataFromCurUser,
         loading: false,
         isFriend: state.params.isFriend,
-        curUserName: state.params.curUserName,
-        curUserEmail: state.params.curUserEmail
+        curUserName: state.params.curUserName
       });
     }
     catch(err) {
@@ -60,8 +58,44 @@ export default class FriendDetail extends Component {
     }
   };
 
-  onButtonPressed() {
-    
+  renderAddFriendButton = () => {
+    // console.log(this.state.curUserEmail)
+    var curUserEmail = firebase.auth().currentUser.email.replace(".", ",");
+    console.log(curUserEmail)
+    if (this.state.isFriend) {
+      return (
+        <Button title='unfriend' onPress={async () => {
+          try {
+            console.log('friendEmail: ' + this.state.email);
+            console.log('userEmail: ' + curUserEmail);
+            const response = await get('app/deleteFriend?friendEmail=' + this.state.email
+              + '&userEmail=' + curUserEmail);
+              this.setState({isFriend: false});
+          }
+          catch(err) {
+            alert(err);
+          }
+          }}
+        />
+      );
+    } else {
+      return (
+        <Button title='add' onPress={async () => {
+          try {
+            console.log('friendEmail: ' + this.state.email);
+            console.log('userEmail: ' + curUserEmail);
+            const response = await get('app/addFriend?friendName=' +
+              this.state.name + '&friendEmail=' + this.state.email +
+                '&userName=' + this.state.curUserName + '&userEmail=' + curUserEmail);
+              this.setState({isFriend: true});
+            }
+            catch(err) {
+              alert(err);
+            }
+          }}
+        />
+      );
+    }
   }
 
   render() {
@@ -93,36 +127,10 @@ export default class FriendDetail extends Component {
             <View style={ styles.nameContainer }>
               <Text style={ styles.name }>{ this.state.name }</Text>
             </View>
-            { this.state.isFriend
-                ? <Button title='unfriend' onPress={async () => {
-                    try {
-                      console.log('friendEmail: ' + this.state.email);
-                      console.log('userEmail: ' + this.state.curUserEmail);
-                      const response = await get('app/deleteFriend?friendEmail=' + this.state.email
-                        + '&userEmail=' + this.state.curUserEmail);
-                    }
-                    catch(err) {
-                      alert(err);
-                    }
-                    }}
-                  />
-                : <Button title='add' onPress={async () => {
-                    try {
-                      console.log('friendEmail: ' + this.state.email);
-                      console.log('userEmail: ' + this.state.curUserEmail);
-                      const response = await get('app/addFriend?friendName=' +
-                        this.state.name + '&friendEmail=' + this.state.email +
-                         '&userName=' + this.state.curUserName + '&userEmail=' + this.state.curUserEmail);
-                      }
-                      catch(err) {
-                        alert(err);
-                      }
-                    }}
-                  />
-            }
+            {this.renderAddFriendButton()}
           </View>
           <RadarGraph data={[barList]} />
-          <Text style={styles.subtitle}> Your Activity Summary: </Text>
+          <Text style={styles.subtitle}>{this.state.name}'s Activity Summary:</Text>
           <Bar
             barList = { barList }
           />
