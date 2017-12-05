@@ -12,6 +12,7 @@ const db = admin.database();
   This creates a user's Group.
   Parameters:
     userEmail: The owner of the group's email.
+    userName: The owner of the group's name.
     groupName: Name of group to create.
     groupObjective: Objective of group to create.
 */
@@ -35,22 +36,26 @@ app.get('/createGroup', (req, res) => {
   /* Creating Group Logic */
   var query = url.parse(req.url, true).query;
   var userEmail = query['userEmail'];
+  var userName = query['userName'];
   var groupName = query['groupName'];
   var groupObjective = query['groupObjective'];
   var groupRef =  db.ref("groups")
   var ownerRef = db.ref('users/'+userEmail);
-  groupRef.child(groupName).set({
-      "owner": userEmail,
-      "avatar": "https://api.adorable.io/avatars/250/" + groupName + ".png",
-      "top3": ["On the bus", "At work", "Standing"],
-      "objective": groupObjective
-      // "memberList": {userEmail: {"memberName": userEmail}}
 
+  groupRef.child(groupName).set({
+    "owner": userEmail,
+    "avatar": "https://api.adorable.io/avatars/250/" + groupName + ".png",
+    "top3": ["On the bus", "At work", "Standing"],
+    "objective": groupObjective,
+    "memberList": {[userEmail]: {"memberName": userName}}
   });
   ownerRef.child("ownerGroup").once('value').then(snapshot => {
-      ownerRef.child("ownerGroup").child(groupName).set({
-          "CreatedTime": printDate
-      });
+    ownerRef.child("ownerGroup").child(groupName).set({
+        "CreatedTime": printDate
+    });
+    ownerRef.child("memberofGroup").child(groupName).set({
+      "TimeJoined": printDate	
+    });	
   });
   res.send("Sucess")
 });
@@ -83,7 +88,7 @@ app.get('/addToGroup', (req, res) => {
   var groupRef =  admin.database().ref("groups");
   var usersRef = admin.database().ref('users/'+userEmail);
     
-  groupRef.child(groupName).child(userEmail).set({
+  groupRef.child(groupName).child('memberList').child(userEmail).set({
     "memberName": userName 	
   });	
   usersRef.child("memberofGroup").child(groupName).set({
