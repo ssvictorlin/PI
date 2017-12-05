@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Image, Text, ActivityIndicator, Button, ListView } from 'react-native';
-import { SearchBar, List, ListItem } from 'react-native-elements';
+import { ScrollView, View, Image, Text, ActivityIndicator, ListView } from 'react-native';
+import { SearchBar, List, ListItem, Button } from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import { Card, CardSection } from './common';
 import { get } from '../../api.js';
@@ -60,10 +60,6 @@ export default class Groups extends Component {
     }
   };
 
-  GetListViewItem (groupName) {
-    Alert.alert(groupName);
-  }
-
   SearchFilterFunction(term){
     const newData = this.groupList.filter(function(item){
       const itemData = item.groupName.toUpperCase()
@@ -110,9 +106,9 @@ export default class Groups extends Component {
   }
 
   render() {
-    /*
-      CreateGroupList: loop through groups and return every group item.
-    */
+    console.log(this.props.navigation);
+    const { navigate } = this.props.navigation;
+
     function CreateGroupList(props) {
       const groups = props.groups;
       const groupItems = groups.map((element, index) => 
@@ -151,6 +147,13 @@ export default class Groups extends Component {
             lightTheme
             onChangeText={(term) => this.SearchFilterFunction(term)}
             placeholder='Search groups'
+          />
+          <Button
+            large
+            icon={{name: 'plus', type: 'font-awesome'}}
+            title='Create group'
+            backgroundColor='#ff9966'
+            onPress={() => navigate('GroupForm')}
           />
           { this.state.hasTermInSearchBar
               ? <List>

@@ -6,7 +6,7 @@ import { Icon, List, ListItem, Button } from 'react-native-elements';
 import firebase from 'firebase';
 import Bar from './bar.js';
 
-export default class FriendDetail extends Component {
+export default class GroupDetail extends Component {
 
   constructor(props) {
     super(props);

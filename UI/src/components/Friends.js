@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { ScrollView, View, Image, Text, ActivityIndicator, Button, ListView, Alert, TouchableHighlight } from 'react-native';
 import { SearchBar, List, ListItem } from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
-import FriendDetail from './FriendDetail';
 import { Card, CardSection } from './common';
 import { get } from '../../api.js';
 import firebase from 'firebase';
@@ -16,9 +15,10 @@ export default class Friends extends Component {
       hasTermInSearchBar: false,
       term: '',
       dataSource: null,
-      curUserName: null
+      curUserName: null,
+      userList: null
     };
-    this.userList = [];
+    // this.userList = [];
     // const { navigate } = this.props.navigation;
     // console.log(this.props.navigation.navigate);
   }
@@ -27,23 +27,28 @@ export default class Friends extends Component {
     this.fetchUsersFriends(); 
     this.getCurUser();
     var user = firebase.auth().currentUser;
-    return get('app/fetchAllUsers?userEmail=' + user.email)
+    this.fetchAllUsers(user.email)
+  }
+
+  fetchAllUsers = async (userEmail) => {
+    const response = await get('app/fetchAllUsers?userEmail=' + userEmail)
     .then((response) => response.json())
     .then((responseJson) => {
       let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.setState({
         dataSource: ds.cloneWithRows(responseJson),
-        loading: false
+        loading: false,
+        userList: responseJson
       }, function() {
         // In this block you can do something with new state.
-        this.userList = responseJson ;
-        console.log(this.userList);
+        // this.userList = responseJson ;
+        console.log(this.state.userList);
       });
     })
     .catch((error) => {
       console.error(error);
     });
-  }
+  };
 
   getCurUser = async () => {
     var user = firebase.auth().currentUser;
@@ -82,7 +87,7 @@ export default class Friends extends Component {
   };
 
   SearchFilterFunction(term){
-    const newData = this.userList.filter(function(item){
+    const newData = this.state.userList.filter(function(item){
       const itemData = item.userName.toUpperCase()
       const textData = term.toUpperCase()
       return itemData.indexOf(textData) > -1

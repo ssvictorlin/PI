@@ -13,6 +13,7 @@ const db = admin.database();
   Parameters:
     userEmail: The owner of the group's email.
     groupName: Name of group to create.
+    groupObjective: Objective of group to create.
 */
 app.get('/createGroup', (req, res) => {
     
@@ -35,12 +36,14 @@ app.get('/createGroup', (req, res) => {
   var query = url.parse(req.url, true).query;
   var userEmail = query['userEmail'];
   var groupName = query['groupName'];
+  var groupObjective = query['groupObjective'];
   var groupRef =  db.ref("groups")
   var ownerRef = db.ref('users/'+userEmail);
   groupRef.child(groupName).set({
       "owner": userEmail,
       "avatar": "https://api.adorable.io/avatars/250/" + groupName + ".png",
-      "top3": ["On the bus", "At work", "Standing"]
+      "top3": ["On the bus", "At work", "Standing"],
+      "objective": groupObjective
       // "memberList": {userEmail: {"memberName": userEmail}}
 
   });
@@ -48,7 +51,6 @@ app.get('/createGroup', (req, res) => {
       ownerRef.child("ownerGroup").child(groupName).set({
           "CreatedTime": printDate
       });
-      
   });
   res.send("Sucess")
 });
