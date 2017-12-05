@@ -69,6 +69,7 @@ export default class FriendDetail extends Component {
             const response = await get('app/deleteFriend?friendEmail=' + this.state.email
               + '&userEmail=' + curUserEmail);
             this.setState({isFriend: false});
+            alert('You unfriend ' + this.state.name + '!');
           }
           catch(err) {
             alert(err);
@@ -86,6 +87,7 @@ export default class FriendDetail extends Component {
               this.state.name + '&friendEmail=' + this.state.email +
                 '&userName=' + this.state.curUserName + '&userEmail=' + curUserEmail);
               this.setState({isFriend: true});
+              alert('You and ' + this.state.name + ' are friends now!');
             }
             catch(err) {
               alert(err);

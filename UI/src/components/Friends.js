@@ -108,29 +108,35 @@ export default class Friends extends Component {
     const { navigate } = this.props.navigation;
     function CreateFriendList(props) {
       const friends = props.friends;
-      const friendItems = friends.map((element, index) => 
-        <Card key={index}>
-          <CardSection>
-            <TouchableHighlight
-              style={styles.container}
-              onPress={() => navigate('FriendDetail', {
-                userName: element.userName,
-                userEmail: element.userEmail,
-                isFriend: true
-              })}
-            >
-              <View>
-                <Text>{ element.userName }</Text>
-                <Image
-                  style={ styles.thumbnail }
-                  source={{ uri: element.avatar }}
-                />
-              </View>
-            </TouchableHighlight>
-          </CardSection>
-        </Card>
-      );
-      return friendItems;
+      if (friends.length != 0) {
+        const friendItems = friends.map((element, index) => 
+          <Card key={index}>
+            <CardSection>
+              <TouchableHighlight
+                style={styles.container}
+                onPress={() => navigate('FriendDetail', {
+                  userName: element.userName,
+                  userEmail: element.userEmail,
+                  isFriend: true
+                })}
+              >
+                <View>
+                  <Text>{ element.userName }</Text>
+                  <Image
+                    style={ styles.thumbnail }
+                    source={{ uri: element.avatar }}
+                  />
+                </View>
+              </TouchableHighlight>
+            </CardSection>
+          </Card>
+        );
+        return friendItems;
+      } else {
+        return (
+          <Text>You don't have any friend!</Text>
+        );
+      }
     }
 
     function renderRow (rowData, sectionID) {

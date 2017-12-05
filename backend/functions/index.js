@@ -125,10 +125,10 @@ app.get('/removeFromGroup', (req, res) => {
   This adds a user to person's friend list.
   TODO: Need to implement checking that the friend accepts request.
   Parameters:
-    friendName = the friend to be added
-    userName = the person adding
-    userEmail = the email of the person adding
     friendEmail = the email of the friend one is adding.
+    friendName = the friend to be added.
+    userEmail = the email of the person adding.
+    userName = the person adding.
 */
 app.get('/addFriend', (req, res) => {
   var query = url.parse(req.url, true).query;
@@ -281,7 +281,7 @@ app.get('/fetchAllUsers', (req, res) => {
         userObj['userEmail'] = data.key;
         userObj['userName'] = data.val()['userName'];
         userObj['avatar'] = data.val()['avatar'];
-        // userObj['joinedGroup'] = data.val()['joinedGroup'];
+        // userObj['memberofGroup'] = data.val()['memberofGroup'];
         // userObj['labels'] = data.val()['labels'];
         userObj['curUserName'] = curUserName;
         userObj['curUserEmail'] = userEmail;
@@ -312,7 +312,7 @@ app.get('/fetchUsersFriends', (req, res) => {
         friendObj['userEmail'] = user;
         friendObj['userName'] = snap.val()[user]['userName'];
         friendObj['avatar'] = snap.val()[user]['avatar'];
-        friendObj['joinedGroup'] = snap.val()[user]['joinedGroup'];
+        friendObj['memberofGroup'] = snap.val()[user]['memberofGroup'];
         friendObj['labels'] = snap.val()[user]['labels'];
         friendList.push(friendObj);
       }
@@ -323,8 +323,7 @@ app.get('/fetchUsersFriends', (req, res) => {
 
 app.get('/fetchAllGroups', (req, res) => {
   var query = url.parse(req.url, true).query;
-  var email = query['userEmail'];
-  userEmail = email.replace(".", ",");
+  var userEmail = query['userEmail'].replace(".", ",");
   var groupRef = db.ref('groups');
   var userFriendRef = db.ref('users/' + userEmail + '/friends');
 
@@ -377,10 +376,8 @@ app.get('/fetchAllGroups', (req, res) => {
 
 app.get('/fetchGroupsUserIn', (req, res) => {
   var query = url.parse(req.url, true).query;
-  var email = query['userEmail'];
-  userEmail = email.replace(".", ",");
+  var userEmail = query['userEmail'].replace(".", ",");
   var groupRef = db.ref('groups');
-  var userRef = db.ref('users/' + userEmail + '/joinedGroup');
 
   groupRef.on('value', snap1 => {
     var groupsUserIn = [];

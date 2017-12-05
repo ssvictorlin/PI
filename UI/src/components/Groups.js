@@ -106,30 +106,35 @@ export default class Groups extends Component {
   }
 
   render() {
-    console.log(this.props.navigation);
     const { navigate } = this.props.navigation;
 
     function CreateGroupList(props) {
       const groups = props.groups;
-      const groupItems = groups.map((element, index) => 
-        <Card key={index}>
-          <CardSection>
-            <View style={styles.container}>
-              <Text>{ element.groupName }</Text>
-              <Image
-                style={ styles.thumbnail }
-                source={{ uri: element.avatar }}
-              />
-            </View>
-            <View>
-              <Text>{ element.top3[0] }</Text>
-              <Text>{ element.top3[1] }</Text>
-              <Text>{ element.top3[2] }</Text>
-            </View>
-          </CardSection>
-        </Card>
-      );
-      return groupItems;
+      if (groups.length != 0) {
+        const groupItems = groups.map((element, index) => 
+          <Card key={index}>
+            <CardSection>
+              <View style={styles.container}>
+                <Text>{ element.groupName }</Text>
+                <Image
+                  style={ styles.thumbnail }
+                  source={{ uri: element.avatar }}
+                />
+              </View>
+              <View>
+                <Text>{ element.top3[0] }</Text>
+                <Text>{ element.top3[1] }</Text>
+                <Text>{ element.top3[2] }</Text>
+              </View>
+            </CardSection>
+          </Card>
+        );
+        return groupItems;
+      } else {
+        return (
+          <Text>You haven't joined any group!</Text>
+        );
+      }
     }
 
     if (this.state.loading == true) {

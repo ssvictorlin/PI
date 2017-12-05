@@ -8,7 +8,28 @@ export default class GroupForm extends Component {
   state = {
     groupName: '',
     objective: '',
-    loading: false
+    loading: false,
+    curUserName: null
+  };
+
+  componentWillMount() {
+    this.getCurUser();
+  }
+
+  getCurUser = async () => {
+    var user = firebase.auth().currentUser;
+    try {
+      const response = await get('app/readUser?userEmail=' + user.email);
+      console.log(user.email);
+      const data = await response.json();
+      console.log(data);
+      this.setState({
+        curUserName: data['userName']
+      });
+    }
+    catch(err) {
+      alert(err);
+    }
   };
 
   createGroup = async () => {
@@ -20,7 +41,8 @@ export default class GroupForm extends Component {
     }
     try {
       const response = await get('app/createGroup?userEmail=' + user.email.replace('.',',') + 
-        '&groupName=' + this.state.groupName + '&groupObjective=' + this.state.objective)
+        '&userName=' + this.state.curUserName + '&groupName=' + this.state.groupName +
+        '&groupObjective=' + this.state.objective);
         alert('Group created!');
         this.props.navigation.goBack();
     }
