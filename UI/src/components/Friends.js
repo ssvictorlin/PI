@@ -154,7 +154,7 @@ export default class Friends extends Component {
             onPress={() => navigate('FriendDetail', {
               userName: rowData.userName,
               userEmail: rowData.userEmail,
-              isFriend: rowData.isFriend,
+              isFriend: rowData.isFriend
             })}
           />
         )
@@ -170,7 +170,7 @@ export default class Friends extends Component {
             onPress={() => navigate('FriendDetail', 
             { userName: rowData.userName,
               userEmail: rowData.userEmail,
-              isFriend: rowData.isFriend,
+              isFriend: rowData.isFriend
             })}
           />
         )

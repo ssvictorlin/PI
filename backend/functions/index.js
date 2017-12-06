@@ -55,7 +55,6 @@ app.get('/createGroup', (req, res) => {
       var maxProb = 0;
       var maxLabelName = '';
       for (var label in snapshot.val()['labels']) {
-        console.log(top3.length)
         if (top3.indexOf(label) > -1) {
           continue;
         }

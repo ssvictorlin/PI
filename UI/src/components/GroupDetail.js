@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ScrollView, View, Text, Image, ActivityIndicator } from 'react-native';
 import { get } from '../../api.js';
 import RadarGraph from './radar.js';
-import { Icon, List, ListItem, Button } from 'react-native-elements';
+import { Icon, List, ListItem, Button, Card } from 'react-native-elements';
 import firebase from 'firebase';
 import Bar from './bar.js';
 
@@ -15,7 +15,8 @@ export default class GroupDetail extends Component {
       groupName: null,
       groupObjective: null,
       avatar: null,
-      userData: null,
+      top3: null,
+      groupData: null,
       loading: false,
       barList: {},
       activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
@@ -57,9 +58,10 @@ export default class GroupDetail extends Component {
         groupName: state.params.groupName,
         avatar: dataFromGroup.avatar,
         groupData: dataFromGroup,
-        groupObjective: dataFromGroup.groupObjective,
+        groupObjective: dataFromGroup.objective,
         loading: false,
-        isJoined: state.params.isJoined
+        isJoined: state.params.isJoined,
+        top3: dataFromGroup.top3
       });
     }
     catch(err) {
@@ -71,7 +73,12 @@ export default class GroupDetail extends Component {
     var curUserEmail = firebase.auth().currentUser.email.replace(".", ",");
     if (this.state.isJoined) {
       return (
-        <Button title='leave' onPress={async () => {
+        <Button
+          title='Leave'
+          backgroundColor='#03A9F4'
+          fontFamily='Lato'
+          buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+          onPress={async () => {
           try {
             console.log('curUserName: ' + this.state.curUserName);
             const response = await get('app/removeFromGroup?userEmail=' + curUserEmail
@@ -87,7 +94,12 @@ export default class GroupDetail extends Component {
       );
     } else {
       return (
-        <Button title='join' onPress={async () => {
+        <Button
+          title='Join'
+          backgroundColor='#03A9F4'
+          fontFamily='Lato'
+          buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+          onPress={async () => {
           try {
             console.log('curUserName: ' + this.state.curUserName);
             const response = await get('app/addToGroup?groupName=' + this.state.groupName +
@@ -114,32 +126,23 @@ export default class GroupDetail extends Component {
         />
       );
     } else {
-      // barList = {}
-      // for (var i = 0; i < this.state.activityList.length; i++) {
-      //   var acti = this.state.activityList[i]
-      //   console.log(this.state.activityList[i])
-      //   barList[acti] = this.state.userData['labels'][acti]
-      // }
+      barList = {}
+      for (var i = 0; i < this.state.top3.length; i++) {
+        var acti = this.state.top3[i]
+        console.log(this.state.top3[i])
+        console.log(this.state.groupData['labels'])
+        barList[acti] = this.state.groupData['labels'][acti]
+      }
 
       return (
         <ScrollView>
-          <View style={styles.container}>
-            <View style={ styles.thumbnailContainer }>
-              <Image
-                style={ styles.thumbnail }
-                source={{ uri: this.state.avatar }}
-              />
-            </View>
-            <View style={ styles.nameContainer }>
-              <Text style={ styles.name }>{ this.state.groupName }</Text>
-            </View>
+          <Card
+            title={this.state.groupObjective}
+            image={{ uri: this.state.avatar }}>
+            <Text style={{marginBottom: 10}}>Top 3 Activities:</Text>
+            <Bar barList = { barList } />
             {this.renderJoinButton()}
-          </View>
-          {/* <RadarGraph data={[barList]} /> */}
-          {/* <Text style={styles.subtitle}>{this.state.groupName}'s Activity Summary:</Text> */}
-          {/* <Bar
-            barList = { barList }
-          /> */}
+          </Card>
         </ScrollView>
       );
     }
