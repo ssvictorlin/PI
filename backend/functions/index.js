@@ -45,10 +45,34 @@ app.get('/createGroup', (req, res) => {
   groupRef.child(groupName).set({
     "owner": userEmail,
     "avatar": "https://api.adorable.io/avatars/250/" + groupName + ".png",
-    "top3": ["On the bus", "At work", "Standing"],
     "objective": groupObjective,
-    "memberList": {[userEmail]: {"memberName": userName}}
+    "memberList": {[userEmail]: {"memberName": userName}},
   });
+  ownerRef.once('value').then(snapshot => {
+    // getting the top 3 activities of a group
+    var top3 = [];
+    for (var i = 0; i < 3; i++) {
+      var maxProb = 0;
+      var maxLabelName = '';
+      for (var label in snapshot.val()['labels']) {
+        console.log(top3.length)
+        if (top3.indexOf(label) > -1) {
+          continue;
+        }
+        var labelName = label;
+        var labelProb = snapshot.val()['labels'][label];
+        
+        if (labelProb > maxProb) {
+          maxProb = labelProb;
+          maxLabelName = labelName;
+        } 
+      }
+      top3.push(maxLabelName);
+    }
+    groupRef.child(groupName).child('labels').set(snapshot.val()['labels']);
+    groupRef.child(groupName).child('top3').set(top3);
+  });
+
   ownerRef.child("ownerGroup").once('value').then(snapshot => {
     ownerRef.child("ownerGroup").child(groupName).set({
         "CreatedTime": printDate
