@@ -124,7 +124,6 @@ app.get('/addToGroup', (req, res) => {
 /*
   This removes a user from Group.
   Parameters:
-    userName = user to delete
     userEmail = their email
     groupName = name to delete user from.
 */
@@ -140,9 +139,9 @@ app.get('/removeFromGroup', (req, res) => {
   updates[userEmail] = null
   var updates2 = {}
   updates2[groupName] = null
-  groupRef.child(groupName).update(updates);
+  groupRef.child(groupName).child("memberList").update(updates);
   usersRef.child("memberofGroup").update(updates2);
-  res.send(userName);
+  res.send(userEmail);
 });
 
 /*
@@ -282,6 +281,7 @@ app.get('/readUser', (req, res) => {
   var query = url.parse(req.url, true).query;
   var usersRef = db.ref('users');
   var userEmail = query['userEmail'].replace(".", ",");
+
   usersRef.child(userEmail).on('value', snap => {
     res.send(snap.val());
   });
@@ -368,11 +368,6 @@ app.get('/fetchAllGroups', (req, res) => {
           groupObject['groupName'] = groupName;
           groupObject['avatar'] = snap4.val()['avatar'];
 
-          if (snap4.val()['memberList'].hasOwnProperty(userEmail)) {
-            groupObject['isJoined'] = true;
-          } else {
-            groupObject['isJoined'] = false;
-          }
           // get member list of a group
           for (var groupMember in snap4.val()['memberList']) {
             memberList.push(snap4.val()['memberList'][groupMember]['memberName']);
@@ -388,6 +383,18 @@ app.get('/fetchAllGroups', (req, res) => {
           } else if (intersectList.length > 2) {
             groupObject['subtitle'] = intersectList[0] + ' and ' + intersectList[1] + 
               ' and ' + intersectList.length-2 + ' more friends are in this group';
+          }
+
+          if (snap4.val()['memberList'].hasOwnProperty(userEmail)) {
+            groupObject['isJoined'] = true;
+            if (intersectList.length === 0) {
+              groupObject['subtitle'] = 'No friends are in this group';
+            }
+          } else {
+            groupObject['isJoined'] = false;
+            if (intersectList.length === 0) {
+              groupObject['subtitle'] = 'Be the first one to join';
+            }
           }
 
           result.push(groupObject);
@@ -422,6 +429,16 @@ app.get('/fetchGroupsUserIn', (req, res) => {
   });
 });
 
+app.get('/readGroup', (req, res) => {
+  var query = url.parse(req.url, true).query;
+  var groupName = query['groupName'];
+  var groupRef = db.ref('groups');
+
+  groupRef.child(groupName).on('value', snap => {
+    res.send(snap.val());
+  });
+});
+
 /*
   This will get the profile of designated user
   Parameter:
@@ -429,10 +446,9 @@ app.get('/fetchGroupsUserIn', (req, res) => {
 */
 app.get('/profile', (req, res) => {
   var query = url.parse(req.url, true).query;
-  var email = query['email'];
-  userEmail = email.replace(".", ",");
-  // console.log(userEmail);
+  var userEmail = query['email'].replace(".", ",");
   var usersRef = db.ref('users');
+
   usersRef.child(userEmail).on('value', snap => {
     const username = snap.val()['userName'];
     const avatar = snap.val()['avatar'];

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Image, Text, ActivityIndicator, Button, ListView, Alert, TouchableHighlight } from 'react-native';
+import { ScrollView, View, Image, Text, ActivityIndicator, Button, ListView, TouchableHighlight } from 'react-native';
 import { SearchBar, List, ListItem } from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import { Card, CardSection } from './common';
@@ -106,6 +106,7 @@ export default class Friends extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
+
     function CreateFriendList(props) {
       const friends = props.friends;
       if (friends.length != 0) {
@@ -153,7 +154,7 @@ export default class Friends extends Component {
             onPress={() => navigate('FriendDetail', {
               userName: rowData.userName,
               userEmail: rowData.userEmail,
-              isFriend: rowData.isFriend
+              isFriend: rowData.isFriend,
             })}
           />
         )
@@ -170,7 +171,6 @@ export default class Friends extends Component {
             { userName: rowData.userName,
               userEmail: rowData.userEmail,
               isFriend: rowData.isFriend,
-              curUserName: rowData.curUserName
             })}
           />
         )

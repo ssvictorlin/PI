@@ -72,7 +72,6 @@ export default class App extends Component<{}> {
     this.setState({loading: true});
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(async() => {
-        // TODO get readUser with email, replace . with ,
         const fullResponse = await get('app/readUser?userEmail=' + this.state.email.replace(".", ","));
         const fullData = await fullResponse.json();
         this.setState({
@@ -86,7 +85,10 @@ export default class App extends Component<{}> {
   }
 
   attemptRegister(email, password, username) {
-    this.setState({ error: '', loading: true });
+    this.setState({
+      error: '',
+      loading: true,
+    });
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .then(this.sendUserData(email, username))
       .catch((error) => {

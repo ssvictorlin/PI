@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Image, Text, ActivityIndicator, ListView } from 'react-native';
+import { ScrollView, View, Image, Text, ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
 import { SearchBar, List, ListItem, Button } from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import { Card, CardSection } from './common';
@@ -14,15 +14,21 @@ export default class Groups extends Component {
       loading: false,
       hasTermInSearchBar: false,
       term: '',
-      dataSource: null
+      dataSource: null,
+      curUserName: null
     };
     this.groupList = [];
   };
 
   componentWillMount() {
     this.fetchGroupsUserIn();
+    this.getCurUser();
     var user = firebase.auth().currentUser;
-    return get('app/fetchAllGroups?userEmail=' + user.email)
+    this.fetchAllGroups(user.email);
+  }
+
+  fetchAllGroups = async (userEmail) => {
+    const response = await get('app/fetchAllGroups?userEmail=' + userEmail)
     .then((response) => response.json())
     .then((responseJson) => {
       let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -39,6 +45,22 @@ export default class Groups extends Component {
       console.error(error);
     });
   }
+
+  getCurUser = async () => {
+    var user = firebase.auth().currentUser;
+    try {
+      const response = await get('app/readUser?userEmail=' + user.email);
+      console.log(user.email);
+      const data = await response.json();
+      console.log(data);
+      this.setState({
+        curUserName: data['userName']
+      });
+    }
+    catch(err) {
+      alert(err);
+    }
+  };
 
   fetchGroupsUserIn = async () => {
     this.setState({loading: true});
@@ -78,33 +100,6 @@ export default class Groups extends Component {
     }
   }
 
-  renderRow (rowData, sectionID) {
-    if (rowData.isJoined) {
-      return (
-        <ListItem
-          roundAvatar
-          key={sectionID}
-          title={rowData.groupName}
-          subtitle={rowData.subtitle}
-          avatar={{uri:rowData.avatar}}
-          rightTitle='Joined'
-          hideChevron={true}
-        />
-      )
-    } else {
-      return (
-        <ListItem
-          roundAvatar
-          key={sectionID}
-          title={rowData.groupName}
-          subtitle={rowData.subtitle}
-          avatar={{uri:rowData.avatar}}
-          hideChevron={true}
-        />
-      )
-    }
-  }
-
   render() {
     const { navigate } = this.props.navigation;
 
@@ -114,18 +109,30 @@ export default class Groups extends Component {
         const groupItems = groups.map((element, index) => 
           <Card key={index}>
             <CardSection>
-              <View style={styles.container}>
-                <Text>{ element.groupName }</Text>
-                <Image
-                  style={ styles.thumbnail }
-                  source={{ uri: element.avatar }}
-                />
-              </View>
-              <View>
-                <Text>{ element.top3[0] }</Text>
-                <Text>{ element.top3[1] }</Text>
-                <Text>{ element.top3[2] }</Text>
-              </View>
+              <TouchableHighlight
+                style={styles.container}
+                onPress={() => navigate('GroupDetail', {
+                  groupName: element.groupName,
+                  groupEmail: element.groupEmail,
+                  isJoined: true,
+                  groupObjective: element.groupObjective
+                })}
+              >
+                <View>
+                  <View>
+                    <Text>{ element.groupName }</Text>
+                    <Image
+                      style={ styles.thumbnail }
+                      source={{ uri: element.avatar }}
+                    />
+                  </View>
+                  <View>
+                    <Text>{ element.top3[0] }</Text>
+                    <Text>{ element.top3[1] }</Text>
+                    <Text>{ element.top3[2] }</Text>
+                  </View>
+                </View>
+              </TouchableHighlight>
             </CardSection>
           </Card>
         );
@@ -134,6 +141,46 @@ export default class Groups extends Component {
         return (
           <Text>You haven't joined any group!</Text>
         );
+      }
+    }
+
+    function renderRow (rowData, sectionID) {
+      if (rowData.isJoined) {
+        return (
+          <ListItem
+            roundAvatar
+            key={sectionID}
+            title={rowData.groupName}
+            subtitle={rowData.subtitle}
+            avatar={{uri:rowData.avatar}}
+            rightTitle='Joined'
+            hideChevron={true}
+            onPress={() => navigate('GroupDetail', {
+              groupName: rowData.groupName,
+              groupEmail: rowData.groupEmail,
+              isJoind: rowData.isJoined,
+              groupObjective: rowData.groupObjective
+            })}
+          />
+        )
+      } else {
+        return (
+          <ListItem
+            roundAvatar
+            key={sectionID}
+            title={rowData.groupName}
+            subtitle={rowData.subtitle}
+            avatar={{uri:rowData.avatar}}
+            rightTitle='Not Joined'
+            hideChevron={true}
+            onPress={() => navigate('GroupDetail', {
+              groupName: rowData.groupName,
+              groupEmail: rowData.groupEmail,
+              isJoind: rowData.isJoined,
+              groupObjective: rowData.groupObjective
+            })}
+          />
+        )
       }
     }
 
@@ -163,7 +210,7 @@ export default class Groups extends Component {
           { this.state.hasTermInSearchBar
               ? <List>
                   <ListView
-                    renderRow={this.renderRow}
+                    renderRow={renderRow}
                     dataSource={this.state.dataSource}
                   />
                 </List>

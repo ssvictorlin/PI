@@ -25,12 +25,25 @@ export default class FriendDetail extends Component {
 
   componentWillMount() {
     this.getData();
+    this.getCurUser();
   }
 
-  /* getData: first checked if user signed in and get user
-        activities and their minutes
-        TODO: Not signed in -> redirect to sign in page
-  */
+  getCurUser = async () => {
+    var user = firebase.auth().currentUser;
+    try {
+      const response = await get('app/readUser?userEmail=' + user.email);
+      console.log(user.email);
+      const data = await response.json();
+      console.log(data);
+      this.setState({
+        curUserName: data['userName']
+      });
+    }
+    catch(err) {
+      alert(err);
+    }
+  };
+
   getData = async () => {
     this.setState({loading: true});
     const {state} = this.props.navigation;
@@ -49,8 +62,7 @@ export default class FriendDetail extends Component {
         avatar: dataFromProfile.avatar,
         userData: dataFromCurUser,
         loading: false,
-        isFriend: state.params.isFriend,
-        curUserName: state.params.curUserName
+        isFriend: state.params.isFriend
       });
     }
     catch(err) {

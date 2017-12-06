@@ -12,7 +12,8 @@ export default class GroupDetail extends Component {
     super(props);
     this.state = {
       email: null,
-      name: null,
+      groupName: null,
+      groupObjective: null,
       avatar: null,
       userData: null,
       loading: false,
@@ -25,32 +26,18 @@ export default class GroupDetail extends Component {
 
   componentWillMount() {
     this.getData();
+    this.getCurUser();
   }
 
-  /* getData: first checked if user signed in and get user
-        activities and their minutes
-        TODO: Not signed in -> redirect to sign in page
-  */
-  getData = async () => {
-    this.setState({loading: true});
-    const {state} = this.props.navigation;
-    console.log(state.params.fetchUsersFriends);
+  getCurUser = async () => {
+    var user = firebase.auth().currentUser;
     try {
-      const responseFromProfile = await get('app/profile?email=' + state.params.userEmail);
-      const dataFromProfile = await responseFromProfile.json();
-
-      const email = state.params.userEmail.replace('.',',')
-      const responseFromCurUser = await get('app/readUser'+'?userEmail='+ email)
-      const dataFromCurUser = await responseFromCurUser.json()
-
+      const response = await get('app/readUser?userEmail=' + user.email);
+      console.log(user.email);
+      const data = await response.json();
+      console.log(data);
       this.setState({
-        email: state.params.userEmail,
-        name: dataFromProfile.username,
-        avatar: dataFromProfile.avatar,
-        userData: dataFromCurUser,
-        loading: false,
-        isFriend: state.params.isFriend,
-        curUserName: state.params.curUserName
+        curUserName: data['userName']
       });
     }
     catch(err) {
@@ -58,17 +45,39 @@ export default class GroupDetail extends Component {
     }
   };
 
-  renderAddFriendButton = () => {
+  getData = async () => {
+    this.setState({loading: true});
+    const {state} = this.props.navigation;
+    try {
+      const responseFromGroup = await get('app/readGroup?groupName=' + state.params.groupName);
+      const dataFromGroup = await responseFromGroup.json();
+      console.log(dataFromGroup);
+
+      this.setState({
+        groupName: state.params.groupName,
+        avatar: dataFromGroup.avatar,
+        groupData: dataFromGroup,
+        groupObjective: dataFromGroup.groupObjective,
+        loading: false,
+        isJoined: state.params.isJoined
+      });
+    }
+    catch(err) {
+      alert(err);
+    }
+  };
+
+  renderJoinButton = () => {
     var curUserEmail = firebase.auth().currentUser.email.replace(".", ",");
-    if (this.state.isFriend) {
+    if (this.state.isJoined) {
       return (
-        <Button title='unfriend' onPress={async () => {
+        <Button title='leave' onPress={async () => {
           try {
-            console.log('friendEmail: ' + this.state.email);
-            console.log('userEmail: ' + curUserEmail);
-            const response = await get('app/deleteFriend?friendEmail=' + this.state.email
-              + '&userEmail=' + curUserEmail);
-            this.setState({isFriend: false});
+            console.log('curUserName: ' + this.state.curUserName);
+            const response = await get('app/removeFromGroup?userEmail=' + curUserEmail
+              + '&groupName=' + this.state.groupName);
+            this.setState({isJoined: false});
+            alert('You have left ' + this.state.groupName);
           }
           catch(err) {
             alert(err);
@@ -78,14 +87,13 @@ export default class GroupDetail extends Component {
       );
     } else {
       return (
-        <Button title='add' onPress={async () => {
+        <Button title='join' onPress={async () => {
           try {
-            console.log('friendEmail: ' + this.state.email);
-            console.log('userEmail: ' + curUserEmail);
-            const response = await get('app/addFriend?friendName=' +
-              this.state.name + '&friendEmail=' + this.state.email +
-                '&userName=' + this.state.curUserName + '&userEmail=' + curUserEmail);
-              this.setState({isFriend: true});
+            console.log('curUserName: ' + this.state.curUserName);
+            const response = await get('app/addToGroup?groupName=' + this.state.groupName +
+              '&userName=' + this.state.curUserName + '&userEmail=' + curUserEmail);
+              this.setState({isJoined: true});
+              alert('You have joined ' + this.state.groupName);
             }
             catch(err) {
               alert(err);
@@ -106,12 +114,12 @@ export default class GroupDetail extends Component {
         />
       );
     } else {
-      barList = {}
-      for (var i = 0; i < this.state.activityList.length; i++) {
-        var acti = this.state.activityList[i]
-        console.log(this.state.activityList[i])
-        barList[acti] = this.state.userData['labels'][acti]
-      }
+      // barList = {}
+      // for (var i = 0; i < this.state.activityList.length; i++) {
+      //   var acti = this.state.activityList[i]
+      //   console.log(this.state.activityList[i])
+      //   barList[acti] = this.state.userData['labels'][acti]
+      // }
 
       return (
         <ScrollView>
@@ -123,15 +131,15 @@ export default class GroupDetail extends Component {
               />
             </View>
             <View style={ styles.nameContainer }>
-              <Text style={ styles.name }>{ this.state.name }</Text>
+              <Text style={ styles.name }>{ this.state.groupName }</Text>
             </View>
-            {this.renderAddFriendButton()}
+            {this.renderJoinButton()}
           </View>
-          <RadarGraph data={[barList]} />
-          <Text style={styles.subtitle}>{this.state.name}'s Activity Summary:</Text>
-          <Bar
+          {/* <RadarGraph data={[barList]} /> */}
+          {/* <Text style={styles.subtitle}>{this.state.groupName}'s Activity Summary:</Text> */}
+          {/* <Bar
             barList = { barList }
-          />
+          /> */}
         </ScrollView>
       );
     }
