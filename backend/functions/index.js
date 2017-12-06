@@ -366,7 +366,7 @@ app.get('/fetchAllGroups', (req, res) => {
           var memberList = [];
           groupObject['groupName'] = groupName;
           groupObject['avatar'] = snap4.val()['avatar'];
-
+          groupObject['objective'] = snap4.val()['objective'];
           // get member list of a group
           for (var groupMember in snap4.val()['memberList']) {
             memberList.push(snap4.val()['memberList'][groupMember]['memberName']);
@@ -419,6 +419,7 @@ app.get('/fetchGroupsUserIn', (req, res) => {
             groupObject['groupName'] = groupName;
             groupObject['avatar'] = snap2.val()['avatar'];
             groupObject['top3'] = snap2.val()['top3'];
+            groupObject['objective'] = snap2.val()['objective'];
             groupsUserIn.push(groupObject);
           }
         }

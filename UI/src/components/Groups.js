@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ScrollView, View, Image, Text, ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
-import { SearchBar, List, ListItem, Button } from 'react-native-elements';
+import { SearchBar, List, ListItem, Button, Icon } from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import { Card, CardSection } from './common';
 import { get } from '../../api.js';
@@ -107,34 +107,20 @@ export default class Groups extends Component {
       const groups = props.groups;
       if (groups.length != 0) {
         const groupItems = groups.map((element, index) => 
-          <Card key={index}>
-            <CardSection>
-              <TouchableHighlight
-                style={styles.container}
-                onPress={() => navigate('GroupDetail', {
-                  groupName: element.groupName,
-                  groupEmail: element.groupEmail,
-                  isJoined: true,
-                  groupObjective: element.groupObjective
-                })}
-              >
-                <View>
-                  <View>
-                    <Text>{ element.groupName }</Text>
-                    <Image
-                      style={ styles.thumbnail }
-                      source={{ uri: element.avatar }}
-                    />
-                  </View>
-                  <View>
-                    <Text>{ element.top3[0] }</Text>
-                    <Text>{ element.top3[1] }</Text>
-                    <Text>{ element.top3[2] }</Text>
-                  </View>
-                </View>
-              </TouchableHighlight>
-            </CardSection>
-          </Card>
+          <ListItem
+            key={index}
+            title={element.groupName}
+            avatar={{ uri: element.avatar }}
+            roundAvatar={true}
+            subtitle={element.objective}
+            
+            onPress={() => navigate('GroupDetail', {
+              groupName: element.groupName,
+              groupEmail: element.groupEmail,
+              isJoined: true,
+              groupObjective: element.objective
+            })}
+          />
         );
         return groupItems;
       } else {
@@ -194,31 +180,39 @@ export default class Groups extends Component {
       );
     } else {
   		return (
-    	  <ScrollView>
-          <SearchBar
-            lightTheme
-            onChangeText={(term) => this.SearchFilterFunction(term)}
-            placeholder='Search groups'
-          />
-          <Button
-            large
-            icon={{name: 'plus', type: 'font-awesome'}}
-            title='Create group'
-            backgroundColor='#ff9966'
+        <View style={{flex:1}}>
+          <ScrollView>
+            <SearchBar
+              lightTheme
+              onChangeText={(term) => this.SearchFilterFunction(term)}
+              placeholder='Search groups'
+            />
+            { this.state.hasTermInSearchBar
+                ? <List>
+                    <ListView
+                      renderRow={renderRow}
+                      dataSource={this.state.dataSource}
+                    />
+                  </List>
+                : <CreateGroupList
+                    groups={this.state.groups}
+                  />
+            }
+          </ScrollView>
+          <Icon
+            raised
+            name='plus'
+            type='font-awesome'
+            color='white'
+            size={30}
+            containerStyle={{backgroundColor: '#009973',
+                            position: 'absolute',
+                            alignSelf: 'flex-end',
+                            bottom: 15,
+                            right: 15}}
             onPress={() => navigate('GroupForm')}
           />
-          { this.state.hasTermInSearchBar
-              ? <List>
-                  <ListView
-                    renderRow={renderRow}
-                    dataSource={this.state.dataSource}
-                  />
-                </List>
-              : <CreateGroupList
-                  groups={this.state.groups}
-                />
-          }
-      	</ScrollView>
+        </View>
     	);
     }
   }

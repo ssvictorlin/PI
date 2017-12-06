@@ -19,7 +19,6 @@ export default class GroupDetail extends Component {
       groupData: null,
       loading: false,
       barList: {},
-      activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
       isFriend: false,
       curUserName: null
     };

@@ -111,26 +111,18 @@ export default class Friends extends Component {
       const friends = props.friends;
       if (friends.length != 0) {
         const friendItems = friends.map((element, index) => 
-          <Card key={index}>
-            <CardSection>
-              <TouchableHighlight
-                style={styles.container}
-                onPress={() => navigate('FriendDetail', {
-                  userName: element.userName,
-                  userEmail: element.userEmail,
-                  isFriend: true
-                })}
-              >
-                <View>
-                  <Text>{ element.userName }</Text>
-                  <Image
-                    style={ styles.thumbnail }
-                    source={{ uri: element.avatar }}
-                  />
-                </View>
-              </TouchableHighlight>
-            </CardSection>
-          </Card>
+          <ListItem
+            key={index}
+            title={element.userName}
+            avatar={{ uri: element.avatar }}
+            roundAvatar={true}
+            
+            onPress={() => navigate('FriendDetail', {
+              userName: element.userName,
+              userEmail: element.userEmail,
+              isFriend: true
+            })}
+          />
         );
         return friendItems;
       } else {
