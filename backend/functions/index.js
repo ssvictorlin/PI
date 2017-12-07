@@ -300,7 +300,7 @@ app.get('/fetchAllUsers', (req, res) => {
     console.log(curUserName);
     snap.forEach(function(data) {
       var userObj = {};
-      if (data.key !== userEmail && snap.val()[data.key]['friends'] != null) {
+      if (data.key !== userEmail) {
         userObj['userEmail'] = data.key;
         userObj['userName'] = data.val()['userName'];
         userObj['avatar'] = data.val()['avatar'];
@@ -308,7 +308,7 @@ app.get('/fetchAllUsers', (req, res) => {
         // userObj['labels'] = data.val()['labels'];
         userObj['curUserName'] = curUserName;
         userObj['curUserEmail'] = userEmail;
-        if (snap.val()[data.key]['friends'].hasOwnProperty(userEmail)) {
+        if (snap.val()[data.key]['friends'] != null && snap.val()[data.key]['friends'].hasOwnProperty(userEmail)) {
           userObj['isFriend'] = true;
         } else {
           userObj['isFriend'] = false;
