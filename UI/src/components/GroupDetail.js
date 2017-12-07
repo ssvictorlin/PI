@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ScrollView, View, Text, Image, ActivityIndicator } from 'react-native';
 import { get } from '../../api.js';
 import RadarGraph from './radar.js';
-import { Icon, List, ListItem, Button, Card } from 'react-native-elements';
+import { Icon, List, ListItem, Button, Card, Avatar } from 'react-native-elements';
 import firebase from 'firebase';
 import Bar from './bar.js';
 
@@ -17,9 +17,11 @@ export default class GroupDetail extends Component {
       avatar: null,
       top3: null,
       groupData: null,
+      memberList: null,
+      friendsInGroup: [],
       loading: false,
       barList: {},
-      isFriend: false,
+      isJoined: false,
       curUserName: null
     };
   }
@@ -28,6 +30,37 @@ export default class GroupDetail extends Component {
     this.getData();
     this.getCurUser();
   }
+
+  getData = async () => {
+    const {state} = this.props.navigation;
+    this.setState({loading: true, groupName: state.params.groupName});
+    try {
+      const responseFromGroup = await get('app/readGroup?groupName=' + state.params.groupName)
+      .then((response) => response.json())
+      .then((dataFromGroup) => {
+        console.log(dataFromGroup);
+        this.setState({
+          groupName: state.params.groupName,
+          avatar: dataFromGroup.avatar,
+          groupData: dataFromGroup,
+          groupObjective: dataFromGroup.objective,
+          memberList: dataFromGroup.memberList,
+          isJoined: state.params.isJoined,
+          top3: dataFromGroup.top3
+        }, function() {
+          // In this block you can do something with new state.
+          console.log(this.state.groupName);
+          this.fetchUsersFriendsInGroup();
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+    catch(err) {
+      alert(err);
+    }
+  };
 
   getCurUser = async () => {
     var user = firebase.auth().currentUser;
@@ -45,23 +78,24 @@ export default class GroupDetail extends Component {
     }
   };
 
-  getData = async () => {
-    this.setState({loading: true});
-    const {state} = this.props.navigation;
+  fetchUsersFriendsInGroup = async () => {
+    var user = firebase.auth().currentUser;
+    if (user == null) {
+      throw "user not signed in"
+    }
     try {
-      const responseFromGroup = await get('app/readGroup?groupName=' + state.params.groupName);
-      const dataFromGroup = await responseFromGroup.json();
-      console.log(dataFromGroup);
-
+      console.log(user.email);
+      console.log(this.state.groupName);
+      const response = await get('app/fetchUsersFriendsInGroup?userEmail=' + user.email + 
+        '&groupName=' + this.state.groupName);
+      console.log(response);
+      const data = await response.json();
+      console.log(data);
       this.setState({
-        groupName: state.params.groupName,
-        avatar: dataFromGroup.avatar,
-        groupData: dataFromGroup,
-        groupObjective: dataFromGroup.objective,
-        loading: false,
-        isJoined: state.params.isJoined,
-        top3: dataFromGroup.top3
+        friendsInGroup: data,
+        loading: false
       });
+      console.log(this.state.friendsInGroup);
     }
     catch(err) {
       alert(err);
@@ -116,6 +150,30 @@ export default class GroupDetail extends Component {
   }
 
   render() {
+    function RenderFriendList(props) {
+      const friends = props.friends;
+      if (friends.length != 0) {
+        const friendItems = friends.map((element, index) => 
+          <View key={index}>
+            <Avatar
+              medium
+              rounded
+              source={{uri: element.avatar}}
+              title={element.userName}
+              onPress={() => console.log("Works!")}
+              activeOpacity={0.7}
+            />
+            <Text>{element.userName}</Text>
+          </View>
+        );
+        return friendItems;
+      } else {
+        return (
+          <Text>No friends are in this group!</Text>
+        );
+      }
+    }
+
     if (this.state.loading == true) {
       return (
         <ActivityIndicator
@@ -138,8 +196,12 @@ export default class GroupDetail extends Component {
           <Card
             title={this.state.groupObjective}
             image={{ uri: this.state.avatar }}>
-            <Text style={{marginBottom: 10}}>Top 3 Activities:</Text>
+            <Text style={{marginBottom: 10}}>Top 3 Activities</Text>
             <Bar barList = { barList } />
+            <Text style={{marginBottom: 10}}>Friends in the group</Text>
+            <View style={styles.buttonContainer}>
+              <RenderFriendList friends={this.state.friendsInGroup} />
+            </View>
             {this.renderJoinButton()}
           </Card>
         </ScrollView>
@@ -160,7 +222,6 @@ const styles = {
   },
   nameContainer: {
     flexDirection: 'column',
-    justifyContent: 'space-around'
   },
   name: {
     fontSize: 24
@@ -193,5 +254,16 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 8
+  },
+  buttonContainer: {
+    height: 80,
+    flexDirection: 'row',
+  },
+  friendButton: {
+    height: 50,
+    width: 50 ,
+    borderRadius: 100,
+    marginTop: 10,
+    marginLeft: 10
   }
 }

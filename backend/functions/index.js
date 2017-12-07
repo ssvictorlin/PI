@@ -450,6 +450,50 @@ app.get('/fetchGroupsUserIn', (req, res) => {
 });
 
 /*
+  This fetches user's friend in a designated group.
+  Parameters:
+    userEmail: The email of the current user.
+    groupName: The name of group.
+*/
+app.get('/fetchUsersFriendsInGroup', (req, res) => {
+  var query = url.parse(req.url, true).query;
+  var userEmail = query['userEmail'].replace(".", ",");
+  var groupName = query['groupName'];
+  var groupMemberRef = db.ref('groups/' + groupName + '/memberList');
+  var userRef = db.ref('users/');
+  
+  var friendsInGroup = [];
+  userRef.on('value', snap => {
+    var friendList = [];
+     for (var user in snap.val()) {
+      var friendObj = {};
+      if (user === userEmail || snap.val()[user]['friends'] == null) continue;
+      if (snap.val()[user]['friends'].hasOwnProperty(userEmail)) {
+        friendObj['userEmail'] = user;
+        friendObj['userName'] = snap.val()[user]['userName'];
+        friendObj['avatar'] = snap.val()[user]['avatar'];
+        friendObj['memberofGroup'] = snap.val()[user]['memberofGroup'];
+        friendObj['labels'] = snap.val()[user]['labels'];
+        friendList.push(friendObj);
+      }
+    }
+
+    groupMemberRef.on('value', snap2 => {  
+      console.log(snap2.val());
+      for (var i = 0; i < friendList.length; i++) {
+        console.log(friendList[i]);
+        if (snap2.val() != null && snap2.val().hasOwnProperty(friendList[i]['userEmail'])) {
+          friendsInGroup.push(friendList[i]);
+        }
+      }
+      console.log(friendsInGroup);
+      res.send(friendsInGroup); 
+    });
+  });
+   
+});
+
+/*
   This read information from a designated group.
   Parameters:
     groupName: The group name that wanted to be queried.
