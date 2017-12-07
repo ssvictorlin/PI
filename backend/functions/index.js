@@ -7,7 +7,6 @@ const app = express();
 const dbroutes = require('./routes/database.js');
 const db = admin.database();
 
-
 /*
   This creates a user's Group.
   Parameters:
@@ -286,6 +285,11 @@ app.get('/readUser', (req, res) => {
   });
 });
 
+/*
+  This fetches all users.
+  Parameters:
+    userEmail: The email of the current user.
+*/
 app.get('/fetchAllUsers', (req, res) => {
   var query = url.parse(req.url, true).query;
   var usersRef = db.ref('users');
@@ -321,6 +325,11 @@ app.get('/fetchAllUsers', (req, res) => {
   });
 });
 
+/*
+  This fetches all current user's friend.
+  Parameters:
+    userEmail: The email of the current user.
+*/
 app.get('/fetchUsersFriends', (req, res) => {
   var query = url.parse(req.url, true).query;
   var userEmail = query['userEmail'].replace(".", ",");
@@ -344,6 +353,11 @@ app.get('/fetchUsersFriends', (req, res) => {
   });
 });
 
+/*
+  This fetches all groups.
+  Parameters:
+    userEmail: The email of the current user.
+*/
 app.get('/fetchAllGroups', (req, res) => {
   var query = url.parse(req.url, true).query;
   var userEmail = query['userEmail'].replace(".", ",");
@@ -404,6 +418,12 @@ app.get('/fetchAllGroups', (req, res) => {
   });
 });
 
+
+/*
+  This fetches all groups that user joins.
+  Parameters:
+    userEmail: The email of the current user.
+*/
 app.get('/fetchGroupsUserIn', (req, res) => {
   var query = url.parse(req.url, true).query;
   var userEmail = query['userEmail'].replace(".", ",");
@@ -429,6 +449,11 @@ app.get('/fetchGroupsUserIn', (req, res) => {
   });
 });
 
+/*
+  This read information from a designated group.
+  Parameters:
+    groupName: The group name that wanted to be queried.
+*/
 app.get('/readGroup', (req, res) => {
   var query = url.parse(req.url, true).query;
   var groupName = query['groupName'];
@@ -436,34 +461,6 @@ app.get('/readGroup', (req, res) => {
 
   groupRef.child(groupName).on('value', snap => {
     res.send(snap.val());
-  });
-});
-
-/*
-  This will get the profile of designated user
-  Parameter:
-    email: the email for fetching the designated user's data
-*/
-app.get('/profile', (req, res) => {
-  var query = url.parse(req.url, true).query;
-  var userEmail = query['email'].replace(".", ",");
-  var usersRef = db.ref('users');
-
-  usersRef.child(userEmail).on('value', snap => {
-    const username = snap.val()['userName'];
-    const avatar = snap.val()['avatar'];
-    res.send({
-      "username": username,
-      "avatar": avatar,
-    });
-  });
-});
-
-app.get('/crowns', (req, res) => {
-  res.send({
-    "crownHolder": "http://farm3.static.flickr.com/2788/4132734706_da037b2754.jpg",
-    "pieChart": "https://cdn-images-1.medium.com/max/1600/1*RSqZ9sw6-mOXAAptmvz4Dg.png",
-    "crownIcon": "https://image.ibb.co/kna94b/icons8_crown_48.png",
   });
 });
 

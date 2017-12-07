@@ -9,9 +9,7 @@ export default class Crowns extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      crownHolder: "",
-      pieChart: "",
-      crownIcon: "",
+      crownIcon: 'https://image.ibb.co/kna94b/icons8_crown_48.png',
       loading: false,
       friendsObjList: [] // friends' objects list
     };
@@ -37,9 +35,6 @@ export default class Crowns extends Component {
       throw "user not signed in"
     }
     try {
-      const response = await get('app/crowns')
-      const pageData = await response.json()
-
       const email = user.email.replace('.',',')
       const res = await get('app/readUser'+'?userEmail='+email)
       const userData = await res.json()
@@ -52,9 +47,6 @@ export default class Crowns extends Component {
       }
 
       this.setState({
-        crownHolder: pageData.crownHolder,
-        pieChart: pageData.pieChart,
-        crownIcon: pageData.crownIcon,
         loading: false,
         friendsObjList: result
       });

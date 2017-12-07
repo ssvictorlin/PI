@@ -49,18 +49,15 @@ export default class FriendDetail extends Component {
     const {state} = this.props.navigation;
     console.log(state.params.fetchUsersFriends);
     try {
-      const responseFromProfile = await get('app/profile?email=' + state.params.userEmail);
-      const dataFromProfile = await responseFromProfile.json();
-
       const email = state.params.userEmail.replace('.',',')
-      const responseFromCurUser = await get('app/readUser'+'?userEmail='+ email)
-      const dataFromCurUser = await responseFromCurUser.json()
+      const responseFromUser = await get('app/readUser'+'?userEmail='+ email)
+      const dataFromUser = await responseFromUser.json()
 
       this.setState({
         email: state.params.userEmail,
-        name: dataFromProfile.username,
-        avatar: dataFromProfile.avatar,
-        userData: dataFromCurUser,
+        name: dataFromUser.userName,
+        avatar: dataFromUser.avatar,
+        userData: dataFromUser,
         loading: false,
         isFriend: state.params.isFriend
       });
