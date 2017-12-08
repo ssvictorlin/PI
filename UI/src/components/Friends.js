@@ -15,10 +15,10 @@ export default class Friends extends Component {
       hasTermInSearchBar: false,
       term: '',
       dataSource: null,
-      curUserName: null,
-      userList: null
+      curUserName: null
+      // userList: null
     };
-    // this.userList = [];
+    this.userList = [];
     // const { navigate } = this.props.navigation;
     // console.log(this.props.navigation.navigate);
   }
@@ -38,11 +38,11 @@ export default class Friends extends Component {
       this.setState({
         dataSource: ds.cloneWithRows(responseJson),
         loading: false,
-        userList: responseJson
+        // userList: responseJson
       }, function() {
         // In this block you can do something with new state.
-        // this.userList = responseJson ;
-        console.log(this.state.userList);
+        this.userList = responseJson ;
+        console.log(this.userList);
       });
     })
     .catch((error) => {
@@ -87,10 +87,11 @@ export default class Friends extends Component {
   };
 
   SearchFilterFunction(term){
-    const newData = this.state.userList.filter(function(item){
-      const itemData = item.userName.toUpperCase()
-      const textData = term.toUpperCase()
-      return itemData.indexOf(textData) > -1
+    const newData = this.userList.filter(function(item){
+      console.log(item.length);
+      const itemData = item.userName.toUpperCase();
+      const textData = term.toUpperCase();
+      return itemData.indexOf(textData) > -1;
     })
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(newData),

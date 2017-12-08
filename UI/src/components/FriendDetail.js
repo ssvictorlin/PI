@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ScrollView, View, Text, Image, ActivityIndicator } from 'react-native';
 import { get } from '../../api.js';
 import RadarGraph from './radar.js';
-import { Icon, List, ListItem, Button } from 'react-native-elements';
+import { Icon, List, ListItem, Button, Avatar } from 'react-native-elements';
 import firebase from 'firebase';
 import Bar from './bar.js';
 
@@ -14,6 +14,7 @@ export default class FriendDetail extends Component {
       email: null,
       name: null,
       avatar: null,
+      memberofGroup: null,
       userData: null,
       loading: false,
       barList: {},
@@ -27,6 +28,37 @@ export default class FriendDetail extends Component {
     this.getData();
     this.getCurUser();
   }
+
+  getData = async () => {
+    this.setState({loading: true});
+    const {state} = this.props.navigation;
+    try {
+      const email = state.params.userEmail.replace('.',',')
+      const responseFromUser = await get('app/readUser'+'?userEmail='+ email)
+        .then((response) => response.json())
+        .then((friendData) => {
+          console.log(friendData);
+          this.setState({
+            email: state.params.userEmail,
+            name: friendData.userName,
+            avatar: friendData.avatar,
+            userData: friendData,
+            isFriend: state.params.isFriend
+          }, function() {
+            // In this block you can do something with new state.
+            console.log(this.state.email);
+            this.fetchGroupsUserIn();
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+    catch(err) {
+      alert(err);
+    }
+  };
+
 
   getCurUser = async () => {
     var user = firebase.auth().currentUser;
@@ -44,22 +76,14 @@ export default class FriendDetail extends Component {
     }
   };
 
-  getData = async () => {
-    this.setState({loading: true});
-    const {state} = this.props.navigation;
-    console.log(state.params.fetchUsersFriends);
+  fetchGroupsUserIn = async () => {
     try {
-      const email = state.params.userEmail.replace('.',',')
-      const responseFromUser = await get('app/readUser'+'?userEmail='+ email)
-      const dataFromUser = await responseFromUser.json()
-
+      const response = await get('app/fetchGroupsUserIn?userEmail=' + this.state.email);
+      const data = await response.json();
+      console.log(data);
       this.setState({
-        email: state.params.userEmail,
-        name: dataFromUser.userName,
-        avatar: dataFromUser.avatar,
-        userData: dataFromUser,
-        loading: false,
-        isFriend: state.params.isFriend
+        memberofGroup: data,
+        loading: false
       });
     }
     catch(err) {
@@ -108,6 +132,30 @@ export default class FriendDetail extends Component {
   }
 
   render() {
+    function RenderGroupList(props) {
+      const groups = props.groups;
+      if (groups.length != 0) {
+        const groupItems = groups.map((element, index) => 
+          <View key={index}>
+            <Avatar
+              medium
+              rounded
+              source={{uri: element.avatar}}
+              title={element.userName}
+              onPress={() => console.log("Works!")}
+              activeOpacity={0.7}
+            />
+            <Text>{element.groupName}</Text>
+          </View>
+        );
+        return groupItems;
+      } else {
+        return (
+          <Text>Doesn't join any group!</Text>
+        );
+      }
+    }
+
     if (this.state.loading == true) {
       return (
         <ActivityIndicator
@@ -120,7 +168,7 @@ export default class FriendDetail extends Component {
       barList = {}
       for (var i = 0; i < this.state.activityList.length; i++) {
         var acti = this.state.activityList[i]
-        console.log(this.state.activityList[i])
+        // console.log(this.state.activityList[i])
         barList[acti] = this.state.userData['labels'][acti]
       }
 
@@ -143,6 +191,10 @@ export default class FriendDetail extends Component {
           <Bar
             barList = { barList }
           />
+          <Text style={styles.subtitle}>Groups</Text>
+          <View style={styles.buttonContainer}>
+              <RenderGroupList groups={this.state.memberofGroup} />
+            </View>
         </ScrollView>
       );
     }
@@ -194,5 +246,17 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 8
+  },
+  buttonContainer: {
+    paddingTop: 10,
+    height: 80,
+    flexDirection: 'row',
+  },
+  groupButton: {
+    height: 50,
+    width: 50 ,
+    borderRadius: 100,
+    paddingTop: 10,
+    paddingLeft: 10
   }
 }
