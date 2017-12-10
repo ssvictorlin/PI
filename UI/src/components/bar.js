@@ -54,6 +54,7 @@ export default class Bar extends Component {
           widthCap = Math.round(this.props.barList[item] * unit)
           width[item] = widthCap
         })
+        console.log('MaxWidth', maxWidth)
         width['maxWidth'] = maxWidth
         return width
     }
@@ -74,7 +75,7 @@ export default class Bar extends Component {
                 <Text style={styles.label}>{element}</Text>
                 <View style={styles.data}>
                     <Animated.View style={[styles.bar,  {backgroundColor: randomColor()},
-                      {width: ((this.state[element] <= this.state['maxWidth']) ? this.state[element] : 360)}]} />
+                      {width: ((this.state[element] <= this.state['maxWidth']) ? this.state[element] : this.state['maxWidth'])}]} />
                     <Text style={styles.dataNumber}>{this.state[element]}</Text>
                 </View>
               </View>

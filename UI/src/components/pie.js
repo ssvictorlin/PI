@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Image, Text } from 'react-native';
+import { ScrollView, View, Image, Text, Dimensions } from 'react-native';
 import { get, put } from '../../api.js';
 import { Card, CardSection } from './common';
 import { Pie } from 'react-native-pathjs-charts';
@@ -21,13 +21,22 @@ export default class PieGraph extends Component {
     console.log("Activity to piechart is: "+ this.props.activity)
   }
 
+  getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
   getTop5Data() {
     var acti = this.props.activity
     result = []
+    let rcolor = randomColor({
+      luminosity: 'dark',
+      format:'rgbArray'
+    })
     for (var i = 0; i < this.props.top5List.length; i++) {
       let item = {
         "name": this.props.top5List[i]['userName'],
-        "minutes": this.props.top5List[i]['labels'][acti]
+        "minutes": this.props.top5List[i]['labels'][acti],
+        "color": {'r':rcolor[0],'g':this.getRandomInt(0,255),'b':rcolor[2]}
       }
       if (item['name'] == this.props.curUserName) {
         item['color'] = {'r':66,'g':111,'b':183}
@@ -39,15 +48,16 @@ export default class PieGraph extends Component {
   }
   
   render() {
-    let data = this.getTop5Data()
-    console.log("data is: %O", data)
-    
+    const deviceWidth = Dimensions.get('window').width    
+    const maxWidthForPie = Math.round(deviceWidth - 200)
+    const radius = (maxWidthForPie-10)/2
+    let data = this.getTop5Data()    
     let options = {
-      width: 180,
-      height: 180,
-      color: randomColor({ luminosity: 'dark' }),
-      r: 20,
-      R: 90,
+      width: maxWidthForPie,
+      height: maxWidthForPie,
+      //color: randomColor({ luminosity: 'dark' }),
+      r: radius/4,
+      R: radius,
       legendPosition: 'topRight',
       animate: {
           type: 'oneByOne',
@@ -63,7 +73,7 @@ export default class PieGraph extends Component {
     }
 
     return (
-      <View>
+      <View style = {{justifyContent: 'center'}}>
           <Pie
           data={data}
           options={options}

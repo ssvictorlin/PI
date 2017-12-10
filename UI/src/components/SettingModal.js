@@ -26,7 +26,7 @@ export default class SettingModal extends Component {
 
   makeCheckList() {
     return this.props.fullList.map((x) =>
-      <CheckBox center key={x[0]} title={x[0]} checked={x[1]}
+      <CheckBox key={x[0]} title={x[0]} checked={x[1]}
         onPress={() => this.props.setActivityList(x[0])}
         />
     );

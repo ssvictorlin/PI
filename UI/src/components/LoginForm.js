@@ -31,13 +31,16 @@ export default class LoginForm extends Component {
 
   renderButton() {
     if (this.props.loading) {
-      return <Spinner size="small" />;
+      return  <CardSection><Spinner size="small" /></CardSection>;
     }
 
     return (
       <CardSection>
         <Button onPress={this.onButtonPress.bind(this)}>
           Log in
+        </Button>
+        <Button onPress={() => this.props.showRegister()}>
+          Register
         </Button>
       </CardSection>
     );
@@ -70,11 +73,6 @@ export default class LoginForm extends Component {
             {this.props.error}
           </Text>
           {this.renderButton()}
-          <CardSection>
-            <Button onPress={() => this.props.showRegister()}>
-              Register
-            </Button>
-          </CardSection>
         </Card>
       </View>
     );

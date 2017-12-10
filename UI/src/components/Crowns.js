@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Image, Text, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Image, Text, ActivityIndicator, Dimensions } from 'react-native';
 import { get } from '../../api.js';
 import { Card, CardSection } from './common';
 import PieGraph from './pie.js'
@@ -83,7 +83,7 @@ export default class Crowns extends Component {
               />
               <Text style={ styles.subtitle }> { sortedLists[element][0]['userName'] } </Text>
             </View>
-            <PieGraph activity={ element }
+            <PieGraph style={ styles.pieChart } activity={ element }
             top5List={ sortedLists[element] }
             curUserName = { this.state.friendsObjList[0]['userName'] }/>
           </View>
@@ -127,7 +127,6 @@ export default class Crowns extends Component {
     var sortedObjList = this.state.friendsObjList.slice(0)
     sortedObjList.sort(compare)
     result = []
-    console.log("list: " + JSON.stringify(sortedObjList));
     for (var i = 0; i < 5; i++) {
       if (!sortedObjList[i] || (i > 0 && sortedObjList[i]['labels'][acti] == 0)) break;
       if (sortedObjList[i]['userName'] == this.state.friendsObjList[0]['userName']) {
@@ -175,14 +174,17 @@ const styles = {
     borderRadius: 50,
   },
   crownHolderContainer: {
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
     marginRight: 10,
   },
   pieChart: {
-    height: 100,
-    width: 100,
+    justifyContent: 'center',
+    height: 150,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   centering: {
 		alignItems: 'center',

@@ -31,7 +31,7 @@ export default class RadarGraph extends Component {
         bottom: 0
       },
       r: 100,
-      max: 100,
+      max: 360,
       fill: "#2980B9",
       stroke: "#2980B9",
       animate: {
@@ -47,9 +47,19 @@ export default class RadarGraph extends Component {
       }
     }
 
+    var result = [];
+    result.push({});
+    var obj = this.props.data[0];
+    for (dataInst in obj) {
+      if (obj[dataInst] > 300) {
+        result[0][dataInst] = 300;
+      } else {
+        result[0][dataInst] = obj[dataInst];
+      }
+    }
     return (
       <View style={styles.container}>
-        <Radar data={this.props.data} options={options} />
+        <Radar data={result} options={options} />
       </View>
     )
   }
