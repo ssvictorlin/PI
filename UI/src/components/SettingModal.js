@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Dimensions, View, Modal, Text, TouchableHighlight, ScrollView } from 'react-native';
-import { CheckBox } from 'react-native-elements';
+import { Icon, CheckBox } from 'react-native-elements';
 
 export default class SettingModal extends Component {
   constructor(props) {
@@ -42,14 +42,18 @@ export default class SettingModal extends Component {
             this.setState({settingsView: false});
             this.props.setModalVisible(!this.props.modalVisible);}
           }>
-            <Text style={{fontSize: 20}}>X</Text>
+          <View hitSlop={{top: 10, bottom: 10, left: 0, right: 0}}>
+            <Text style={{fontSize: 40}}>X</Text>
+          </View>          
           </TouchableHighlight>
           <TouchableHighlight
             onPress={() => {
               this.setState({settingsView: false});
             }
           }>
-            <Text style={{fontSize: 20, borderBottomWidth: 2, marginBottom: 10}}>{'<-- '}Back</Text>
+          <View hitSlop={{top: 10, bottom: 10, left: 0, right: 0}} style={{flexDirection: 'row', marginBottom: 20}}>
+            <Icon name='arrow-back'/><Text style={{fontSize: 20}}>Back</Text>
+          </View>
           </TouchableHighlight>
           <Text>Select your preferred insight labels (we recommend between 4 and 10 labels)</Text>
           <ScrollView>
@@ -68,7 +72,9 @@ export default class SettingModal extends Component {
             this.setState({settingsView: false});
             this.props.setModalVisible(!this.props.modalVisible);}
           }>
-            <Text style={{fontSize: 20}}>X</Text>
+          <View hitSlop={{top: 10, bottom: 10, left: 0, right: 0}}>
+            <Text style={{fontSize: 40}}>X</Text>
+          </View>
           </TouchableHighlight>
           <Text style={{fontSize: 20, borderBottomWidth: 2}}>
             Hi, {this.props.email}!
@@ -78,13 +84,13 @@ export default class SettingModal extends Component {
               onPress={() => {
               this.showDetailed();
             }}>
-              <Text style={{marginBottom: 10}}>Insight Settings</Text>
+              <Text style={{marginBottom: 10, fontSize: 24}}>Insight Settings</Text>
             </TouchableHighlight>
             <TouchableHighlight style={{marginBottom: 10, borderBottomWidth: 2}}
               onPress={() => {
               this.props.logout()
             }}>
-              <Text style={{marginBottom: 10}}>Logout</Text>
+              <Text style={{marginBottom: 10, fontSize: 24}}>Logout</Text>
             </TouchableHighlight>
           </View>
         </View>

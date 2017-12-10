@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Setting = (props) => {
   return (
-    <View>
+    <View hitSlop={{top: 5, bottom: 5, left: 5, right: 5}}>
       <Icon size={30} style={styles.gear} name="cog" onPress={() => {props.openModal(true)}} />
     </View>
   );

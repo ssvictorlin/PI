@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { ScrollView, View, Text, Image, Button, ActivityIndicator } from 'react-native';
 import { get, put } from '../../api.js';
 import RadarGraph from './radar.js';
-import { Icon, List, ListItem } from 'react-native-elements';
 import firebase from 'firebase';
 import Bar from './bar.js';
 
