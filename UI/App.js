@@ -251,7 +251,7 @@ export default class App extends Component<{}> {
 
   render() {
     return (
-      <View style={{flex:1}}>
+      <View style={{flex:1, backgroundColor: '#fff'}}>
         {this.renderContent()}
       </View>
     );
@@ -263,7 +263,7 @@ const styles = {
     flex: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#FFF',
   },
   rowViewContainer: {
     fontSize: 17,

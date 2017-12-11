@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Image } from 'react-native';
 import { Button, Card, CardSection, Input, Spinner } from './common';
 import { get } from '../../api.js';
 import firebase from 'firebase';
@@ -31,10 +31,28 @@ export default class RegisterForm extends Component {
   }
 
   render() {
+    const resizeMode = 'cover';
     return (
       <View style={{flex: 1, justifyContent: 'center'}}>
-        <Text style={{alignSelf: 'stretch', height: 50, fontSize: 30, textAlign: 'center', color: 'white', backgroundColor: 'lightblue'}}>Register</Text>
+      <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          <Image
+            style={{
+              flex: 1,
+              resizeMode,
+            }}
+            source={require('../bg.jpg')}
+          />
+      </View>
         <Card>
+          <Text style={{alignSelf: 'stretch', height: 50, fontSize: 30, textAlign: 'center', color: '#FFF', backgroundColor: '#778899', borderTopLeftRadius: 15, borderTopRightRadius: 15}}>Register</Text>
           <CardSection>
             <Input
               placeholder="user@gmail.com"

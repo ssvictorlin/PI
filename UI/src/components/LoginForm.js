@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Image } from 'react-native';
 import { Button, Card, CardSection, Input, Spinner } from './common';
 import { get } from '../../api.js';
 //import firebase from 'firebase';
@@ -47,9 +47,30 @@ export default class LoginForm extends Component {
   }
 
   render() {
+    const resizeMode = 'cover';
     return (
-      <View style={{flex: 1, justifyContent: 'center'}}>
+      <View style={styles.roundEdges}>
+        <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <Image
+              style={{
+                flex: 1,
+                resizeMode,
+              }}
+              source={require('../bg.jpg')}
+            />
+        </View>
         <Card>
+          <View>
+            <Text style={styles.header}>Personality Insights</Text>
+          </View>
           <CardSection>
             <Input
               placeholder="user@gmail.com"
@@ -84,5 +105,19 @@ const styles = {
     fontSize: 20,
     alignSelf: 'center',
     color: 'red'
+  },
+  header: {
+    fontSize: 40,
+    alignSelf: 'center',
+    textAlign: 'center',
+    fontFamily: 'sans-serif-medium',
+    color: '#FFF',
+    backgroundColor: '#778899',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  roundEdges: {
+    flex: 1,
+    justifyContent: 'center'
   }
 };

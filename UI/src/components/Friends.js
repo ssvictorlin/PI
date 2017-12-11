@@ -24,7 +24,7 @@ export default class Friends extends Component {
   }
 
   componentWillMount() {
-    this.fetchUsersFriends(); 
+    this.fetchUsersFriends();
     this.getCurUser();
     var user = firebase.auth().currentUser;
     this.fetchAllUsers(user.email)
@@ -111,13 +111,13 @@ export default class Friends extends Component {
     function CreateFriendList(props) {
       const friends = props.friends;
       if (friends.length != 0) {
-        const friendItems = friends.map((element, index) => 
+        const friendItems = friends.map((element, index) =>
           <ListItem
             key={index}
             title={element.userName}
             avatar={{ uri: element.avatar }}
             roundAvatar={true}
-            
+
             onPress={() => navigate('FriendDetail', {
               userName: element.userName,
               userEmail: element.userEmail,
@@ -160,7 +160,7 @@ export default class Friends extends Component {
             subtitle='Stranger'
             avatar={{uri:rowData.avatar}}
             hideChevron={true}
-            onPress={() => navigate('FriendDetail', 
+            onPress={() => navigate('FriendDetail',
             { userName: rowData.userName,
               userEmail: rowData.userEmail,
               isFriend: rowData.isFriend
@@ -180,7 +180,7 @@ export default class Friends extends Component {
       );
     } else {
       return (
-        <ScrollView>
+        <ScrollView style={{backgroundColor: '#FFF'}}>
           <SearchBar
             lightTheme
             onChangeText={(term) => this.SearchFilterFunction(term)}
@@ -208,7 +208,7 @@ const styles = {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#FFF',
   },
   nameContainer: {
     flexDirection: 'column',

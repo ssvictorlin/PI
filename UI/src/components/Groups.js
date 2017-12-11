@@ -106,14 +106,14 @@ export default class Groups extends Component {
     function CreateGroupList(props) {
       const groups = props.groups;
       if (groups.length != 0) {
-        const groupItems = groups.map((element, index) => 
+        const groupItems = groups.map((element, index) =>
           <ListItem
             key={index}
             title={element.groupName}
             avatar={{ uri: element.avatar }}
             roundAvatar={true}
             subtitle={element.objective}
-            
+
             onPress={() => navigate('GroupDetail', {
               groupName: element.groupName,
               groupEmail: element.groupEmail,
@@ -180,7 +180,7 @@ export default class Groups extends Component {
       );
     } else {
   		return (
-        <View style={{flex:1}}>
+        <View style={{flex:1, backgroundColor: '#FFF'}}>
           <ScrollView>
             <SearchBar
               lightTheme
@@ -223,7 +223,7 @@ const styles = {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#FFF',
   },
   nameContainer: {
     flexDirection: 'column',

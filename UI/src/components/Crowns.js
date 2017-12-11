@@ -16,6 +16,7 @@ export default class Crowns extends Component {
   }
 
   componentWillMount() {
+    console.log("mounting");
     this.getData();
   }
 
