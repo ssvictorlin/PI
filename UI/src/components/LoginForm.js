@@ -31,7 +31,7 @@ export default class LoginForm extends Component {
 
   renderButton() {
     if (this.props.loading) {
-      return  <CardSection><Spinner size="small" /></CardSection>;
+      return  <CardSection style={{justifyContent: 'center', alignItems: 'center'}}><Image style={{width: '100%'}} source={require('../graph.gif')} /></CardSection>;
     }
 
     return (
