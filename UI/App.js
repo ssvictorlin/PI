@@ -33,7 +33,7 @@ export default class App extends Component<{}> {
       email: null,
       password: null,
       username: null,
-      loading: false,
+      loading: true,
       loginErr: '',
       activityList: ['Sitting', 'Standing', 'Walking', 'With friends', 'At home', 'Phone in hand'],
       fullList: [],
@@ -130,6 +130,25 @@ export default class App extends Component<{}> {
     };
 
     firebase.initializeApp(config);
+
+    const authObserver = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        get('app/readUser?userEmail=' + user.email.replace(".", ",")).then((response) => {
+          const fullData = JSON.parse(response._bodyText);
+          this.setState({
+            fullList: Object.entries(fullData.labels),
+            loggedIn: true,
+            loading: false,
+            modalVisible: false,
+            email: user.email,
+            username: fullData.userName
+          });
+        });
+        authObserver();
+      } else {
+        this.setState({loading: false})
+      }
+    });
   }
 
   setModalVisible = (visible) => {
@@ -137,12 +156,14 @@ export default class App extends Component<{}> {
   }
 
   logout = () => {
-    this.setState({
-      loggedIn: false,
-      username: null,
-      password: null,
-      email: null,
-      modalVisible: false
+    firebase.auth().signOut().then(() => {
+      this.setState({
+        loggedIn: false,
+        username: null,
+        password: null,
+        email: null,
+        modalVisible: false
+      });
     });
   }
 
