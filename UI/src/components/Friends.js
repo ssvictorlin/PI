@@ -20,7 +20,6 @@ export default class Friends extends Component {
     };
     this.userList = [];
     // const { navigate } = this.props.navigation;
-    // console.log(this.props.navigation.navigate);
   }
 
   componentWillMount() {
@@ -42,11 +41,10 @@ export default class Friends extends Component {
       }, function() {
         // In this block you can do something with new state.
         this.userList = responseJson ;
-        console.log(this.userList);
       });
     })
     .catch((error) => {
-      console.error(error);
+      // handle error
     });
   };
 
@@ -54,9 +52,7 @@ export default class Friends extends Component {
     var user = firebase.auth().currentUser;
     try {
       const response = await get('app/readUser?userEmail=' + user.email);
-      console.log(user.email);
       const data = await response.json();
-      console.log(data);
       this.setState({
         curUserName: data['userName']
       });
@@ -76,7 +72,6 @@ export default class Friends extends Component {
     try {
       const response = await get('app/fetchUsersFriends?userEmail=' + user.email);
       const data = await response.json();
-      console.log(data);
       this.setState({
         friends: data
       });
@@ -88,7 +83,6 @@ export default class Friends extends Component {
 
   SearchFilterFunction(term){
     const newData = this.userList.filter(function(item){
-      console.log(item.length);
       const itemData = item.userName.toUpperCase();
       const textData = term.toUpperCase();
       return itemData.indexOf(textData) > -1;
@@ -134,7 +128,6 @@ export default class Friends extends Component {
     }
 
     function renderRow (rowData, sectionID) {
-      console.log(rowData);
       if (rowData.isFriend) {
         return (
           <ListItem

@@ -20,9 +20,7 @@ export default class GroupForm extends Component {
     var user = firebase.auth().currentUser;
     try {
       const response = await get('app/readUser?userEmail=' + user.email);
-      console.log(user.email);
       const data = await response.json();
-      console.log(data);
       this.setState({
         curUserName: data['userName']
       });
@@ -40,7 +38,7 @@ export default class GroupForm extends Component {
       throw "user not signed in"
     }
     try {
-      const response = await get('app/createGroup?userEmail=' + user.email.replace('.',',') + 
+      const response = await get('app/createGroup?userEmail=' + user.email.replace('.',',') +
         '&userName=' + this.state.curUserName + '&groupName=' + this.state.groupName +
         '&groupObjective=' + this.state.objective);
         alert('Group created!');

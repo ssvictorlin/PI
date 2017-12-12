@@ -37,7 +37,6 @@ export default class FriendDetail extends Component {
       const responseFromUser = await get('app/readUser'+'?userEmail='+ email)
         .then((response) => response.json())
         .then((friendData) => {
-          console.log(friendData);
           this.setState({
             email: state.params.userEmail,
             name: friendData.userName,
@@ -46,12 +45,11 @@ export default class FriendDetail extends Component {
             isFriend: state.params.isFriend
           }, function() {
             // In this block you can do something with new state.
-            console.log(this.state.email);
             this.fetchGroupsUserIn();
           });
         })
         .catch((error) => {
-          console.error(error);
+          // handle error
         });
     }
     catch(err) {
@@ -64,9 +62,7 @@ export default class FriendDetail extends Component {
     var user = firebase.auth().currentUser;
     try {
       const response = await get('app/readUser?userEmail=' + user.email);
-      console.log(user.email);
       const data = await response.json();
-      console.log(data);
       this.setState({
         curUserName: data['userName']
       });
@@ -80,7 +76,6 @@ export default class FriendDetail extends Component {
     try {
       const response = await get('app/fetchGroupsUserIn?userEmail=' + this.state.email);
       const data = await response.json();
-      console.log(data);
       this.setState({
         memberofGroup: data,
         loading: false
@@ -97,8 +92,6 @@ export default class FriendDetail extends Component {
       return (
         <Button title='unfriend' onPress={async () => {
           try {
-            console.log('friendEmail: ' + this.state.email);
-            console.log('userEmail: ' + curUserEmail);
             const response = await get('app/deleteFriend?friendEmail=' + this.state.email
               + '&userEmail=' + curUserEmail);
             this.setState({isFriend: false});
@@ -114,8 +107,6 @@ export default class FriendDetail extends Component {
       return (
         <Button title='add' onPress={async () => {
           try {
-            console.log('friendEmail: ' + this.state.email);
-            console.log('userEmail: ' + curUserEmail);
             const response = await get('app/addFriend?friendName=' +
               this.state.name + '&friendEmail=' + this.state.email +
                 '&userName=' + this.state.curUserName + '&userEmail=' + curUserEmail);
@@ -135,7 +126,7 @@ export default class FriendDetail extends Component {
     function RenderGroupList(props) {
       const groups = props.groups;
       if (groups.length != 0) {
-        const groupItems = groups.map((element, index) => 
+        const groupItems = groups.map((element, index) =>
           <View key={index}>
             <Avatar
               medium
@@ -168,7 +159,6 @@ export default class FriendDetail extends Component {
       barList = {}
       for (var i = 0; i < this.state.activityList.length; i++) {
         var acti = this.state.activityList[i]
-        // console.log(this.state.activityList[i])
         barList[acti] = this.state.userData['labels'][acti]
       }
 

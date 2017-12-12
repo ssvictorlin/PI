@@ -22,11 +22,6 @@ export default class LoginForm extends Component {
     this.setState({
       loading: false,
     });
-    console.log("log in success");
-  }
-
-  registerPress() {
-    alert("TODO");
   }
 
   renderButton() {

@@ -128,7 +128,6 @@ export default class Profile extends Component {
       barList = {}
       for (var i = 0; i < this.props.activityList.length; i++) {
         var acti = this.props.activityList[i]
-        console.log(this.props.activityList[i])
         barList[acti] = this.state.userData['labels'][acti]
       }
       return (

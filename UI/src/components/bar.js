@@ -38,7 +38,6 @@ export default class Bar extends Component {
         for(var k in width) {
           newState[k] = width[k]
         }
-        console.log("newState: " + JSON.stringify(newState));
         this.setState( newState );
     }
 
@@ -48,13 +47,11 @@ export default class Bar extends Component {
         const unit = maxWidth / (360*1.0)
         let width = {}
         let widthCap // Give with a max cap
-        console.log(unit);
         itemNameList.forEach(item => {
           /* React-Native bug: if width=0 at first time, the borderRadius can't be implemented in the View */
           widthCap = Math.round(this.props.barList[item] * unit)
           width[item] = widthCap
         })
-        console.log('MaxWidth', maxWidth)
         width['maxWidth'] = maxWidth
         return width
     }

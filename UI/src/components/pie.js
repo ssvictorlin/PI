@@ -18,7 +18,6 @@ export default class PieGraph extends Component {
   }
 
   componentWillMount() {
-    console.log("Activity to piechart is: "+ this.props.activity);
   }
 
   getRandomInt(min, max) {
@@ -44,7 +43,6 @@ export default class PieGraph extends Component {
       }
       result.push(item)
     }
-    console.log("first");
     return result
   }
 
@@ -53,7 +51,6 @@ export default class PieGraph extends Component {
     const maxWidthForPie = Math.round(deviceWidth - 200)
     const radius = (maxWidthForPie-10)/2
     let data = this.getTop5Data()
-    console.log(data);
     let options = {
       width: maxWidthForPie,
       height: maxWidthForPie,

@@ -38,7 +38,6 @@ export default class GroupDetail extends Component {
       const responseFromGroup = await get('app/readGroup?groupName=' + state.params.groupName)
       .then((response) => response.json())
       .then((dataFromGroup) => {
-        console.log(dataFromGroup);
         this.setState({
           groupName: state.params.groupName,
           avatar: dataFromGroup.avatar,
@@ -49,12 +48,11 @@ export default class GroupDetail extends Component {
           top3: dataFromGroup.top3
         }, function() {
           // In this block you can do something with new state.
-          console.log(this.state.groupName);
           this.fetchUsersFriendsInGroup();
         });
       })
       .catch((error) => {
-        console.error(error);
+        // handle error
       });
     }
     catch(err) {
@@ -66,9 +64,7 @@ export default class GroupDetail extends Component {
     var user = firebase.auth().currentUser;
     try {
       const response = await get('app/readUser?userEmail=' + user.email);
-      console.log(user.email);
       const data = await response.json();
-      console.log(data);
       this.setState({
         curUserName: data['userName']
       });
@@ -84,18 +80,13 @@ export default class GroupDetail extends Component {
       throw "user not signed in"
     }
     try {
-      console.log(user.email);
-      console.log(this.state.groupName);
-      const response = await get('app/fetchUsersFriendsInGroup?userEmail=' + user.email + 
+      const response = await get('app/fetchUsersFriendsInGroup?userEmail=' + user.email +
         '&groupName=' + this.state.groupName);
-      console.log(response);
       const data = await response.json();
-      console.log(data);
       this.setState({
         friendsInGroup: data,
         loading: false
       });
-      console.log(this.state.friendsInGroup);
     }
     catch(err) {
       alert(err);
@@ -113,7 +104,6 @@ export default class GroupDetail extends Component {
           buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
           onPress={async () => {
           try {
-            console.log('curUserName: ' + this.state.curUserName);
             const response = await get('app/removeFromGroup?userEmail=' + curUserEmail
               + '&groupName=' + this.state.groupName);
             this.setState({isJoined: false});
@@ -134,7 +124,6 @@ export default class GroupDetail extends Component {
           buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
           onPress={async () => {
           try {
-            console.log('curUserName: ' + this.state.curUserName);
             const response = await get('app/addToGroup?groupName=' + this.state.groupName +
               '&userName=' + this.state.curUserName + '&userEmail=' + curUserEmail);
               this.setState({isJoined: true});
@@ -153,7 +142,7 @@ export default class GroupDetail extends Component {
     function RenderFriendList(props) {
       const friends = props.friends;
       if (friends.length != 0) {
-        const friendItems = friends.map((element, index) => 
+        const friendItems = friends.map((element, index) =>
           <View key={index}>
             <Avatar
               medium
@@ -186,8 +175,6 @@ export default class GroupDetail extends Component {
       barList = {}
       for (var i = 0; i < this.state.top3.length; i++) {
         var acti = this.state.top3[i]
-        console.log(this.state.top3[i])
-        console.log(this.state.groupData['labels'])
         barList[acti] = this.state.groupData['labels'][acti]
       }
 

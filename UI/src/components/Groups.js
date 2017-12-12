@@ -42,7 +42,7 @@ export default class Groups extends Component {
       });
     })
     .catch((error) => {
-      console.error(error);
+      // handle error
     });
   }
 
@@ -50,9 +50,7 @@ export default class Groups extends Component {
     var user = firebase.auth().currentUser;
     try {
       const response = await get('app/readUser?userEmail=' + user.email);
-      console.log(user.email);
       const data = await response.json();
-      console.log(data);
       this.setState({
         curUserName: data['userName']
       });
@@ -72,7 +70,6 @@ export default class Groups extends Component {
     try {
       const response = await get('app/fetchGroupsUserIn?userEmail=' + user.email);
       const data = await response.json();
-      console.log(data);
       this.setState({
         groups: data,
       });
